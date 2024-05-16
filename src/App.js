@@ -1,7 +1,7 @@
-import Navbar from "./pages/dashboard/global/Navbar";
+import Navbar from "./pages/global/Navbar";
 import { ColorModeContext, useMode } from "./theme";
 import { CssBaseline, ThemeProvider } from "@mui/material";
-import Sidebar from './pages/dashboard/global/Sidebar';
+import Sidebar from './pages/global/Sidebar';
 import HR from './pages/hr/HR';
 import Sales from './pages/sales/Sales';
 import Finance from './pages/finance/Finance';
