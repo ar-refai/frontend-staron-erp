@@ -23,7 +23,9 @@ const Navbar = () => {
         <Box
             display={'flex'}
             justifyContent={"space-between"}
-            p={2}>
+            p={2}
+            sx={{backgroundColor: colors.primary[400]}}
+            >
             {/* Search Bar */}
             <Box
                 display='flex'
@@ -62,4 +64,4 @@ const Navbar = () => {
     )
 }
 
-export default Navbar
+export default Navbar 

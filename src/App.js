@@ -1,6 +1,6 @@
 import Navbar from "./pages/global/Navbar";
 import { ColorModeContext, useMode } from "./theme";
-import { CssBaseline, ThemeProvider } from "@mui/material";
+import { Box, CssBaseline, ThemeProvider } from "@mui/material";
 import Sidebar from './pages/global/Sidebar';
 import HR from './pages/hr/HR';
 import Sales from './pages/sales/Sales';
@@ -11,20 +11,26 @@ import Control from "./pages/control/Control";
 import SupplyChain from './pages/supply_chain/SupplyChain';
 import { Route, Routes } from "react-router-dom";
 import { Dashboard } from "@mui/icons-material";
-
+import {useState} from 'react';
 
 function App() {
   const [theme, colorMode] = useMode();
+  const [open, setOpen] = useState(false);
+  const handleDrawerOpen = () => {
+    setOpen(true);
+  };
 
-
+  const handleDrawerClose = () => {
+    setOpen(false);
+  };
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
         <CssBaseline />
         <div className="app">
-          <Sidebar />
+          <Sidebar open={open} handleDrawerClose={handleDrawerClose} />
           <main className="content">
-            <Navbar/>
+          <Navbar open={open} handleDrawerOpen={handleDrawerOpen} />
             <Routes>
               <Route path="/" element={<Dashboard/>} />
               <Route path="/hr" element={<HR/>} />
