@@ -18,47 +18,80 @@ import ChecklistOutlinedIcon from '@mui/icons-material/ChecklistOutlined';
 import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined';
 import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import QueryStatsOutlinedIcon from '@mui/icons-material/QueryStatsOutlined';
-import PeopleOutlinedIcon from '@mui/icons-material/PeopleOutlined';
-import ListAltOutlinedIcon from '@mui/icons-material/ListAltOutlined';
-import FactCheckOutlinedIcon from '@mui/icons-material/FactCheckOutlined';
-import AssignmentTurnedInOutlinedIcon from '@mui/icons-material/AssignmentTurnedInOutlined';
-import LocalAtmOutlinedIcon from '@mui/icons-material/LocalAtmOutlined';
-import PriceChangeOutlinedIcon from '@mui/icons-material/PriceChangeOutlined';
-import FollowTheSignsOutlinedIcon from '@mui/icons-material/FollowTheSignsOutlined';
-import SmsFailedOutlinedIcon from '@mui/icons-material/SmsFailedOutlined';
+import Badge from '@mui/material/Badge';
+import Avatar from '@mui/material/Avatar';
+import HRLinks from './HrLinks';
+import TagIcon from '@mui/icons-material/Tag';
+import UserAvatar from "../../assets/user.jpg";
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
+  
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  
   return (
-    <ListItem
-      button
-      selected={selected === title}
-      onClick={() => setSelected(title)}
-      component={Link}
-      to={to}
-      sx={{
-        color: colors.grey[200],
-        '&.Mui-selected': {
-          backgroundColor: colors.primary[800],
-        },
-        '&.Mui-selected:hover': {
-          backgroundColor: colors.primary[600],
-        },
-        '&:hover': {
-          backgroundColor: colors.primary[600],
-        }
-      }}
-    >
-      <ListItemIcon sx={{ color: colors.grey[400] }}>
-        {icon}
-      </ListItemIcon>
-      <ListItemText primary={title} />
-    </ListItem>
+    <LightTooltip title={title}>
+      <ListItem
+        button
+        selected={selected === title}
+        onClick={() => setSelected(title)}
+        component={Link}
+        to={to}
+        sx={{
+          color: colors.grey[200],
+          '&.Mui-selected': {
+            backgroundColor: colors.primary[800],
+            color: colors.blueAccent[200]
+          },
+          '&.Mui-selected:hover': {
+            backgroundColor: theme.palette.mode === 'light' ? colors.primary[800] : colors.primary[500],
+          },
+          '&:hover': {
+            backgroundColor: theme.palette.mode === 'light' ? colors.primary[800] : colors.primary[500],
+          }
+        }}
+      >
+        <ListItemIcon sx={{ color: selected === title ? colors.blueAccent[200] : colors.grey[300] }}>
+          {icon}
+        </ListItemIcon>
+        <ListItemText primary={title} />
+      </ListItem>
+    </LightTooltip>
   );
 };
 
+
 const drawerWidth = 240;
+
+
+const StyledBadge = styled(Badge)(({ theme }) => ({
+  '& .MuiBadge-badge': {
+    backgroundColor: '#44b700',
+    color: '#44b700',
+    boxShadow: `0 0 0 2px ${theme.palette.background.paper}`,
+    '&::after': {
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      borderRadius: '50%',
+      animation: 'ripple 1.2s infinite ease-in-out',
+      border: '1px solid currentColor',
+      content: '""',
+    },
+  },
+  '@keyframes ripple': {
+    '0%': {
+      transform: 'scale(.8)',
+      opacity: 1,
+    },
+    '100%': {
+      transform: 'scale(2.4)',
+      opacity: 0,
+    },
+  },
+}));
 
 const LightTooltip = styled(({ className, ...props }) => (
   <Tooltip {...props} classes={{ popper: className }} />
@@ -68,7 +101,8 @@ const LightTooltip = styled(({ className, ...props }) => (
     color: 'rgba(0, 0, 0, 0.87)',
     boxShadow: theme.shadows[1],
     fontSize: 12,
-    padding: '4px 10px'
+    padding: '4px 10px',
+    position:'absolute',
   },
 }));
 
@@ -133,16 +167,19 @@ export default function MiniDrawer() {
 
   return (
     <>
-      <Drawer 
-      variant="permanent" 
-      open={open}
-      PaperProps={{
-        sx: {
-          backgroundColor: colors.primary[400],
-          boxShadow:" 0px -9px 40px rgba(255, 255, 225, 0.1)"
-        }
-      }}
-    
+      <Drawer
+        variant="permanent"
+        open={open}
+        PaperProps={{
+          sx: {
+            backgroundColor: colors.primary[400],
+            border: theme.palette.mode === 'dark' ? "1px solid rgba(255, 255, 255, 0.2)" : "1px solid rgba(0, 0, 0,.15)",
+            borderRadius: '30px',
+            transform: 'scale(.99)',
+            marginLeft: '10px'
+          }
+        }}
+
       >
         <DrawerHeader open={open}>
           {open && (
@@ -155,14 +192,7 @@ export default function MiniDrawer() {
           </IconButton>
         </DrawerHeader>
         <Divider />
-        <List>
-          <Item
-            title="Dashboard"
-            to="/"
-            icon={<SpaceDashboardOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
+        <List sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
           <Typography
             variant="h6"
@@ -170,12 +200,21 @@ export default function MiniDrawer() {
             sx={{ m: "15px 0 5px 20px" }}
           >
             {open ? (
-              <Box>
-                General
-              </Box>) : <Box sx={{ cursor: 'default' }}>ـــ</Box> // Change cursor to pointer when hovered
+              <Box sx={{display:'flex',justifyContent:'start',fontSize:'16px',cursor:'default' , alignItems:'center',color:colors.primary[100],letterSpacing:'2px',fontWeight:'bold'}}>
+                  <TagIcon sx={{color:colors.redAccent[500], fontSize:'30px'}}/> GENERAL
+              </Box>) : <Box sx={{ cursor: 'default' }}> 
+              <Typography sx={{display:'flex',color:colors.redAccent[500], fontSize:'30px' ,justifyContent:'start'}}> ـــ </Typography>
+            </Box> // Change cursor to pointer when hovered
 
             }
           </Typography>
+<Item
+  title="Dashboard"
+  to="/"
+  icon={<SpaceDashboardOutlinedIcon />}
+  selected={selected}
+  setSelected={setSelected}
+/>
           <Item
             title="Attendance"
             to="/attendance"
@@ -192,7 +231,7 @@ export default function MiniDrawer() {
           />
           <Item
             title="Requirment Requests"
-            to="/requirment-requests"
+            to="/requirement-requests"
             icon={<LocalShippingOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
@@ -200,7 +239,7 @@ export default function MiniDrawer() {
 
           <Item
             title="Targets & Performance"
-            to="/targets-performance"
+            to="/target-performance"
             icon={<QueryStatsOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
@@ -212,71 +251,76 @@ export default function MiniDrawer() {
             sx={{ m: "15px 0 5px 20px" }}
           >
             {open ? (
-              <Box>
-                Specific
-              </Box>
-            ) : (
-              <Box sx={{ cursor: 'default' }}>ـــ</Box> // Change cursor to pointer when hovered
+              <Box sx={{display:'flex',justifyContent:'start',fontSize:'16px',cursor:'default' , alignItems:'center',color:colors.primary[100],letterSpacing:'2px',fontWeight:'bold'}}>
+              <TagIcon sx={{color:colors.redAccent[500], fontSize:'30px'}}/> SPECIFIC
+        </Box>)
+        : (
+              <Box sx={{ cursor: 'default' }}>
+                <Typography sx={{display:'flex',color:colors.redAccent[500], fontSize:'30px',justifyContent:'start'}}> ـــ </Typography>
+              </Box> // Change cursor to pointer when hovered
             )}
 
           </Typography>
+          {HRLinks.map((item, index) => (
+          <Item
+            key={index}
+            title={item.title}
+            to={item.to}
+            icon={item.icon}
+            selected={selected}
+            setSelected={setSelected}
+          />))}        
 
-          <Item
-            title="Employee Repository"
-            to="/employees"
-            icon={<PeopleOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Timesheet"
-            to="/timesheet"
-            icon={<ListAltOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Requests Approvals"
-            to="/requests-approvals"
-            icon={<FactCheckOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Requirments Approvals"
-            to="/requirments-approvals"
-            icon={<AssignmentTurnedInOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Payroll"
-            to="/payroll"
-            icon={<LocalAtmOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Incentive Remuneration"
-            to="incentive-remuneration"
-            icon={<PriceChangeOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Leave Balance"
-            to="/leave-balance"
-            icon={<FollowTheSignsOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
-          <Item
-            title="Warning Log"
-            to="/warning-log"
-            icon={<SmsFailedOutlinedIcon />}
-            selected={selected}
-            setSelected={setSelected}
-          />
+          {/* The User Signed in */}
+          <ListItem
+            sx={{
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'center',
+              alignItems: 'center',
+              marginTop: 'auto', // Push the avatar to the bottom of the sidebar
+              translate: open? '-4px' : '0'
+            }}
+          >
+            <StyledBadge
+              overlap="circular"
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+              variant="dot"
+            >
+              <Avatar 
+              alt="users name" 
+              src={UserAvatar}
+              sx={{ 
+                width:open ? '50px' : '40px', 
+                height:open ? '50px' : '40px',
+                transition:'all ease .4s'
+              }}
+              />
+            </StyledBadge>
+            {open && (
+              <>
+              <ListItemText 
+              primary="Abdelrahman ElRefai" 
+              sx={{
+                marginTop: open ? '15px' : 0,
+                marginLeft:open ? '0' : '18px',
+                fontSize:'12px',
+                color:colors.primary[100]
+                
+              }} /> 
+              <ListItemText 
+              primary="Software Team" 
+              sx={{
+                marginLeft:open ? '0' : '18px',
+                color:colors.primary[200],
+                transform:'translateY(-10px)',
+                fontSize:'10px',
+              }} /> 
+              </>
+            )}
+          </ListItem>
+
+
         </List>
       </Drawer>
     </>

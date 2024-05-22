@@ -26,8 +26,8 @@ export const tokens = (mode) => ({
                 700: "#0c101b",
                 800: "#080b12",
                 900: "#040509",
-                
-            },
+            }
+            ,
             greenAccent: {
                 100: "#dbf5ee",
                 200: "#b7ebde",
@@ -164,30 +164,30 @@ export const themeSettings = (mode) => {
                 }),
         },
         typography: {
-            fontFamily: ["Source Sans 3", "sans-serif"].join(","),
+            fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
             fontSize: 12,
             h1: {
-                fontFamily: ["Source Sans 3", "sans-serif"].join(","),
+                fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
                 fontSize: 40,
             },
             h2: {
-                fontFamily: ["Source Sans 3", "sans-serif"].join(","),
+                fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
                 fontSize: 32,
             },
             h3: {
-                fontFamily: ["Source Sans 3", "sans-serif"].join(","),
+                fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
                 fontSize: 24,
             },
             h4: {
-                fontFamily: ["Source Sans 3", "sans-serif"].join(","),
+                fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
                 fontSize: 20,
             },
             h5: {
-                fontFamily: ["Source Sans 3", "sans-serif"].join(","),
+                fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
                 fontSize: 16,
             },
             h6: {
-                fontFamily: ["Source Sans 3", "sans-serif"].join(","),
+                fontFamily: ["Source Sans Pro", "sans-serif"].join(","),
                 fontSize: 14,
             },
         },
