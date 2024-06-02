@@ -10,26 +10,44 @@ import {
   MRT_ToggleFiltersButton,
 } from 'material-react-table';
 
-// Import makeData function
-import { makeData } from './makeData';
-
 // Generate mock data
-const data = makeData();
+const makeRecruitmentData = () => [
+  {
+    id: 1,
+    role: 'Software Engineer',
+    description: 'Develop and maintain software applications.',
+    requesterName: 'John Doe',
+    date: new Date().toISOString(),
+    status: 'Pending',
+    requesterImage: 'https://via.placeholder.com/30',
+  },
+  {
+    id: 2,
+    role: 'Product Manager',
+    description: 'Oversee product development lifecycle.',
+    requesterName: 'Jane Smith',
+    date: new Date().toISOString(),
+    status: 'Accepted',
+    requesterImage: 'https://via.placeholder.com/30',
+  },
+  // Add more mock data here
+];
 
-const Requests = () => {
+const RecruitmentRequests = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  
+
   const [open, setOpen] = useState(false);
   const [newRequest, setNewRequest] = useState({
-    name: '',
-    title: '',
-    date: '',
-    requesterName: '',
-    status: 'Pending',
+    role: '',
     description: '',
-    requesterImage: ''
+    requesterName: 'Admin', // Assuming Admin is creating the request
+    date: new Date().toISOString(),
+    status: 'Pending',
+    requesterImage: 'https://via.placeholder.com/30'
   });
+
+  const data = useMemo(() => makeRecruitmentData(), []);
 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
@@ -42,7 +60,6 @@ const Requests = () => {
   };
 
   const handleAddRequest = () => {
-    // Add the new request to your data
     data.push(newRequest);
     setOpen(false);
   };
@@ -50,13 +67,13 @@ const Requests = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'name',
-        header: 'Request Name',
-        size: 250,
+        accessorKey: 'role',
+        header: 'Role',
+        size: 200,
       },
       {
-        accessorKey: 'title',
-        header: 'Request Title',
+        accessorKey: 'description',
+        header: 'Description',
         size: 300,
       },
       {
@@ -142,7 +159,7 @@ const Requests = () => {
               padding: '10px 12px',
             }}
           >
-            Requests Table
+            Recruitment Requests
           </Typography>
         </Box>
       </Box>
@@ -159,7 +176,7 @@ const Requests = () => {
             showColumnFilters: true,
             showGlobalFilter: true,
             columnPinning: {
-              left: ['mrt-row-expand', 'mrt-row-select'],
+              left: [],
             },
           }}
           paginationDisplayMode="pages"
@@ -193,14 +210,15 @@ const Requests = () => {
                 <Typography variant="body2">Requester: {row.original.requesterName}</Typography>
                 <Typography variant="body2">Status: {row.original.status}</Typography>
                 <Typography variant="body2">Date of Request: {new Date(row.original.date).toLocaleDateString()}</Typography>
+                <Typography variant="body2">Role: {row.original.role}</Typography>
               </Box>
             </Box>
           )}
           renderTopToolbar={({ table }) => (
             <Box
               sx={{
-                backgroundColor: colors.primary[400],
-                display: 'flex',
+               backgroundColor: colors.primary[400],
+               display: 'flex',
                 gap: '0.5rem',
                 p: '8px',
                 justifyContent: 'space-between',
@@ -226,47 +244,30 @@ const Requests = () => {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: 400,
-            bgcolor: 'background.paper',
+            bgcolor: colors.primary[700],
+            color: colors.primary[200],
             border: '2px solid #000',
             boxShadow: 24,
             p: 4,
             display: 'flex',
             flexDirection: 'column',
             gap: '1rem',
+            borderRadius: '10px'
           }}
         >
           <Typography variant="h6" component="h2">
-            Add New Request
+            Add New Recruitment Request
           </Typography>
           <TextField
-            label="Request Name"
-            name="name"
-            value={newRequest.name}
+            label="Role"
+            name="role"
+            value={newRequest.role}
             onChange={handleChange}
             fullWidth
-          />
-          <TextField
-            label="Request Title"
-            name="title"
-            value={newRequest.title}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            label="Date"
-            name="date"
-            type="date"
-            InputLabelProps={{ shrink: true }}
-            value={newRequest.date}
-            onChange={handleChange}
-            fullWidth
-          />
-          <TextField
-            label="Requester Name"
-            name="requesterName"
-            value={newRequest.requesterName}
-            onChange={handleChange}
-            fullWidth
+            InputLabelProps={{ style: { color: colors.primary[200] } }}
+            InputProps={{
+              style: { color: colors.primary[200] },
+            }}
           />
           <TextField
             label="Description"
@@ -274,13 +275,12 @@ const Requests = () => {
             value={newRequest.description}
             onChange={handleChange}
             fullWidth
-          />
-          <TextField
-            label="Requester Image URL"
-            name="requesterImage"
-            value={newRequest.requesterImage}
-            onChange={handleChange}
-            fullWidth
+            multiline
+            rows={4}
+            InputLabelProps={{ style: { color: colors.primary[200] } }}
+            InputProps={{
+              style: { color: colors.primary[200] },
+            }}
           />
           <Button variant="contained" color="primary" onClick={handleAddRequest}>
             Add
@@ -291,4 +291,4 @@ const Requests = () => {
   );
 };
 
-export default Requests;
+export default RecruitmentRequests;

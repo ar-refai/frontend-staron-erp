@@ -230,8 +230,8 @@ export default function MiniDrawer() {
             setSelected={setSelected}
           />
           <Item
-            title="Requirment Requests"
-            to="/requirement-requests"
+            title="Recruitment Requests"
+            to="/recruitment-requests"
             icon={<LocalShippingOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}

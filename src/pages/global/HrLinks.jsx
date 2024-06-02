@@ -22,8 +22,8 @@ const HRLinks = [
         icon: <FactCheckOutlinedIcon />,
     },
     {
-        title: "Requirements Approval",
-        to: "/hr/requirments-approval",
+        title: "Recruitment Approval",
+        to: "/hr/recruitment-approval",
         icon: <AssignmentTurnedInOutlinedIcon />,
     },
     { 

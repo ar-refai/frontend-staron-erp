@@ -54,7 +54,7 @@ export default function HR() {
             >Requests Approval</Typography>
           )}
 
-          {url.pathname === '/hr/requirments-approval' && (
+          {url.pathname === '/hr/recruitment-approval' && (
             <Typography variant='h2' sx=
               {{
                 color: colors.primary[200],
@@ -62,7 +62,7 @@ export default function HR() {
                 padding: '10px 12px'
 
               }}
-            >Requirments Approval</Typography>
+            >Recruitment Approval</Typography>
           )}
 
           {url.pathname === '/hr/payroll' && (

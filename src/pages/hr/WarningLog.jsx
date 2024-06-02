@@ -8,6 +8,7 @@ import {
     DialogContent,
     DialogTitle,
     MenuItem,
+    Select,
     TextField,
     useTheme,
 } from "@mui/material";
@@ -54,23 +55,32 @@ const mockData = [
 
 const Warning = () => {
     const [tableData, setTableData] = useState(mockData);
-    const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const [rowToDelete, setRowToDelete] = useState(null);
-    const [showIncress, setShowIncress] = useState(false);
-    const [selectedemployee, setselectedemployee] = useState();
+    const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [warningLevel, setWarningLevel] = useState('');
+    const [reason, setReason] = useState('');
     const [departmentFilter, setDepartmentFilter] = useState("");
     const [sortBy, setSortBy] = useState("");
     const [searchQuery, setSearchQuery] = useState("");
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
+    const reasons = [
+        "Late Arrival",
+        "Incomplete Task",
+        "Unprofessional Behavior",
+        "Violation of Policy"
+    ];
+
     const handleClose = () => {
-        setShowIncress(false);
+        setEditDialogOpen(false);
+        setWarningLevel('');
+        setReason('');
     };
 
-    const handleIncress = (item) => {
-        setselectedemployee(item);
-        setShowIncress(true);
+    const handleEdit = (item) => {
+        setSelectedEmployee(item);
+        setEditDialogOpen(true);
     };
 
     const filteredEmployees = () => {
@@ -169,11 +179,20 @@ const Warning = () => {
                 header: "Action",
                 Cell: ({ cell }) => (
                     <Button
+                    
+                        sx={{
+                            borderColor:colors.blueAccent[200],
+                            color:colors.blueAccent[200],
+                            "&:hover": {
+                                borderColor:colors.blueAccent[400],
+                                color:colors.blueAccent[400]
+                            }
+                        }}
                         variant="outlined"
-                        color="warning"
-                        onClick={() => handleIncress(cell.row.original)}
+                        color="primary"
+                        onClick={() => handleEdit(cell.row.original)}
                     >
-                        Increase
+                        Edit
                     </Button>
                 ),
             },
@@ -191,34 +210,94 @@ const Warning = () => {
                 enableColumnActions={false}
             />
 
-            <Dialog open={showIncress} onClose={handleClose}>
-                <DialogTitle>Increase Warning Level for {selectedemployee?.name}</DialogTitle>
-                <DialogContent>Are you sure you want to increase the warning level?</DialogContent>
+            <Dialog
+                open={editDialogOpen}
+                onClose={handleClose}
+            >
+                <DialogTitle>Edit Warning Level for {selectedEmployee?.name}</DialogTitle>
+                <DialogContent>
+                    <Box 
+                    sx={{ 
+                        display: 'flex', 
+                        flexDirection: 'column', 
+                        gap: 2, 
+                        mt: 2 ,
+                        width:'300px',
+                        }}>
+                        <Select
+                            value={warningLevel}
+                            onChange={(e) => setWarningLevel(e.target.value)}
+                            displayEmpty
+                            fullWidth
+                            sx={{
+                                "&.Mui-focused": {
+                                    borderColor:colors.blueAccent[300],
+                                }
+                            }}
+                        >
+                            <MenuItem value="" disabled>Select Warning Level</MenuItem>
+                            <MenuItem value={1}>Level 1</MenuItem>
+                            <MenuItem value={2}>Level 2</MenuItem>
+                            <MenuItem value={3}>Level 3</MenuItem>
+                            <MenuItem value={4}>Level 4</MenuItem>
+                        </Select>
+                        <Select
+                            value={reason}
+                            onChange={(e) => setReason(e.target.value)}
+                            displayEmpty
+                            fullWidth
+                        >
+                            <MenuItem value="" disabled>Select Reason</MenuItem>
+                            {reasons.map((reason) => (
+                                <MenuItem key={reason} value={reason}>
+                                    {reason}
+                                </MenuItem>
+                            ))}
+                        </Select>
+                    </Box>
+                </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleClose} sx={{
-                      color:colors.redAccent[200],
-                      "&:hover": {
-                        color:colors.redAccent[300]
-                      }
-
-                    }}>Close</Button>
                     <Button
-                        color="warning"
+                        onClick={handleClose}
+                        sx={{
+                            color: colors.redAccent[800],
+                            backgroundColor:colors.redAccent[300],
+                            
+                            "&:hover": {
+                                color: colors.redAccent[700],
+                                backgroundColor:colors.redAccent[200],
+
+                            }
+                        }}
+                    >
+                        Close
+                    </Button>
+                    <Button
+                        color="primary"
                         onClick={() => {
                             const updatedData = tableData.map((emp) =>
-                                emp.id === selectedemployee.id
-                                    ? { ...emp, warning_count: emp.warning_count + 1 }
+                                emp.id === selectedEmployee.id
+                                    ? { ...emp, warning_count: warningLevel }
                                     : emp
                             );
+                            
                             setTableData(updatedData);
                             handleClose();
                         }}
+                        sx={{
+                            color: colors.blueAccent[800],
+                            backgroundColor:colors.blueAccent[300],
+                            
+                            "&:hover": {
+                                color: colors.blueAccent[700],
+                                backgroundColor:colors.blueAccent[200],
+                            }
+                        }}
                     >
-                        Increase
+                        Save
                     </Button>
                 </DialogActions>
             </Dialog>
-
         </>
     );
 };
