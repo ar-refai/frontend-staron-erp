@@ -40,8 +40,8 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
         sx={{
           color: colors.grey[200],
           '&.Mui-selected': {
-            backgroundColor: colors.primary[800],
-            color: colors.blueAccent[200]
+            backgroundColor: colors.primary[900],
+            color: colors.redAccent[400]
           },
           '&.Mui-selected:hover': {
             backgroundColor: theme.palette.mode === 'light' ? colors.primary[800] : colors.primary[500],
@@ -51,7 +51,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
           }
         }}
       >
-        <ListItemIcon sx={{ color: selected === title ? colors.blueAccent[200] : colors.grey[300] }}>
+        <ListItemIcon sx={{ color: selected === title ? colors.redAccent[400] : colors.grey[300] }}>
           {icon}
         </ListItemIcon>
         <ListItemText primary={title} />

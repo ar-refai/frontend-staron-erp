@@ -7,7 +7,10 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    Divider,
     MenuItem,
+    TextField,
+    Typography,
     useTheme,
 } from "@mui/material";
 import UserImg from "../../assets/user.jpg";
@@ -52,37 +55,28 @@ const mockData = [
 
 const LeaveBalance = () => {
     const [tableData, setTableData] = useState(mockData);
-    const [showIncrease, setShowIncrease] = useState(false);
-    const [showDecrease, setShowDecrease] = useState(false); // State for showing decrease modal
+    const [showEdit, setShowEdit] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [editDays, setEditDays] = useState(0);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
-    const handleIncrease = (employee) => {
+    const handleEdit = (employee) => {
         const updatedData = tableData.map((item) => {
             if (item.id === employee.id) {
-                return { ...item, VacationBalance: item.VacationBalance + 1 };
+                return {
+                    ...item,
+                    VacationBalance: Math.max(0, item.VacationBalance + editDays),
+                };
             }
             return item;
         });
         setTableData(updatedData);
-        setShowIncrease(false);
-    };
-
-    const handleDecrease = (employee) => {
-        const updatedData = tableData.map((item) => {
-            if (item.id === employee.id) {
-                return { ...item, VacationBalance: Math.max(0, item.VacationBalance - 1) };
-            }
-            return item;
-        });
-        setTableData(updatedData);
-        setShowDecrease(false);
+        setShowEdit(false);
     };
 
     const handleClose = () => {
-        setShowIncrease(false);
-        setShowDecrease(false);
+        setShowEdit(false);
     };
 
     const columns = useMemo(
@@ -142,20 +136,11 @@ const LeaveBalance = () => {
                             color="warning"
                             onClick={() => {
                                 setSelectedEmployee(cell.row.original);
-                                setShowDecrease(true);
+                                setEditDays(0);
+                                setShowEdit(true);
                             }}
                         >
-                            Decrease
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            color="warning"
-                            onClick={() => {
-                                setSelectedEmployee(cell.row.original);
-                                setShowIncrease(true);
-                            }}
-                        >
-                            Increase
+                            Inc & Dec
                         </Button>
                     </Box>
                 ),
@@ -174,31 +159,47 @@ const LeaveBalance = () => {
                 enableColumnActions={false}
             />
 
-            <Dialog open={showIncrease} onClose={handleClose}>
-                <DialogTitle>Increase Leave Balance for {selectedEmployee?.name}</DialogTitle>
-                <DialogContent sx={{ color: colors.grey[200] }}>Are you sure you want to increase the leave balance?</DialogContent>
+            <Dialog open={showEdit} onClose={handleClose} >
+                <DialogTitle >Edit Leave Balance for {selectedEmployee?.name}</DialogTitle>
+                <Divider />
+
+                <DialogContent sx={{ color: colors.grey[200], paddingBlock:'20px'}} >
+                    <Typography>
+                        Positive Numbers for Increasing / Negative Numbers For Decreasing
+                    </Typography>
+                    <TextField
+                        type="number"
+                        label="Days to add/subtract"
+                        value={editDays}
+                        onChange={(e) => setEditDays(Number(e.target.value))}
+                        fullWidth
+                        sx={{
+                            marginTop: '20px',
+                        }}
+                    />
+                </DialogContent>
+                <Divider />
+
                 <DialogActions>
-                    <Button onClick={handleClose} sx={{ color: colors.redAccent[200], "&:hover": { color: colors.redAccent[300] } }}>Close</Button>
                     <Button
-                        color="warning"
-                        onClick={() => {
-                            handleIncrease(selectedEmployee);
+                        variant="outlined"
+                        onClick={handleClose}
+                        sx={{
+                            color: colors.redAccent[200],
+                            borderColor:colors.redAccent[200],
+                            "&:hover": { color: colors.redAccent[300],borderColor:colors.redAccent[300] },
                         }}
                     >
-                        Confirm
+                        Close
                     </Button>
-                </DialogActions>
-            </Dialog>
-
-            <Dialog open={showDecrease} onClose={handleClose}>
-                <DialogTitle>Decrease Leave Balance for {selectedEmployee?.name}</DialogTitle>
-                <DialogContent sx={{ color: colors.grey[200] }}>Are you sure you want to decrease the leave balance?</DialogContent>
-                <DialogActions>
-                    <Button onClick={handleClose} sx={{ color: colors.redAccent[200], "&:hover": { color: colors.redAccent[300] } }}>Close</Button>
                     <Button
+                        variant="outlined"
                         color="warning"
-                        onClick={() => {
-                            handleDecrease(selectedEmployee);
+                        onClick={() => handleEdit(selectedEmployee)}
+                        sx={{
+                            color: colors.blueAccent[200],
+                            borderColor:colors.blueAccent[200],
+                            "&:hover": { color: colors.blueAccent[300],borderColor:colors.blueAccent[300] },
                         }}
                     >
                         Confirm

@@ -16,7 +16,7 @@ export default function HR() {
       <Box sx={{
         backgroundColor: colors.primary[400],
         padding: '12px 40px',
-        margin: '20px 20px 10px 10px',
+        margin: '20px ',
         borderRadius: '10px',
       }}>
         <Typography variant='h2' sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>

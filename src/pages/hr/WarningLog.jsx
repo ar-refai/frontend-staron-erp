@@ -7,6 +7,7 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    Divider,
     MenuItem,
     Select,
     TextField,
@@ -121,35 +122,29 @@ const Warning = () => {
                 accessorKey: "profileimage",
                 header: "Image",
                 Cell: ({ cell }) => (
-                    <img
+                    <Link
+                        to={`/employee/${cell.row.original.id}`}
+                        onMouseEnter={(e) => {
+                            e.target.style.color = colors.blueAccent[400];
+                        }} // Change color on hover
+                        onMouseLeave={(e) => e.target.style.color = colors.primary[100]} // Restore color on hover out
+                    >
+                        <img
                         src={UserImg}
                         alt="Employee"
                         style={{ width: "40px", borderRadius: "50%" }}
                     />
+                    </Link>
+                    
                 ),
             },
             {
                 accessorKey: "name",
                 header: "Full Name",
                 Cell: ({ cell }) => (
-                  <Link 
-                  style={{
-                      color: colors.primary[100],
-                      transition: 'color 0.3s ease', // Smooth transition
-                      fontSize: "14px",
-                      textDecoration:'none',
-                      borderBottom: `1px solid ${colors.primary[100]}`,
-                      padding: '2px',
-                      borderBottomColor : colors.blueAccent[400]
-                  }} 
-                  to={`/employee/${cell.row.original.id}`}
-                  onMouseEnter={(e) => {
-                    e.target.style.color = colors.blueAccent[400];
-                  }} // Change color on hover
-                  onMouseLeave={(e) => e.target.style.color = colors.primary[100]} // Restore color on hover out
-              >
-                {cell.getValue()}
-              </Link>
+                   <Box>
+                    {cell.getValue()}
+                   </Box>
                 ),
                 size: 140,
             },
@@ -179,13 +174,13 @@ const Warning = () => {
                 header: "Action",
                 Cell: ({ cell }) => (
                     <Button
-                    
+
                         sx={{
-                            borderColor:colors.blueAccent[200],
-                            color:colors.blueAccent[200],
+                            borderColor: colors.blueAccent[200],
+                            color: colors.blueAccent[200],
                             "&:hover": {
-                                borderColor:colors.blueAccent[400],
-                                color:colors.blueAccent[400]
+                                borderColor: colors.blueAccent[400],
+                                color: colors.blueAccent[400]
                             }
                         }}
                         variant="outlined"
@@ -215,14 +210,16 @@ const Warning = () => {
                 onClose={handleClose}
             >
                 <DialogTitle>Edit Warning Level for {selectedEmployee?.name}</DialogTitle>
+                <Divider />
+
                 <DialogContent>
-                    <Box 
-                    sx={{ 
-                        display: 'flex', 
-                        flexDirection: 'column', 
-                        gap: 2, 
-                        mt: 2 ,
-                        width:'300px',
+                    <Box
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 2,
+                            mt: 2,
+                            width: '300px',
                         }}>
                         <Select
                             value={warningLevel}
@@ -231,7 +228,7 @@ const Warning = () => {
                             fullWidth
                             sx={{
                                 "&.Mui-focused": {
-                                    borderColor:colors.blueAccent[300],
+                                    borderColor: colors.blueAccent[300],
                                 }
                             }}
                         >
@@ -256,16 +253,18 @@ const Warning = () => {
                         </Select>
                     </Box>
                 </DialogContent>
+                <Divider />
+
                 <DialogActions>
                     <Button
                         onClick={handleClose}
                         sx={{
                             color: colors.redAccent[800],
-                            backgroundColor:colors.redAccent[300],
-                            
+                            backgroundColor: colors.redAccent[300],
+
                             "&:hover": {
                                 color: colors.redAccent[700],
-                                backgroundColor:colors.redAccent[200],
+                                backgroundColor: colors.redAccent[200],
 
                             }
                         }}
@@ -280,17 +279,17 @@ const Warning = () => {
                                     ? { ...emp, warning_count: warningLevel }
                                     : emp
                             );
-                            
+
                             setTableData(updatedData);
                             handleClose();
                         }}
                         sx={{
                             color: colors.blueAccent[800],
-                            backgroundColor:colors.blueAccent[300],
-                            
+                            backgroundColor: colors.blueAccent[300],
+
                             "&:hover": {
                                 color: colors.blueAccent[700],
-                                backgroundColor:colors.blueAccent[200],
+                                backgroundColor: colors.blueAccent[200],
                             }
                         }}
                     >

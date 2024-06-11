@@ -1,55 +1,77 @@
-import { Box, Typography, MenuItem, ListItemIcon, Button } from '@mui/material';
-import React, { useMemo } from 'react';
+import {
+    Box,
+    Typography,
+    MenuItem,
+    ListItemIcon,
+    Button,
+    Alert,
+    Snackbar,
+    Dialog,
+    DialogActions,
+    DialogContent,
+    DialogContentText,
+    DialogTitle,
+    Divider,
+} from '@mui/material';
+import React, { useMemo, useState } from 'react';
 import { useTheme, lighten } from '@mui/system';
 import { tokens } from '../../theme';
-import TagIcon from '@mui/icons-material/Tag';
-
 import {
     MaterialReactTable,
     MRT_GlobalFilterTextField,
     MRT_ToggleFiltersButton,
 } from 'material-react-table';
-
 import { AccountCircle, Send } from '@mui/icons-material';
-
-// Mock Data
-import { data } from './makeDataApprovals';
+import { data as initialData } from './makeDataApprovals';
 
 const RequestsApproval = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
+    const [data, setData] = useState(initialData);
+    const [alertMessage, setAlertMessage] = useState('');
+    const [showAlert, setShowAlert] = useState(false);
+    const [selectedDescription, setSelectedDescription] = useState('');
+    const [showDescriptionModal, setShowDescriptionModal] = useState(false);
+
+    const handleCloseAlert = () => {
+        setShowAlert(false);
+    };
+
+    const handleOpenDescriptionModal = (description) => {
+        setSelectedDescription(description);
+        setShowDescriptionModal(true);
+    };
+
+    const handleCloseDescriptionModal = () => {
+        setShowDescriptionModal(false);
+    };
+
     const columns = useMemo(
         () => [
             {
-                accessorKey: 'name', // simple accessor for the request name
+                accessorKey: 'name',
                 header: 'Request Name',
-                size: 250,
+                size: 150,
             },
             {
-                accessorKey: 'title', // simple accessor for the request title
+                accessorKey: 'title',
                 header: 'Request Title',
-                size: 300,
-            },
-            {
-                accessorKey: 'date', // simple accessor for the date
-                header: 'Date of Request',
                 size: 200,
-                Cell: ({ cell }) => new Date(cell.getValue()).toLocaleDateString(), // render Date as a string
             },
             {
-                accessorFn: (row) => `${row.requesterName}`, // accessorFn used to join multiple data into a single cell
-                id: 'requester', // id is still required when using accessorFn instead of accessorKey
+                accessorKey: 'date',
+                header: 'Date of Request',
+                size: 150,
+                Cell: ({ cell }) => new Date(cell.getValue()).toISOString().slice(0, 10),
+            },
+            {
+                accessorFn: (row) => `${row.requesterName}`,
+                id: 'requester',
                 header: 'Requester',
-                size: 250,
+                size: 150,
                 Cell: ({ renderedCellValue, row }) => (
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: '1rem',
-                        }}
-                    >
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                         <img
                             alt="requester"
                             height={30}
@@ -62,9 +84,9 @@ const RequestsApproval = () => {
                 ),
             },
             {
-                accessorKey: 'status', // simple accessor for the status
+                accessorKey: 'status',
                 header: 'Status',
-                size: 150,
+                size: 100,
                 Cell: ({ cell }) => {
                     const status = cell.getValue();
                     const color =
@@ -90,17 +112,84 @@ const RequestsApproval = () => {
                     );
                 },
             },
+            {
+                accessorKey: 'description',
+                header: 'Description',
+                Cell: ({ cell }) => (
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => handleOpenDescriptionModal(cell.getValue())}
+                    >
+                        View Description
+                    </Button>
+                ),
+            },
         ],
-        [],
+        []
     );
+
+    const handleApprove = () => {
+        const updatedData = data.map((row) => {
+            if (row.selected) {
+                return { ...row, status: 'Accepted' };
+            }
+            return row;
+        });
+        setData(updatedData);
+        setAlertMessage('Request Accepted.');
+        setShowAlert(true);
+    };
+
+    const handleReject = () => {
+        const updatedData = data.map((row) => {
+            if (row.selected) {
+                return { ...row, status: 'Rejected' };
+            }
+            return row;
+        });
+        setData(updatedData);
+        setAlertMessage('Request Rejected.');
+        setShowAlert(true);
+    };
 
     return (
         <>
-            {/* New Content Here */}
+            <Snackbar
+                open={showAlert}
+                autoHideDuration={6000}
+                onClose={handleCloseAlert}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleCloseAlert} variant="filled" severity="success">
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
+
+            <Dialog
+                open={showDescriptionModal}
+                onClose={handleCloseDescriptionModal}
+                aria-labelledby="description-dialog-title"
+            >
+                <DialogTitle id="description-dialog-title">Request Description:</DialogTitle>
+                <Divider />
+                <DialogContent sx={{ padding: "30px 80px" }}>
+                    <DialogContentText sx={{ textAlign: 'start' }}>
+                        {selectedDescription}
+                    </DialogContentText>
+                </DialogContent>
+                <Divider />
+                <DialogActions>
+                    <Button onClick={handleCloseDescriptionModal} variant='outlined' color="secondary">
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+
             <Box sx={{ padding: '20px' }}>
                 <MaterialReactTable
                     columns={columns}
-                    data={data} // data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
+                    data={data}
                     enableColumnFilterModes
                     enableColumnOrdering
                     enableGrouping
@@ -115,6 +204,14 @@ const RequestsApproval = () => {
                             right: ['mrt-row-actions'],
                         },
                     }}
+                    muiSelectCheckboxProps={({ row }) => ({
+                        sx: {
+                            color: colors.greenAccent[400],
+                            '&.Mui-checked': {
+                                color: colors.greenAccent[400],
+                            },
+                        },
+                    })}
                     paginationDisplayMode="pages"
                     positionToolbarAlertBanner="bottom"
                     muiSearchTextFieldProps={{
@@ -127,28 +224,20 @@ const RequestsApproval = () => {
                         shape: 'rounded',
                         variant: 'outlined',
                     }}
-                    renderDetailPanel={({ row }) => (
-                        <Box
-                            sx={{
-                                alignItems: 'center',
-                                display: 'flex',
-                                justifyContent: 'space-around',
-                                left: '30px',
-                                maxWidth: '1000px',
-                                position: 'sticky',
-                                width: '100%',
-                            }}
-                        >
-                            <Box sx={{ textAlign: 'center' }}>
-                                <Typography variant="h4">Request Description:</Typography>
-                                <Typography variant="body1">{row.original.description}</Typography>
-                                <Typography variant="h6" sx={{ mt: 2 }}>Additional Info:</Typography>
-                                <Typography variant="body2">Requester: {row.original.requesterName}</Typography>
-                                <Typography variant="body2">Status: {row.original.status}</Typography>
-                                <Typography variant="body2">Date of Request: {new Date(row.original.date).toLocaleDateString()}</Typography>
-                            </Box>
-                        </Box>
-                    )}
+                    muiTablePaperProps={{
+                        elevation: 2,
+                        sx: {
+                            borderRadius: '20px',
+                            padding: '10px 0 0 0',
+                        },
+                    }}
+                    muiTableContainerProps={{ sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } }}
+                    muiTableHeadCellProps={{ sx: { backgroundColor: colors.primary[400] } }}
+                    muiTableBodyCellProps={{ sx: { backgroundColor: colors.primary[400] } }}
+                    muiTableBodyProps={{ sx: { backgroundColor: colors.primary[400] } }}
+                    muiBottomToolbarProps={({ table }) => ({
+                        sx: { backgroundColor: colors.primary[400] },
+                    })}
                     renderRowActionMenuItems={({ closeMenu }) => [
                         <MenuItem
                             key={0}
@@ -178,18 +267,6 @@ const RequestsApproval = () => {
                         </MenuItem>,
                     ]}
                     renderTopToolbar={({ table }) => {
-                        const handleApprove = () => {
-                            table.getSelectedRowModel().flatRows.forEach((row) => {
-                                alert('approving ' + row.getValue('name'));
-                            });
-                        };
-
-                        const handleReject = () => {
-                            table.getSelectedRowModel().flatRows.forEach((row) => {
-                                alert('rejecting ' + row.getValue('name'));
-                            });
-                        };
-
                         return (
                             <Box
                                 sx={{
