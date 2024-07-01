@@ -1,14 +1,15 @@
-import React, { useMemo, useState } from 'react';
+import * as React from 'react';
+import { useMemo, useState } from 'react';
 import { Box, Button, Typography, Modal, TextField, MenuItem, Select, FormControl, InputLabel, Chip, Divider } from '@mui/material';
 import { useTheme } from '@mui/system';
 import { tokens } from '../../theme';
 import TagIcon from '@mui/icons-material/Tag';
-import {
-     MaterialReactTable,
-     MRT_GlobalFilterTextField,
-     MRT_ToggleFiltersButton,
-     useMaterialReactTable,
-} from 'material-react-table';
+import { MaterialReactTable, MRT_GlobalFilterTextField, MRT_ToggleFiltersButton, useMaterialReactTable } from 'material-react-table';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+import dayjs from 'dayjs';
+import { useNavigate } from 'react-router-dom';
 
 // Generate mock data
 const makeRecruitmentData = () => [
@@ -60,7 +61,7 @@ const RecruitmentRequests = () => {
           role: '',
           description: '',
           requesterName: 'Admin', // Assuming Admin is creating the request
-          date: new Date().toISOString(),
+          date: dayjs(),
           status: 'Pending',
           requesterImage: 'https://via.placeholder.com/30'
      });
@@ -80,12 +81,19 @@ const RecruitmentRequests = () => {
           });
      };
 
+     const handleDateChange = (newDate) => {
+          setNewRequest({
+               ...newRequest,
+               date: newDate,
+          });
+     };
+
      const handleAddRequest = () => {
           const currentDate = new Date().toISOString().split('T')[0]; // Get current date in 'YYYY-MM-DD' format
           const randomRequester = employees[Math.floor(Math.random() * employees.length)].name;
           const requestToAdd = {
                ...newRequest,
-               date: newRequest.date || currentDate,
+               date: newRequest.date.format('YYYY-MM-DD') || currentDate,
                status: 'Pending',
                requesterName: randomRequester,
           };
@@ -95,7 +103,7 @@ const RecruitmentRequests = () => {
                role: '',
                description: '',
                requesterName: 'Admin',
-               date: new Date().toISOString(),
+               date: dayjs(),
                status: 'Pending',
                requesterImage: 'https://via.placeholder.com/30'
           });
@@ -126,7 +134,7 @@ const RecruitmentRequests = () => {
                     accessorKey: 'date',
                     header: 'Date of Request',
                     size: 200,
-                    Cell: ({ cell }) => new Date(cell.getValue()).toISOString().slice(0,10),
+                    Cell: ({ cell }) => new Date(cell.getValue()).toISOString().slice(0, 10),
                },
                {
                     accessorFn: (row) => `${row.requesterName}`,
@@ -166,15 +174,15 @@ const RecruitmentRequests = () => {
                                         : 'red';
                          return (
                               <Chip
-                              label={status}
-                              sx={{
-                                   backgroundColor: color,
-                                   textAlign: 'center',
-                                   width: '80px',
-                                   fontSize: '13px',
-                                   fontWeight: 'semiBold',
-                                   letterSpacing:"0.5px",
-                                   color: colors.grey[100] 
+                                   label={status}
+                                   sx={{
+                                        backgroundColor: color,
+                                        textAlign: 'center',
+                                        width: '80px',
+                                        fontSize: '13px',
+                                        fontWeight: 'semiBold',
+                                        letterSpacing: "0.5px",
+                                        color: colors.grey[100]
                                    }}
                               />
                          );
@@ -183,7 +191,7 @@ const RecruitmentRequests = () => {
           ],
           [],
      );
-
+ 
      const table = useMaterialReactTable({
           columns,
           data, // data must be memoized or stable (useState, useMemo, defined outside of this component, etc.)
@@ -211,13 +219,13 @@ const RecruitmentRequests = () => {
                sx: {
                     borderRadius: '20px',
                }
-               },    
-               muiTableContainerProps: { sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } },
-               muiTableHeadCellProps: { sx: { backgroundColor: colors.primary[400] } },
-               muiTableBodyCellProps: { sx: { backgroundColor: colors.primary[400] } },
-               muiTableBodyProps: {sx: { backgroundColor: colors.primary[400] } },
-               muiBottomToolbarProps: ({table}) => ({
-               sx: { backgroundColor: colors.primary[400]}
+          },
+          muiTableContainerProps: { sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } },
+          muiTableHeadCellProps: { sx: { backgroundColor: colors.primary[400] } },
+          muiTableBodyCellProps: { sx: { backgroundColor: colors.primary[400] } },
+          muiTableBodyProps: { sx: { backgroundColor: colors.primary[400] } },
+          muiBottomToolbarProps: ({ table }) => ({
+               sx: { backgroundColor: colors.primary[400] }
           }),
           muiPaginationProps: {
                color: 'secondary',
@@ -228,9 +236,9 @@ const RecruitmentRequests = () => {
           muiTableBodyRowProps: ({ row }) => ({
                //conditionally style selected rows
                sx: {
-                    backgroundColor:colors.primary[400]
+                    backgroundColor: colors.primary[400]
                },
-               }),           
+          }),
           renderTopToolbar: ({ table }) => (
                <Box
                     sx={{
@@ -244,9 +252,9 @@ const RecruitmentRequests = () => {
                          <MRT_GlobalFilterTextField table={table} />
                          <MRT_ToggleFiltersButton table={table} />
                     </Box>
-                    <Button 
-                         variant="contained" 
-                         color="primary" 
+                    <Button
+                         variant="contained"
+                         color="primary"
                          onClick={handleOpen}
                          sx={{
                               backgroundColor: colors.primary[600],
@@ -260,6 +268,12 @@ const RecruitmentRequests = () => {
                </Box>
           ),
      });
+     
+     const user = JSON.parse(localStorage.getItem('user'));
+     const navigate = useNavigate();
+     // If the user is not authenticated or authorized, redirect to the login page
+     if (!(user.department === 'admin')) 
+          return navigate('/');
 
      return (
           <>
@@ -298,7 +312,7 @@ const RecruitmentRequests = () => {
                               transform: 'translate(-50%, -50%)',
                               width: 900,
                               bgcolor: colors.primary[700],
-                              border: '2px solid #000',
+                              border: `2px solid ${colors.greenAccent[500]}`,
                               boxShadow: 24,
                               p: 4,
                               display: 'flex',
@@ -310,7 +324,9 @@ const RecruitmentRequests = () => {
                          <Typography variant="h6" component="h2">
                               Add New Recruitment Request
                          </Typography>
-                         <FormControl fullWidth>
+                         <Divider />
+
+                         <FormControl fullWidth variant="filled">
                               <InputLabel>Role</InputLabel>
                               <Select
                                    name="role"
@@ -333,13 +349,33 @@ const RecruitmentRequests = () => {
                               onChange={handleChange}
                               fullWidth
                               multiline
+                              variant="filled"
                               rows={4}
                               InputLabelProps={{ style: { color: colors.primary[200] } }}
                               InputProps={{
                                    style: { color: colors.primary[200] },
                               }}
                          />
-                         <Button variant="contained" color="primary" onClick={handleAddRequest}>
+                         <LocalizationProvider dateAdapter={AdapterDayjs}>
+                              <DatePicker
+                                   label="Start Date"
+                                   value={newRequest.date}
+                                   slotProps={{
+                                        openPickerIcon: { fontSize: 'large' },
+                                        openPickerButton: { color: 'secondary' },
+                                        textField: {
+                                        variant: 'filled',
+                                        focused: true,
+                                        color: 'secondary',
+                                   },
+                                   }}
+                         
+                                   onChange={handleDateChange}
+                                   renderInput={(params) => <TextField {...params} fullWidth />}
+                              />
+                         </LocalizationProvider>
+                         <Divider />
+                         <Button variant="outlined" color="secondary" onClick={handleAddRequest}>
                               Add
                          </Button>
                     </Box>
@@ -353,9 +389,9 @@ const RecruitmentRequests = () => {
                               left: '50%',
                               transform: 'translate(-50%, -50%)',
                               width: 900,
-                              bgcolor: colors.primary[700],
+                              bgcolor: colors.primary[500],
                               color: colors.primary[200],
-                              border: `3px solid ${colors.greenAccent[300]}`,
+                              border: `3px solid ${colors.greenAccent[400]}`,
                               boxShadow: 24,
                               p: 4,
                               display: 'flex',
@@ -365,22 +401,22 @@ const RecruitmentRequests = () => {
                          }}
                     >
                          <Typography variant="h6" sx={{
-                              textTransform:"uppercase",
-                              fontWeight:'bold',
+                              textTransform: "uppercase",
+                              fontWeight: 'bold',
                          }} component="h2">
                               Request Description
                          </Typography>
-                         <Divider/>
+                         <Divider />
                          <Typography
-                         sx={{
-                              padding: '10px',
-                              borderRadius: '10px'
-                         }}
+                              sx={{
+                                   padding: '10px',
+                                   borderRadius: '10px'
+                              }}
                          >{selectedDescription}</Typography>
-                         <Divider/>
-                         <Button 
-                              variant="contained" 
-                              color="primary" 
+                         <Divider />
+                         <Button
+                              variant="contained"
+                              color="primary"
                               onClick={handleDescriptionClose}
                               sx={{
                                    alignSelf: 'center',

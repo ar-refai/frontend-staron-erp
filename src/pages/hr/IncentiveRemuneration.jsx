@@ -10,16 +10,40 @@ const IncentiveRemuniration = () => {
 
   const columns = useMemo(
     () => [
-      { accessorKey: 'name', header: 'Name', footer: 'Name' },
-      { accessorKey: 'employeeId', header: 'Employee ID', footer: 'Employee ID' },
-      { accessorKey: 'department', header: 'Department', footer: 'Department' },
-      { accessorKey: 'possibleIncentivePayroll', header: 'Possible Incentive Payroll', footer: 'Possible Incentive Payroll' },
-      { accessorKey: 'departmentRating', header: 'Department Rating', footer: 'Department Rating' },
-      { accessorKey: 'presenceMargin', header: 'Presence Margin', footer: 'Presence Margin' },
-      { accessorKey: 'supervisorGrade', header: 'Supervisor Grade', footer: 'Supervisor Grade' },
-      { accessorKey: 'overallPerformanceRating', header: 'Overall Performance Rating', footer: 'Overall Performance Rating' },
-      { accessorKey: 'maxPossibleIncentive', header: 'Maximum Possible Incentive', footer: 'Maximum Possible Incentive' },
-      { accessorKey: 'incentiveRemunerationPayout', header: 'Incentive Remuneration Payout', footer: 'Incentive Remuneration Payout' },
+      { accessorKey: "name", header: "Name"},
+      {
+        accessorKey: "employeeId",
+        header: "Employee ID",
+      },
+      { accessorKey: "department", header: "Department" },
+      {
+        accessorKey: "possibleIncentivePayroll",
+        header: "Possible Incentive Payroll",
+      },
+      {
+        accessorKey: "departmentRating",
+        header: "Department Rating",
+      },
+      {
+        accessorKey: "presenceMargin",
+        header: "Presence Margin",
+      },
+      {
+        accessorKey: "supervisorGrade",
+        header: "Supervisor Grade",
+      },
+      {
+        accessorKey: "overallPerformanceRating",
+        header: "Overall Performance Rating",
+      },
+      {
+        accessorKey: "maxPossibleIncentive",
+        header: "Maximum Possible Incentive",
+      },
+      {
+        accessorKey: "incentiveRemunerationPayout",
+        header: "Incentive Remuneration Payout",
+      },
     ],
     []
   );
@@ -133,19 +157,41 @@ const IncentiveRemuniration = () => {
     data,
     enableBottomToolbar: true,
     enableStickyHeader: true,
-    enableStickyFooter: true,
     columnFilterDisplayMode: 'popover',
     enablePagination : true,
     paginationDisplayMode: 'pages',
-    muiTableContainerProps: { sx: { maxHeight: '800px' } },
-    muiTableBodyCellProps: {
-      sx: (theme) => ({
-        backgroundColor:
-          theme.palette.mode === 'dark'
-            ? colors.primary[400]
-            : colors.primary[500],
-      }),
-    },
+    muiBottomToolbarProps: {
+      sx: { backgroundColor: colors.primary[400] }
+  },
+  muiTableContainerProps: {
+      sx: { 
+          maxHeight: '600px', 
+          backgroundColor: colors.primary[400], 
+          overflowX: 'auto' 
+      }
+  },
+  muiTableHeadCellProps: {
+      sx: { backgroundColor: colors.primary[400] }
+  },
+  muiTableBodyCellProps: {
+      sx: { backgroundColor: colors.primary[400] }
+  },
+  muiPaginationProps: {
+    color: 'secondary',
+    rowsPerPageOptions: [10, 20, 30],
+    shape: 'rounded',
+    variant: 'outlined',
+  },
+  muiTableBodyProps: {
+      sx: { backgroundColor: colors.primary[400] }
+  },
+  muiTablePaperProps: {
+      elevation: 2,
+      sx: {
+          borderRadius: '20px',
+          padding: '10px 0 0 0'
+      }
+  },
   });
 
   return <MaterialReactTable table={table} />;

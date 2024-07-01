@@ -1,17 +1,12 @@
 import React, { useMemo, useState } from 'react';
-import { Box, Button, Typography, Modal, TextField, MenuItem, Select, FormControl, InputLabel, Chip } from '@mui/material';
+import { Box, Button, Typography, Modal, TextField, MenuItem, Select, FormControl, InputLabel, Chip, Divider } from '@mui/material';
 import { useTheme } from '@mui/system';
 import { tokens } from '../../theme';
 import TagIcon from '@mui/icons-material/Tag';
-
-import {
-  MaterialReactTable,
-  MRT_GlobalFilterTextField,
-  MRT_ToggleFiltersButton,
-} from 'material-react-table';
-
-// Import makeData function
+import { MaterialReactTable, MRT_GlobalFilterTextField, MRT_ToggleFiltersButton } from 'material-react-table';
 import { makeData } from './makeData';
+import styled from '@emotion/styled';
+import { useNavigate } from 'react-router-dom';
 
 // Generate mock data
 const initialData = makeData();
@@ -24,6 +19,8 @@ const employees = [
   // Add more employees as needed
 ];
 
+const requestTypes = ['Sick Leave', 'Annual Vacation', 'Errands', 'Clock In Excuse', 'Clock Out Excuse'];
+
 const Requests = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -31,13 +28,15 @@ const Requests = () => {
   const [data, setData] = useState(initialData);
   const [open, setOpen] = useState(false);
   const [newRequest, setNewRequest] = useState({
-    name: '',
+    requestType: '',
     description: '',
+    from: '',
+    to: '',
     date: '',
     requesterName: '',
     status: 'Pending',
   });
-
+ 
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
@@ -61,8 +60,10 @@ const Requests = () => {
     setOpen(false);
     // Reset the form
     setNewRequest({
-      name: '',
+      requestType: '',
       description: '',
+      from: '',
+      to: '',
       date: '',
       requesterName: '',
       status: 'Pending',
@@ -72,8 +73,8 @@ const Requests = () => {
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'name',
-        header: 'Request Name',
+        accessorKey: 'requestType',
+        header: 'Request Type',
         size: 250,
       },
       {
@@ -94,6 +95,8 @@ const Requests = () => {
       },
       {
         accessorKey: 'status',
+        filterVariant: "select",
+        filterSelectOptions: ['Accepted', 'Pending', 'Rejected'],
         header: 'Status',
         size: 150,
         Cell: ({ cell }) => {
@@ -106,17 +109,17 @@ const Requests = () => {
               : colors.redAccent[500];
           return (
             <Chip
-            label={status}
-            sx={{
+              label={status}
+              sx={{
                 backgroundColor: color,
                 textAlign: 'center',
                 width: '80px',
                 fontSize: '13px',
                 fontWeight: 'semiBold',
-                letterSpacing:"0.5px",
-                color: colors.grey[900] 
+                letterSpacing: "0.5px",
+                color: colors.grey[900]
               }}
-          />
+            />
           );
         },
       },
@@ -133,7 +136,7 @@ const Requests = () => {
     enableColumnPinning: true,
     enableFacetedValues: true,
     enableStickyHeader: true,
-    enableStickyFooter: true,
+    columnFilterDisplayMode: 'popover',
     muiSkeletonProps: {
       animation: 'wave',
     },
@@ -158,21 +161,21 @@ const Requests = () => {
       rowsPerPageOptions: [10, 20, 30],
       shape: 'rounded',
       variant: 'outlined',
-    },  
+    },
     muiTablePaperProps: {
-            elevation: 2, //change the mui box shadow
-            //customize paper styles
-            sx: {
-                borderRadius: '20px',
-            }
-        },    
-        muiTableContainerProps: { sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } },
-        muiTableHeadCellProps: { sx: { backgroundColor: colors.primary[400] } },
-        muiTableBodyCellProps: { sx: { backgroundColor: colors.primary[400] } },
-        muiTableBodyProps: {sx: { backgroundColor: colors.primary[400] } },
-        muiBottomToolbarProps: ({table}) => ({
-            sx: { backgroundColor: colors.primary[400]}
-        }),
+      elevation: 2, //change the mui box shadow
+      //customize paper styles
+      sx: {
+        borderRadius: '20px',
+      }
+    },
+    muiTableContainerProps: { sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } },
+    muiTableHeadCellProps: { sx: { backgroundColor: colors.primary[400] } },
+    muiTableBodyCellProps: { sx: { backgroundColor: colors.primary[400] } },
+    muiTableBodyProps: { sx: { backgroundColor: colors.primary[400] } },
+    muiBottomToolbarProps: ({ table }) => ({
+      sx: { backgroundColor: colors.primary[400] }
+    }),
 
     renderTopToolbar: ({ table }) => (
       <Box
@@ -187,14 +190,14 @@ const Requests = () => {
           <MRT_GlobalFilterTextField table={table} />
           <MRT_ToggleFiltersButton table={table} />
         </Box>
-        <Button 
-          variant="contained" 
+        <Button
+          variant="contained"
           sx={{
             backgroundColor: colors.primary[600],
             "&:hover": {
               backgroundColor: colors.primary[700],
             },
-          }} 
+          }}
           onClick={handleOpen}
         >
           Add Request
@@ -203,6 +206,17 @@ const Requests = () => {
     ),
   };
 
+
+
+
+
+  const user = JSON.parse(localStorage.getItem('user'));
+  const navigate = useNavigate();
+  // If the user is not authenticated or authorized, redirect to the login page
+  if (!(user.department === 'admin')) 
+      return navigate('/');
+
+  
   return (
     <>
       <Box
@@ -231,10 +245,7 @@ const Requests = () => {
         <MaterialReactTable {...tableProps} />
       </Box>
 
-      <Modal 
-        open={open} 
-        onClose={handleClose}
-      >
+      <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
             position: 'absolute',
@@ -242,8 +253,9 @@ const Requests = () => {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: 900,
-            bgcolor: colors.primary[700],
-            border: '2px solid #000',
+            bgcolor: colors.primary[500],
+            border: `2px solid ${colors.greenAccent[400]}`,
+            borderRadius: '10px',
             boxShadow: 24,
             p: 4,
             display: 'flex',
@@ -254,54 +266,89 @@ const Requests = () => {
           <Typography variant="h6" component="h2">
             Add New Request
           </Typography>
-          <TextField
-            label="Request Name"
-            name="name"
-            value={newRequest.name}
-            onChange={handleChange}
-            fullWidth
-            color='secondary'
-          />
+          <Divider />
+          <FormControl fullWidth variant="filled">
+            <InputLabel>Request Type</InputLabel>
+            <Select
+              name="requestType"
+              value={newRequest.requestType}
+              onChange={handleChange}
+              color="secondary"
+            >
+              {requestTypes.map((type) => (
+                <MenuItem key={type} value={type}>
+                  {type}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+
+          {['Sick Leave', 'Annual Vacation', 'Errands', 'Clock In Excuse', 'Clock Out Excuse'].includes(newRequest.requestType) && (
+            <>
+              <TextField
+                label="From"
+                type="date"
+                name="from"
+                variant="filled"
+                value={newRequest.from}
+                onChange={handleChange}
+                fullWidth
+                color="secondary"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+              <TextField
+                label="To"
+                type="date"
+                name="to"
+                variant="filled"
+                value={newRequest.to}
+                onChange={handleChange}
+                fullWidth
+                color="secondary"
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
+            </>
+          )}
+
+          {['Errands', 'Clock In Excuse', 'Clock Out Excuse'].includes(newRequest.requestType) && (
+            <TextField
+              label="Date"
+              type="date"
+              name="date"
+              variant="filled"
+              value={newRequest.date}
+              onChange={handleChange}
+              fullWidth
+              color="secondary"
+              InputLabelProps={{
+                shrink: true,
+              }}
+            />
+          )}
+
           <TextField
             label="Request Description"
             name="description"
             id="outlined-multiline-static"
             multiline
             rows={4}
+            variant="filled"
             value={newRequest.description}
             onChange={handleChange}
             fullWidth
-            color='secondary'
+            color="secondary"
           />
-          <FormControl fullWidth>
+          <FormControl fullWidth variant="filled">
             <InputLabel>Requester Name</InputLabel>
             <Select
               name="requesterName"
               value={newRequest.requesterName}
               onChange={handleChange}
               color="secondary"
-              sx={{
-                "& .MuiInputLabel-root.Mui-focused": {
-                    color: 'secondary'
-                },
-                "& .MuiOutlinedInput-root": {
-                    "&:hover > fieldset": {
-                        borderColor: 'secondary'
-                    },
-                },
-                "& .MuiSvgIcon-root": {
-                    color: 'secondary'
-                },
-                "& .MuiFilledInput-root:before": {
-                    borderBottomColor:'secondary' ,
-                },
-                "& .MuiFilledInput-root:after": {
-                    borderBottomColor: 'secondary'
-                },
-                "& .MuiFilledInput-root:hover:not(.Mui-disabled):before": {
-                    borderBottomColor: 'secondary'
-                },
-            }}
             >
               {employees.map((employee) => (
                 <MenuItem key={employee.name} value={employee.name}>
@@ -310,15 +357,13 @@ const Requests = () => {
               ))}
             </Select>
           </FormControl>
-          <Button 
-            variant="contained" 
-            color="primary" 
+          <Divider />
+          <Button
+            variant="outlined"
+            color='secondary'
             sx={{
               paddingBlock: '10px',
-              "&:hover": {
-                background: colors.primary[600]
-              }
-            }} 
+            }}
             onClick={handleAddRequest}
           >
             Issue New Request

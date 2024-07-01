@@ -9,6 +9,7 @@ import { useTheme } from '@mui/material/styles';
 import { tokens } from '../../theme';
 import UserImage from '../../assets/user.jpg';
 import TagIcon from '@mui/icons-material/Tag';
+import { useNavigate } from 'react-router-dom';
 
 // Dummy data for demonstration
 const data = [
@@ -29,7 +30,8 @@ const data = [
         Must_C_Out: true,
         Clock_Out: '17:30',
         Work_Time: '8h',
-        note: '',
+        Working_Day_Value: '8h',
+        note: 'wooooow',
         addetion: 0,
         deduction: 0,
         isemploee: 1,
@@ -51,7 +53,8 @@ const data = [
         Must_C_Out: true,
         Clock_Out: '17:30',
         Work_Time: '8h',
-        note: '',
+        Working_Day_Value: '8h',
+        note: 'wooooow',
         addetion: 0,
         deduction: 0,
         isemploee: 1,
@@ -74,93 +77,100 @@ const Attendance = () => {
             {
                 accessorKey: 'profileimage',
                 header: 'Profile Image',
-                Cell: ({ cell }) => <img src={UserImage} alt="profile" style={{ width: '50px', height: '50px', borderRadius: '50%' }} />,
-                size: 50,
+                Cell: ({ cell }) => <img src={UserImage} alt="profile" style={{ width: '100px', borderRadius: '50%' }} />,
+                size: 80,
             },
             {
                 accessorKey: 'name',
                 header: 'Full Name',
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'hr_code',
                 header: 'Employee ID',
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'department',
                 header: 'Department',
-                size: 100,
+                filterVariant:"select",
+                filterSelectOptions: ['Sales', 'Marketing', 'HR'],
+                size: 200,
             },
             {
                 accessorKey: 'TimeStamp',
                 header: 'Date',
                 Cell: ({ cell }) => dayjs(cell.getValue()).format('YYYY-MM-DD'),
-                size: 75,
+                size: 100,
             },
             {
                 accessorKey: 'Absent',
                 header: 'Absent',
                 Cell: ({ cell }) => (cell.getValue() ? 'Yes' : 'No'),
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'clockin',
                 header: 'Clock In',
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'clockout',
                 header: 'Clock Out',
-                size: 100,
+                size: 200,
+            },
+            {
+                accessorKey: 'Working_Day_Value',
+                header: 'Working Day Value',
+                size: 200,
             },
             {
                 accessorKey: 'Must_C_In',
                 header: 'Must Clock In',
                 Cell: ({ cell }) => (cell.getValue() ? 'Yes' : 'No'),
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'Clock_In',
                 header: 'Actual Clock In',
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'Must_C_Out',
                 header: 'Must Clock Out',
                 Cell: ({ cell }) => (cell.getValue() ? 'Yes' : 'No'),
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'Clock_Out',
                 header: 'Actual Clock Out',
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'Work_Time',
                 header: 'Working Duration',
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'note',
                 header: 'Note',
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'addetion',
                 header: 'Additions (Days)',
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'deduction',
                 header: 'Deductions (Days)',
-                size: 100,
+                size: 200,
             },
             {
                 accessorKey: 'isemploee',
                 header: 'Status',
                 Cell: ({ cell }) => (cell.getValue() === 1 ? 'Active' : 'NOT Active'),
-                size: 100,
+                size: 200,
             },
         ],
         []
@@ -187,6 +197,7 @@ const Attendance = () => {
             maxSize: 9001, //allow columns to get larger than default
             size: 260, //make columns wider by default
         },
+        columnFilterDisplayMode: 'popover',
         muiPaginationProps: {
             color: 'secondary',
             rowsPerPageOptions: [10, 20, 30],
@@ -217,6 +228,11 @@ const Attendance = () => {
             sx: { backgroundColor: colors.primary[400]}
         })
     });
+    const user = JSON.parse(localStorage.getItem('user'));
+     const navigate = useNavigate();
+     // If the user is not authenticated or authorized, redirect to the login page
+     if (!(user.department === 'admin')) 
+          return navigate('/');
 
     return (
         <>
@@ -247,13 +263,7 @@ const Attendance = () => {
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
                     <Typography variant="h4">
                     </Typography>
-                    <Button
-                        variant="contained"
-                        sx={{ backgroundColor: colors.primary[400] }}
-                        onClick={() => setShowModal(true)}
-                    >
-                        Upload Attendance
-                    </Button>
+                   
                 </Box>
 
                 <FormControl component="fieldset" sx={{ mb: 3 }}>

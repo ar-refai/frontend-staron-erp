@@ -12,7 +12,7 @@ export const makeData = () => {
   ];
 
   const data = Array.from({ length: 10 }, (_, index) => ({
-      name: names[index % names.length],
+      requestType: names[index % names.length],
       title: titles[index % titles.length],
       date: new Date().toISOString(),
       requesterName: requesterNames[index % requesterNames.length],

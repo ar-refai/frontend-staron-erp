@@ -176,8 +176,8 @@ const RequestsApproval = () => {
 
     const handleUploadFiles = (cvFile, timesheetFile) => {
         // Perform the file upload action here
-        console.log('Uploaded CV:', cvFile);
-        console.log('Uploaded Timesheet:', timesheetFile);
+        // console.log('Uploaded CV:', cvFile);
+        // console.log('Uploaded Timesheet:', timesheetFile);
 
         // Update the status of selected requests to 'Admin Pending'
         const updatedData = data.map((row) => {
@@ -291,8 +291,14 @@ const RequestsApproval = () => {
                 header: 'Description',
                 Cell: ({ cell }) => (
                     <Button
-                        variant="contained"
-                        color="secondary"
+                        variant="outlined"
+                        sx={{
+                            color:colors.greenAccent[300],
+                            borderColor:colors.greenAccent[300],
+                            "&:hover": {
+                                borderColor:colors.greenAccent[300]
+                            }
+                        }}
                         onClick={() => handleOpenDescriptionModal(cell.getValue())}
                     >
                         View Description
@@ -328,7 +334,16 @@ const RequestsApproval = () => {
                 </DialogContent>
                 <Divider />
                 <DialogActions>
-                    <Button onClick={handleCloseDescriptionModal} variant='outlined' color="secondary">
+                    <Button 
+                                onClick={handleCloseDescriptionModal} 
+                                variant='outlined'
+                                sx={{
+                                color:colors.redAccent[300],
+                                borderColor:colors.redAccent[300],
+                                "&:hover": {
+                                    borderColor:colors.redAccent[300]
+                                }
+                            }}>
                         Close
                     </Button>
                 </DialogActions>
@@ -350,6 +365,22 @@ const RequestsApproval = () => {
                     enableColumnPinning
                     enableFacetedValues
                     enableRowSelection
+                    muiBottomToolbarProps={({ table }) => ({
+                        sx: { backgroundColor: colors.primary[400] },
+                    })}
+                
+                        muiTableContainerProps= {{ sx: { maxHeight: '600px', backgroundColor: colors.primary[400], overflowX: 'auto' } }}
+                        muiTableHeadCellProps= {{ sx: { backgroundColor: colors.primary[400] } }}
+                        muiTableBodyCellProps= {{ sx: { backgroundColor: colors.primary[400] } }}
+                        muiTableBodyProps= {{ sx: { backgroundColor: colors.primary[400] } }}
+                        muiTablePaperProps={{
+                        elevation: 2,
+                        sx: {
+                            borderRadius: '20px',
+                            padding: '10px 0 0 0',
+                        },
+                    }}
+
                     initialState={{
                         showColumnFilters: true,
                         showGlobalFilter: true,

@@ -7,14 +7,19 @@
 html,
 body,
 #root,
-.app,
-.content {
+.app {
   height:100%;
   width:100%;
   font-family: 'Source Sans 3' , sans-serif ;
 
 }
+.content {
+  height:100%;
+  width:97%;
+  overflow-x: hidden;
+  font-family: 'Source Sans 3' , sans-serif ;
 
+}
 .app {
   display: flex;
   position:relative;
@@ -48,4 +53,30 @@ body,
   border-radius: 8px;
   width: 12px;
   height: 12px;
+}
+label.Mui-focused {
+  color:gray !important;
+}
+#zoomRange {
+  border-radius: 8px;
+  height: 4px;
+  width: 150px;
+  outline: none;
+  -webkit-appearance: none;
+}
+
+input[type='range']::-webkit-slider-thumb {
+  width: 8px;
+  -webkit-appearance: none;
+  height: 12px;
+  background: #4cceac ;
+  border-radius: 2px;
+  border:2px solid #4cceac
+}
+#filled-basic,
+#filled-basic-two {
+  color:#8e8d8e
+}
+ label {
+  color: #8e8d8e !important;
 }

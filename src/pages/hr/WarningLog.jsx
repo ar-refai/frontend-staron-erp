@@ -10,7 +10,6 @@ import {
     Divider,
     MenuItem,
     Select,
-    TextField,
     useTheme,
 } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -81,6 +80,7 @@ const Warning = () => {
 
     const handleEdit = (item) => {
         setSelectedEmployee(item);
+        setWarningLevel(item.warning_count); // Set warning level to the selected employee's warning count
         setEditDialogOpen(true);
     };
 
@@ -142,9 +142,9 @@ const Warning = () => {
                 accessorKey: "name",
                 header: "Full Name",
                 Cell: ({ cell }) => (
-                   <Box>
+                <Box>
                     {cell.getValue()}
-                   </Box>
+                </Box>
                 ),
                 size: 140,
             },
@@ -203,6 +203,20 @@ const Warning = () => {
                 editingMode="modal"
                 enableColumnOrdering
                 enableColumnActions={false}
+                muiTablePaperProps={{
+                    elevation: 2,
+                    sx: {
+                        borderRadius: '20px',
+                        padding: '20px 0 0 0',
+                    },
+                }}
+                muiTableContainerProps={{ sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } }}
+                muiTableHeadCellProps={{ sx: { backgroundColor: colors.primary[400] } }}
+                muiTableBodyCellProps={{ sx: { backgroundColor: colors.primary[400] } }}
+                muiTableBodyProps={{ sx: { backgroundColor: colors.primary[400] } }}
+                muiBottomToolbarProps={({ table }) => ({
+                    sx: { backgroundColor: colors.primary[400] },
+                })}
             />
 
             <Dialog
@@ -219,7 +233,7 @@ const Warning = () => {
                             flexDirection: 'column',
                             gap: 2,
                             mt: 2,
-                            width: '300px',
+                            width: '450px',
                         }}>
                         <Select
                             value={warningLevel}
@@ -241,6 +255,7 @@ const Warning = () => {
                         <Select
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
+                            defaultValue=""
                             displayEmpty
                             fullWidth
                         >
@@ -257,22 +272,29 @@ const Warning = () => {
 
                 <DialogActions>
                     <Button
-                        onClick={handleClose}
-                        sx={{
-                            color: colors.redAccent[800],
-                            backgroundColor: colors.redAccent[300],
-
-                            "&:hover": {
-                                color: colors.redAccent[700],
-                                backgroundColor: colors.redAccent[200],
-
-                            }
-                        }}
+                    variant="outlined"
+                    sx={{
+                        color:colors.redAccent[300],
+                        borderColor:colors.redAccent[300],
+                        "&:hover": {
+                            borderColor:colors.redAccent[300]
+                        }
+                    }}
+                    onClick={handleClose}
+                    
                     >
                         Close
                     </Button>
                     <Button
-                        color="primary"
+                        variant="outlined"
+                        sx={{
+                            color:colors.greenAccent[300],
+                            borderColor:colors.greenAccent[300],
+                            marginRight:'15px',
+                            "&:hover": {
+                                borderColor:colors.greenAccent[300]
+                            }
+                        }}
                         onClick={() => {
                             const updatedData = tableData.map((emp) =>
                                 emp.id === selectedEmployee.id
@@ -282,15 +304,6 @@ const Warning = () => {
 
                             setTableData(updatedData);
                             handleClose();
-                        }}
-                        sx={{
-                            color: colors.blueAccent[800],
-                            backgroundColor: colors.blueAccent[300],
-
-                            "&:hover": {
-                                color: colors.blueAccent[700],
-                                backgroundColor: colors.blueAccent[200],
-                            }
                         }}
                     >
                         Save

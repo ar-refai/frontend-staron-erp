@@ -13,11 +13,17 @@ import StatBox from "../../components/StateBox";
 import ProgressCircle from "../../components/ProgressCircle";
 import { mockTransactions } from "../../data/mockData";
 import IMAGE from '../../assets/light-logo.png';
+import { useNavigate } from 'react-router-dom';
 
 const Dashboard = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
-  
+    const user = JSON.parse(localStorage.getItem('user'));
+    const navigate = useNavigate();
+    // If the user is not authenticated or authorized, redirect to the login page
+    if (!(user.department === 'admin')) 
+         return navigate('/');
+
     return (
 
         <>
@@ -40,6 +46,12 @@ const Dashboard = () => {
                         }}
                     >
                         Dashboard
+                        <Typography variant="h2"
+                        sx={{
+                            color: colors.primary[200],
+                            display: 'inline'
+                        }}>: Welcome, {user?.name}</Typography>
+
                     </Typography>
                 </Box>
             </Box>

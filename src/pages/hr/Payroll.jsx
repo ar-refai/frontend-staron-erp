@@ -1,88 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { Box, Button, Divider, Modal, TextField, Typography } from '@mui/material';
-import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import React, { useState, useEffect, useMemo } from 'react';
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogTitle, Divider, TextField, Typography, useTheme } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
-
 import * as XLSX from 'xlsx';
 import { LocalizationProvider, DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
-import { MaterialReactTable, createMRTColumnHelper, useMaterialReactTable } from 'material-react-table';
+import { MaterialReactTable, useMaterialReactTable } from 'material-react-table';
 import dayjs from 'dayjs';
-import { styled, useTheme } from '@mui/material/styles';
 import { tokens } from '../../theme';
-
-const columnHelper = createMRTColumnHelper();
-
-const columns = [
-  columnHelper.accessor('id', {
-    header: 'ID',
-    size: 40,
-  }),
-  columnHelper.accessor('name', {
-    header: 'Name',
-    size: 120,
-  }),
-  columnHelper.accessor('hr_code', {
-    header: 'Employee ID',
-    size: 120,
-  }),
-  columnHelper.accessor('department', {
-    header: 'Department',
-    size: 150,
-  }),
-  columnHelper.accessor('salary', {
-    header: 'Salary',
-    size: 100,
-  }),
-  columnHelper.accessor('workdays', {
-    header: 'Possible Working Days',
-    size: 150,
-  }),
-  columnHelper.accessor('holidays', {
-    header: 'Holidays',
-    size: 100,
-  }),
-  columnHelper.accessor('attendance', {
-    header: 'Actual Working Days',
-    size: 150,
-  }),
-  columnHelper.accessor('additions', {
-    header: 'Additions',
-    size: 120,
-  }),
-  columnHelper.accessor('deductions', {
-    header: 'Deductions',
-    size: 100,
-  }),
-  columnHelper.accessor('dailyrate', {
-    header: 'Daily Rate',
-    size: 100,
-  }),
-  columnHelper.accessor('paiddays', {
-    header: 'Paid Days',
-    size: 100,
-  }),
-  columnHelper.accessor('MedicalInsurance', {
-    header: 'Medical Insurance',
-    size: 150,
-  }),
-  columnHelper.accessor('SocialInsurance', {
-    header: 'Social Insurance',
-    size: 150,
-  }),
-  columnHelper.accessor('tax', {
-    header: 'Tax',
-    size: 100,
-  }),
-  columnHelper.accessor('TotalPay', {
-    header: 'Gross Pay',
-    size: 100,
-  }),
-  columnHelper.accessor('TotalLiquidPay', {
-    header: 'Total \n Liquid Pay',
-    size: 100,
-  }),
-];
 
 const generateDummyData = () => {
   const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
@@ -90,7 +14,6 @@ const generateDummyData = () => {
   for (let i = 0; i < 20; i++) {
     const month = months[Math.floor(Math.random() * months.length)];
     data.push({
-      id: i + 1,
       name: `Employee ${i + 1}`,
       hr_code: `E00${i + 1}`,
       department: 'IT',
@@ -111,7 +34,7 @@ const generateDummyData = () => {
     });
   }
   return data;
-}
+};
 
 const Payroll = () => {
   const [showUploadModal, setShowUploadModal] = useState(false);
@@ -119,6 +42,80 @@ const Payroll = () => {
   const [data, setData] = useState(generateDummyData());
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const columns = useMemo(
+    () => [
+      { accessorKey: "name", header: "Name" },
+      {
+        accessorKey: "hr_code",
+        header: "Employee ID",
+        size: 120,
+      },
+      {
+        accessorKey: "department",
+        header: "Department",
+        size: 200,
+      },
+      { accessorKey: "salary", header: "Salary"},
+      {
+        accessorKey: "workdays",
+        header: "Possible Working Days",
+        size: 200,
+      },
+      {
+        accessorKey: "holidays",
+        header: "Holidays",
+        size: 200,
+      },
+      {
+        accessorKey: "attendance",
+        header: "Actual Working Days",
+        size: 200,
+      },
+      {
+        accessorKey: "additions",
+        header: "Additions",
+        size: 120,
+      },
+      {
+        accessorKey: "deductions",
+        header: "Deductions",
+        size: 200,
+      },
+      {
+        accessorKey: "dailyrate",
+        header: "Daily Rate",
+        size: 200,
+      },
+      {
+        accessorKey: "paiddays",
+        header: "Paid Days",
+        size: 200,
+      },
+      {
+        accessorKey: "MedicalInsurance",
+        header: "Medical Insurance",
+        size: 200,
+      },
+      {
+        accessorKey: "SocialInsurance",
+        header: "Social Insurance",
+        size: 200,
+      },
+      { accessorKey: "tax", header: "Tax" },
+      {
+        accessorKey: "TotalPay",
+        header: "Gross Pay",
+        size: 200,
+      },
+      {
+        accessorKey: "TotalLiquidPay",
+        header: "Total \n Liquid Pay",
+        size: 200,
+      },
+    ],
+    []
+  );
 
   useEffect(() => {
     const today = dayjs();
@@ -157,40 +154,43 @@ const Payroll = () => {
     columns,
     data,
     enableRowSelection: true,
-
-    defaultColumn: {
-      minSize: 20, //allow columns to get smaller than default
-      maxSize: 900, //allow columns to get larger than default
-      size: 260, //make columns wider by default
-    },
     muiSelectCheckboxProps: {
       color: 'secondary',
     },
+    enableColumnFilterModes:true,
+    enableColumnPinning:true,
+    enableFacetedValues:true,
     columnFilterDisplayMode: 'popover',
     paginationDisplayMode: 'pages',
     positionToolbarAlertBanner: 'bottom',
     enableColumnResizing: true,
-    initialState: { density: 'comfortable' },
-
+    initialState: { density: 'spacious' },
+    enableStickyHeader: true,
     muiLinearProgressProps: {
       color: 'secondary',
     },
     muiCircularProgressProps: {
       color: 'secondary',
     },
-    muiTableContainerProps: { sx: { maxHeight: '800px', backgroundColor: colors.primary[400] } },
-    muiTableHeadCellProps: { sx: { backgroundColor: colors.primary[400]},
-  },
-    muiTableBodyCellProps: { sx: { backgroundColor: colors.primary[400] } },
-    muiTableBodyProps: {
+    muiTablePaperProps: {
+      elevation: 2,
       sx: {
-        //stripe the rows, make odd rows a darker color
-        '& tr:nth-of-type(odd) > td': {
-          backgroundColor: colors.primary[500],
-        },
+        borderRadius: '20px',
       },
     },
-
+    muiTableContainerProps: { sx: { maxHeight: '600px', backgroundColor: colors.primary[400], overflowX: 'auto' } },
+    muiTableHeadCellProps: { sx: { backgroundColor: colors.primary[400] } },
+    muiTableBodyCellProps: { sx: { backgroundColor: colors.primary[400] } },
+    muiTableBodyProps: { sx: { backgroundColor: colors.primary[400] } },
+    muiBottomToolbarProps: ({ table }) => ({
+      sx: { backgroundColor: colors.primary[400] },
+    }),
+    muiPaginationProps: {
+      color: 'secondary',
+      rowsPerPageOptions: [10, 20, 30],
+      shape: 'rounded',
+      variant: 'outlined',
+    },
     renderTopToolbarCustomActions: ({ table }) => (
       <Box
         sx={{
@@ -200,137 +200,86 @@ const Payroll = () => {
           flexWrap: 'wrap',
         }}
       >
-        {/* <Button
-          variant="outlined"
-          onClick={() => setShowUploadModal(true)}
-          startIcon={<FileDownloadIcon />}
-
-          sx={{
-            backgroundColor: colors.greenAccent[400],
-            "&:hover" : {
-              backgroundColor: colors.greenAccent[300]
-            }
-          }}
-        >
-          Import Excel Sheet
-        </Button> */}
         <Button
           onClick={handleExportData}
           startIcon={<FileUploadIcon />}
           sx={{
             backgroundColor: colors.greenAccent[400],
-            fontWeight:'bold',
+            fontWeight: 'bold',
             fontSize: '13px',
-            "&:hover" : {
+            "&:hover": {
               backgroundColor: colors.greenAccent[300]
             }
           }}
         >
           Export Excel Sheet
         </Button>
-        
       </Box>
     ),
   });
 
   return (
     <>
-      <div className="main-panel">
-        <div className="content-wrapper">
-          <div className="card">
-            <div className="card-body">
-              <div className="row mb-3">
-                <div className="col-sm-12 col-md-4">
-                  <LocalizationProvider dateAdapter={AdapterDayjs}>
-                    <DatePicker
-                      label={'Month and Year'}
-                      views={['month', 'year']}
-                      value={searchQuery}
-                      onChange={handleMonthChange}
-
-                      slots={{
-                        textField: (params) => <TextField {...params} variant="filled" size="small" />
-                      }}
-                      sx={{
-                        "& .MuiInputLabel-root.Mui-focused": {
-                          color: colors.primary[200],
-                        },
-                        "& .MuiOutlinedInput-root": {
-                          "&:hover > fieldset": {
-                            borderColor: colors.primary[200]
-                          },
-                        },
-                        "& .MuiSvgIcon-root": {
-                          color: colors.redAccent[400]
-                        },
-                        "& .MuiFilledInput-root:before": {
-                          borderBottomColor: colors.redAccent[300],
-                        },
-                        "& .MuiFilledInput-root:after": {
-                          borderBottomColor: colors.redAccent[300],
-                        },
-                        "& .MuiFilledInput-root:hover:not(.Mui-disabled):before": {
-                          borderBottomColor: colors.redAccent[300],
-                        },
-                      }}
-                    />
-                  </LocalizationProvider>
-                </div>
-              </div>
-              <div className="table-responsive">
-                <MaterialReactTable table={table} />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-      {/* Upload Excel File */}
-      {/* <Modal 
-        open={showUploadModal} 
-        onClose={() => 
-        setShowUploadModal(false)}>
-        <Box sx={{ 
-          p: 4, 
-          bgcolor: colors.primary[600], 
-          border:`2px solid ${colors.blueAccent[300]}`, 
-          margin: 'auto', 
-          mt: 2, 
-          width: '500px' ,
-          borderRadius: '1px',
-          display: 'flex',
-          flexDirection: 'column',
-              justifyContent: 'center',
-          }}>
-          <Typography variant="h6" component="h2">
-            Upload Your Excel File:
-          </Typography>
-          <Divider  
-          sx={{
-            marginBlock:2,
-            backgroundColor:colors.blueAccent[300]  
-            }} />
-          <input
-            type="file"
-            accept=".xlsx, .xls"
-          
-            onChange={handleUpload}
-          />
-          <Divider  
-          sx={{
-            marginTop:2,
-            backgroundColor:colors.blueAccent[300]  
-            }} />
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
-            <Button variant="outlined"
-            style={{
-              backgroundColor:colors.redAccent[300]
+      <Box sx={{ padding: '16px' }}>
+        <LocalizationProvider dateAdapter={AdapterDayjs}>
+          <DatePicker
+            label={'Month and Year'}
+            views={['month', 'year']}
+            value={searchQuery}
+            onChange={handleMonthChange}
+            slots={{
+              textField: (params) => <TextField {...params} variant="filled" size="small" />
             }}
-            onClick={() => setShowUploadModal(false)}>Close</Button>
-          </Box>
-        </Box>
-      </Modal> */}
+            sx={{
+              "& .MuiInputLabel-root.Mui-focused": {
+                color: colors.primary[200],
+              },
+              "& .MuiOutlinedInput-root": {
+                "&:hover > fieldset": {
+                  borderColor: colors.primary[200]
+                },
+              },
+              "& .MuiSvgIcon-root": {
+                color: colors.redAccent[400]
+              },
+              "& .MuiFilledInput-root:before": {
+                borderBottomColor: colors.redAccent[300],
+              },
+              "& .MuiFilledInput-root:after": {
+                borderBottomColor: colors.redAccent[300],
+              },
+              "& .MuiFilledInput-root:hover:not(.Mui-disabled):before": {
+                borderBottomColor: colors.redAccent[300],
+              },
+            }}
+          />
+        </LocalizationProvider>
+
+        <MaterialReactTable table={table} />
+      </Box>
+
+      <Dialog open={showUploadModal} onClose={() => setShowUploadModal(false)}>
+        <DialogTitle>Upload Your Excel File</DialogTitle>
+        <Divider sx={{ backgroundColor: colors.blueAccent[300] }} />
+        <DialogContent sx={{ color: colors.grey[200], paddingBlock: '20px' }}>
+          <input type="file" accept=".xlsx, .xls" onChange={handleUpload} />
+        </DialogContent>
+        <Divider sx={{ backgroundColor: colors.blueAccent[300] }} />
+        <DialogActions>
+          <Button
+            variant="outlined"
+            style={{
+              backgroundColor: colors.redAccent[300]
+            }}
+            onClick={() => setShowUploadModal(false)}
+          >
+            Close
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
 
 export default Payroll;
+

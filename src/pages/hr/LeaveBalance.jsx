@@ -133,7 +133,13 @@ const LeaveBalance = () => {
                     <Box display="flex" gap={1}>
                         <Button
                             variant="outlined"
-                            color="warning"
+                            sx={{
+                                color:colors.blueAccent[300],
+                                borderColor:colors.blueAccent[300],
+                                "&:hover": {
+                                    borderColor:colors.blueAccent[300]
+                                }
+                            }}
                             onClick={() => {
                                 setSelectedEmployee(cell.row.original);
                                 setEditDays(0);
@@ -148,7 +154,41 @@ const LeaveBalance = () => {
         ],
         []
     );
-
+    const tableStyles = {
+        muiBottomToolbarProps: {
+            sx: { backgroundColor: colors.primary[400] }
+        },
+        muiTableContainerProps: {
+            sx: { 
+                maxHeight: '600px', 
+                backgroundColor: colors.primary[400], 
+                overflowX: 'auto' 
+            }
+        },
+        muiTableHeadCellProps: {
+            sx: { backgroundColor: colors.primary[400] }
+        },
+        muiTableBodyCellProps: {
+            sx: { backgroundColor: colors.primary[400] }
+        },
+        muiPaginationProps: {
+          color: 'secondary',
+          rowsPerPageOptions: [10, 20, 30],
+          shape: 'rounded',
+          variant: 'outlined',
+        },
+        muiTableBodyProps: {
+            sx: { backgroundColor: colors.primary[400] }
+        },
+        muiTablePaperProps: {
+            elevation: 2,
+            sx: {
+                borderRadius: '20px',
+                padding: '10px 0 0 0'
+            }
+        },
+      };
+      
     return (
         <>
             <MaterialReactTable
@@ -157,6 +197,14 @@ const LeaveBalance = () => {
                 editingMode="modal"
                 enableColumnOrdering
                 enableColumnActions={false}
+                muiBottomToolbarProps={tableStyles.muiBottomToolbarProps}
+                muiTableContainerProps={tableStyles.muiTableContainerProps}
+                muiTableHeadCellProps={tableStyles.muiTableHeadCellProps}
+                muiTableBodyCellProps={tableStyles.muiTableBodyCellProps}
+                muiPaginationProps={tableStyles.muiPaginationProps}
+                muiTableBodyProps={tableStyles.muiTableBodyProps}
+                muiTablePaperProps={tableStyles.muiTablePaperProps}
+            
             />
 
             <Dialog open={showEdit} onClose={handleClose} >
@@ -171,7 +219,7 @@ const LeaveBalance = () => {
                         type="number"
                         label="Days to add/subtract"
                         value={editDays}
-                        onChange={(e) => setEditDays(Number(e.target.value))}
+                        onChange={(e) => setEditDays(e.target.value === '' ? '' : Number(e.target.value))}
                         fullWidth
                         sx={{
                             marginTop: '20px',
@@ -182,25 +230,29 @@ const LeaveBalance = () => {
 
                 <DialogActions>
                     <Button
+                        sx={{
+                            color:colors.redAccent[300],
+                            borderColor:colors.redAccent[300],
+                            "&:hover": {
+                                borderColor:colors.redAccent[300]
+                            }
+                        }}
                         variant="outlined"
                         onClick={handleClose}
-                        sx={{
-                            color: colors.redAccent[200],
-                            borderColor:colors.redAccent[200],
-                            "&:hover": { color: colors.redAccent[300],borderColor:colors.redAccent[300] },
-                        }}
                     >
                         Close
                     </Button>
                     <Button
-                        variant="outlined"
-                        color="warning"
-                        onClick={() => handleEdit(selectedEmployee)}
                         sx={{
-                            color: colors.blueAccent[200],
-                            borderColor:colors.blueAccent[200],
-                            "&:hover": { color: colors.blueAccent[300],borderColor:colors.blueAccent[300] },
+                            color:colors.greenAccent[300],
+                            borderColor:colors.greenAccent[300],
+                            marginRight:'15px',
+                            "&:hover": {
+                                borderColor:colors.greenAccent[300]
+                            }
                         }}
+                        variant="outlined"
+                        onClick={() => handleEdit(selectedEmployee)}
                     >
                         Confirm
                     </Button>

@@ -23,6 +23,9 @@ import Avatar from '@mui/material/Avatar';
 import HRLinks from './HrLinks';
 import TagIcon from '@mui/icons-material/Tag';
 import UserAvatar from "../../assets/user.jpg";
+import SalesLinks from './SalesLinks';
+import TechLinks from './TechLinks';
+import ControlLinks from './ControlLinks';
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   
@@ -208,30 +211,30 @@ export default function MiniDrawer() {
 
             }
           </Typography>
-<Item
-  title="Dashboard"
-  to="/"
-  icon={<SpaceDashboardOutlinedIcon />}
-  selected={selected}
-  setSelected={setSelected}
-/>
+          <Item
+            title="Dashboard"
+            to="/global/dashboard"
+            icon={<SpaceDashboardOutlinedIcon />}
+            selected={selected}
+            setSelected={setSelected}
+          />
           <Item
             title="Attendance"
-            to="/attendance"
+            to="/global/attendance"
             icon={<ChecklistOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
           />
           <Item
             title="Requests"
-            to="/requests"
+            to="/global/requests"
             icon={<MarkunreadMailboxOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
           />
           <Item
             title="Recruitment Requests"
-            to="/recruitment-requests"
+            to="/global/recruitment-requests"
             icon={<LocalShippingOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
@@ -239,7 +242,7 @@ export default function MiniDrawer() {
 
           <Item
             title="Targets & Performance"
-            to="/target-performance"
+            to="/global/target-performance"
             icon={<QueryStatsOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
@@ -261,6 +264,7 @@ export default function MiniDrawer() {
             )}
 
           </Typography>
+
           {HRLinks.map((item, index) => (
           <Item
             key={index}
@@ -269,8 +273,39 @@ export default function MiniDrawer() {
             icon={item.icon}
             selected={selected}
             setSelected={setSelected}
-          />))}        
+          />))}
 
+          {SalesLinks.map((item,index)=> (
+            <Item
+            key={index}
+            title={item.title}
+            to={item.to}
+            icon={item.icon}
+            selected={selected}
+            setSelected={setSelected}
+            />
+          ))}        
+
+          {TechLinks.map((item,index)=> (
+            <Item
+            key={index}
+            title={item.title}
+            to={item.to}
+            icon={item.icon}
+            selected={selected}
+            setSelected={setSelected}
+            />
+          ))} 
+            {ControlLinks.map((item,index)=> (
+            <Item
+            key={index}
+            title={item.title}
+            to={item.to}
+            icon={item.icon}
+            selected={selected}
+            setSelected={setSelected}
+            />
+          ))} 
           {/* The User Signed in */}
           <ListItem
             sx={{

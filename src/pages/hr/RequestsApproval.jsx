@@ -117,8 +117,14 @@ const RequestsApproval = () => {
                 header: 'Description',
                 Cell: ({ cell }) => (
                     <Button
-                        variant="contained"
-                        color="secondary"
+                        variant="outlined"
+                        sx={{
+                            color:colors.greenAccent[300],
+                            borderColor:colors.greenAccent[300],
+                            "&:hover": {
+                                borderColor:colors.greenAccent[300]
+                            }
+                        }}
                         onClick={() => handleOpenDescriptionModal(cell.getValue())}
                     >
                         View Description
@@ -173,14 +179,24 @@ const RequestsApproval = () => {
             >
                 <DialogTitle id="description-dialog-title">Request Description:</DialogTitle>
                 <Divider />
-                <DialogContent sx={{ padding: "30px 80px" }}>
-                    <DialogContentText sx={{ textAlign: 'start' }}>
+                <DialogContent sx={{ padding: "30px 80px", width:'600px' }}>
+                    <DialogContentText sx={{ textAlign: 'center' }}>
                         {selectedDescription}
                     </DialogContentText>
                 </DialogContent>
                 <Divider />
                 <DialogActions>
-                    <Button onClick={handleCloseDescriptionModal} variant='outlined' color="secondary">
+                    <Button 
+                    onClick={handleCloseDescriptionModal} 
+                    variant='outlined' 
+                    sx={{
+                        color:colors.redAccent[300],
+                        borderColor:colors.redAccent[300],
+                        "&:hover": {
+                            borderColor:colors.redAccent[300]
+                        }
+                    }}
+                    >
                         Close
                     </Button>
                 </DialogActions>
@@ -228,7 +244,7 @@ const RequestsApproval = () => {
                         elevation: 2,
                         sx: {
                             borderRadius: '20px',
-                            padding: '10px 0 0 0',
+                            padding: '20px 0 0 10px',
                         },
                     }}
                     muiTableContainerProps={{ sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } }}
