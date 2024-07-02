@@ -195,9 +195,6 @@ const PackageDevelopment = () => {
 
   return (
     <Box m="20px">
-      <Typography variant="h5" gutterBottom>
-        Package Development
-      </Typography>
       <MaterialReactTable 
   columns={columns} 
   data={data}

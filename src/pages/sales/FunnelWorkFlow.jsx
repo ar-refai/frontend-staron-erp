@@ -257,7 +257,7 @@ const FunnelWorkFlow = () => {
                 ),
         renderTopToolbarCustomActions: ({ table }) => (
             <Button
-                variant="contained"
+                variant="outlined"
                 color="secondary"
                 onClick={() => setIsAddNewLeadOpen(true)}
             >

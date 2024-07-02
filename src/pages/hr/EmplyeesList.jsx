@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo, useState, useEffect } from "react";
+import { useCallback, useMemo, useState, useEffect } from "react";
 import {
     Box,
     Button,
@@ -259,15 +259,10 @@ const EmployeeList = () => {
                 )}
                 renderTopToolbarCustomActions={() => (
                     <Button
-                        sx={{
-                            color: colors.primary[200], backgroundColor: colors.blueAccent[900],
-                            '&:hover': {
-                                color: colors.primary[800],
-                                backgroundColor: colors.primary[100]
-                            }
-                        }}
+                        
                         onClick={() => handleOpenModal('create')}
-                        variant="contained"
+                        variant="outlined"
+                        color="secondary"
                     >
                         Onboard New Employee
                     </Button>

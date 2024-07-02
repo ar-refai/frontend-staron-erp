@@ -303,7 +303,7 @@ const RequestsApproval = () => {
                                             color="success"
                                             disabled={!table.getIsSomeRowsSelected()}
                                             onClick={handleApprove}
-                                            variant="contained"
+                                            variant="outlined"
                                         >
                                             Approve
                                         </Button>
@@ -311,7 +311,7 @@ const RequestsApproval = () => {
                                             color="error"
                                             disabled={!table.getIsSomeRowsSelected()}
                                             onClick={handleReject}
-                                            variant="contained"
+                                            variant="outlined"
                                         >
                                             Reject
                                         </Button>

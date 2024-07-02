@@ -11,6 +11,7 @@ export default function HR() {
   const url = useLocation();
   const user = JSON.parse(localStorage.getItem('user'));
   const navigate = useNavigate();
+  // console.log(user);
   // If the user is not authenticated or authorized, redirect to the login page
   if (!(user.hraccess === 1 || user.department === 'admin')) 
       return navigate('/');

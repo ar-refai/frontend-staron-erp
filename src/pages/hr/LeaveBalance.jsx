@@ -133,13 +133,7 @@ const LeaveBalance = () => {
                     <Box display="flex" gap={1}>
                         <Button
                             variant="outlined"
-                            sx={{
-                                color:colors.blueAccent[300],
-                                borderColor:colors.blueAccent[300],
-                                "&:hover": {
-                                    borderColor:colors.blueAccent[300]
-                                }
-                            }}
+                            color="secondary"
                             onClick={() => {
                                 setSelectedEmployee(cell.row.original);
                                 setEditDays(0);

@@ -122,7 +122,7 @@ const RecruitmentRequests = () => {
                     size: 300,
                     Cell: ({ cell }) => (
                          <Button
-                              variant="contained"
+                              variant="outlined"
                               color="secondary"
                               onClick={() => handleDescriptionOpen(cell.getValue())}
                          >
@@ -253,15 +253,9 @@ const RecruitmentRequests = () => {
                          <MRT_ToggleFiltersButton table={table} />
                     </Box>
                     <Button
-                         variant="contained"
-                         color="primary"
+                         variant="outlined"
+                         color="secondary"
                          onClick={handleOpen}
-                         sx={{
-                              backgroundColor: colors.primary[600],
-                              "&:hover": {
-                                   backgroundColor: colors.primary[700],
-                              },
-                         }}
                     >
                          Add Request
                     </Button>
@@ -415,7 +409,7 @@ const RecruitmentRequests = () => {
                          >{selectedDescription}</Typography>
                          <Divider />
                          <Button
-                              variant="contained"
+                              variant="outlined"
                               color="primary"
                               onClick={handleDescriptionClose}
                               sx={{

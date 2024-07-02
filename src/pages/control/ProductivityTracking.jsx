@@ -121,7 +121,7 @@ const ProductivityTracking = () => {
     <Box m="20px">
       {/* Upload Plan Button */}
       <Button
-        variant="contained"
+        variant="outlined"
         color="secondary"
         startIcon={<CloudUploadIcon />}
         onClick={() => setIsPlanModalOpen(true)}

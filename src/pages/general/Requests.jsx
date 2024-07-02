@@ -191,13 +191,9 @@ const Requests = () => {
           <MRT_ToggleFiltersButton table={table} />
         </Box>
         <Button
-          variant="contained"
-          sx={{
-            backgroundColor: colors.primary[600],
-            "&:hover": {
-              backgroundColor: colors.primary[700],
-            },
-          }}
+          variant="outlined"
+          color='secondary'
+          
           onClick={handleOpen}
         >
           Add Request

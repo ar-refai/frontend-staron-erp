@@ -10,7 +10,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import { Link } from "react-router-dom";
 import { tokens } from "../../theme";
-import { Typography, Box, ListItem, ListItemIcon, ListItemText } from '@mui/material';
+import { Typography, Box, ListItem, ListItemIcon, ListItemText, Collapse, ListSubheader, ListItemButton } from '@mui/material';
 
 // Importing icons
 import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined';
@@ -26,6 +26,13 @@ import UserAvatar from "../../assets/user.jpg";
 import SalesLinks from './SalesLinks';
 import TechLinks from './TechLinks';
 import ControlLinks from './ControlLinks';
+import { ExpandLess, ExpandMore } from '@mui/icons-material';
+import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
+import SupplyChainLinks from './SupplyChainLinks';
+
+const filteredItems = ControlLinks.filter(
+  (item) => item.to === "/control/productivity-tracking" || item.to === "/control/procurement-requests"
+);
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
   
@@ -160,6 +167,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function MiniDrawer() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const [openControlCollapse, setOpenControlCollapse] = React.useState(false);    
 
   const [open, setOpen] = React.useState(false);
   const [selected, setSelected] = React.useState('');
@@ -167,6 +175,10 @@ export default function MiniDrawer() {
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
+  function handleOpenControlSettings(){
+    setOpenControlCollapse(!openControlCollapse);
+}
+
 
   return (
     <>
@@ -296,7 +308,25 @@ export default function MiniDrawer() {
             setSelected={setSelected}
             />
           ))} 
-            {ControlLinks.map((item,index)=> (
+         
+        
+          {/* Weekly Control Items */}
+          <List
+      sx={{ width: '100%', maxWidth: 360 }}
+      component="nav"
+      aria-labelledby="nested-list-subheader"
+    >
+      <ListItemButton onClick={handleOpenControlSettings}>
+        <ListItemIcon>
+          <ArchiveOutlinedIcon />
+        </ListItemIcon>
+        <ListItemText primary="Weekly Framework" />
+        {openControlCollapse ? <ExpandLess /> : <ExpandMore />}
+      </ListItemButton>
+      <Collapse in={openControlCollapse} timeout="auto" unmountOnExit>
+        <List component="div" disablePadding>
+          {filteredItems.map((item, index) => (
+            <Box pl={2}>
             <Item
             key={index}
             title={item.title}
@@ -305,7 +335,35 @@ export default function MiniDrawer() {
             selected={selected}
             setSelected={setSelected}
             />
-          ))} 
+            </Box>
+          ))}
+        </List>
+      </Collapse>
+    </List>
+    {/* REst of control items  */}
+            {ControlLinks.map((item,index)=> {
+                    if(item.to === "/control/productivity-tracking" || item.to === "/control/procurement-requests")
+                        return <></>              
+                      
+                  return (<Item
+                  key={index}
+                  title={item.title}
+                  to={item.to}
+                  icon={item.icon}
+                  selected={selected}
+                  setSelected={setSelected}
+                  />)
+                  })}
+          {SupplyChainLinks.map((item,index)=> {     
+          return (<Item
+          key={index}
+          title={item.title}
+          to={item.to}
+          icon={item.icon}
+          selected={selected}
+          setSelected={setSelected}
+          />)
+          })}
           {/* The User Signed in */}
           <ListItem
             sx={{

@@ -174,17 +174,8 @@ const Warning = () => {
                 header: "Action",
                 Cell: ({ cell }) => (
                     <Button
-
-                        sx={{
-                            borderColor: colors.blueAccent[200],
-                            color: colors.blueAccent[200],
-                            "&:hover": {
-                                borderColor: colors.blueAccent[400],
-                                color: colors.blueAccent[400]
-                            }
-                        }}
                         variant="outlined"
-                        color="primary"
+                        color="secondary"
                         onClick={() => handleEdit(cell.row.original)}
                     >
                         Edit

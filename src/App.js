@@ -34,8 +34,13 @@ import QuotationGenerationFramework from "pages/technical/QuotationGenerationFra
 import MonthlyFramework from 'pages/control/MonthlyFramework';
 import ProductivityTracking from 'pages/control/ProductivityTracking';
 import ProcurementRequests from 'pages/control/ProcurementRequests';
-import PackageDevelopment from 'pages/control/PackageDevelopment';
 import WarehouseRequests from 'pages/control/WarehouseRequests';
+import SupplyProcurementRequests from 'pages/supply_chain/ProcurementRequests';
+import SupplyWarehouseRequests from 'pages/supply_chain/WarehouseRequests';
+import PackageDevelopment from 'pages/control/PackageDevelopment';
+import SupplyersListing from 'pages/supply_chain/SupplyersListing';
+import StockLog from 'pages/supply_chain/StockLog';
+import TreasuryRequests from 'pages/supply_chain/TreasuryRequests';
 
 function App() {
   const [theme, colorMode] = useMode();
@@ -168,7 +173,11 @@ function App() {
                   {/* Supply Chain Links */}
                   <Route path="/supply-chain" element={<SupplyChain />} >
                     {/* Add supply-chain-related routes here */}
-
+                    <Route path="supplyers-listing" element={<SupplyersListing/>}/>
+                    <Route path="stock-log" element={<StockLog/>}/>
+                    <Route path="treasury-requests" element={<TreasuryRequests/>}/>
+                    <Route path="procurement-requests" element={<SupplyProcurementRequests/>}/>
+                    <Route path="warehouse-requests" element={<SupplyWarehouseRequests/>}/>
                   </Route>
 
                   {/* Supply Chain Links */}

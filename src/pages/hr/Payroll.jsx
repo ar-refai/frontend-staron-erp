@@ -203,13 +203,12 @@ const Payroll = () => {
         <Button
           onClick={handleExportData}
           startIcon={<FileUploadIcon />}
+          variant='outlined'
+          color='secondary'
           sx={{
-            backgroundColor: colors.greenAccent[400],
             fontWeight: 'bold',
             fontSize: '13px',
-            "&:hover": {
-              backgroundColor: colors.greenAccent[300]
-            }
+          
           }}
         >
           Export Excel Sheet

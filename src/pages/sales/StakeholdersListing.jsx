@@ -379,7 +379,8 @@
       ),
       renderTopToolbarCustomActions: ({ table }) => (
         <Button
-          variant="contained"
+          variant="outlined"
+          color="secondary"
           onClick={() => {
             table.setCreatingRow(true);
           }}

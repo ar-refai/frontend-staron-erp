@@ -266,23 +266,7 @@ const TimeSheet = () => {
 
     return (
         <Box>
-            <Box
-                sx={{
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center",
-                    mb: 3,
-                }}
-            >
-                <Typography variant="h4"></Typography>
-                <Button
-                    variant="contained"
-                    sx={{ backgroundColor: colors.primary[400] }}
-                    onClick={() => setShowModal(true)}
-                >
-                    Upload Attendance
-                </Button>
-            </Box>
+           
 
             <FormControl component="fieldset" sx={{ mb: 3 }}>
                 <RadioGroup
@@ -429,8 +413,14 @@ const TimeSheet = () => {
                             }}
                         />
                     </LocalizationProvider>
+                    
                 </Box>
+                
             )}
+                
+                
+            
+
 
             {/* OUR TABLE */}
             <MaterialReactTable
@@ -438,8 +428,34 @@ const TimeSheet = () => {
                 data={filteredData}
                 layoutMode="grid"
                 muiTableContainerProps={{ sx: { maxHeight: "600px" } }}
-                rowVirtualizerProps={{ overscan: 5 }}
-                columnVirtualizerProps={{ overscan: 2 }}
+                enableColumnFilterModes
+                enableColumnOrdering
+                enableGrouping
+                enableColumnPinning
+                enableGlobalFilterModes = {true}
+                globalFilterModeOptions =  {['fuzzy', 'startsWith']} 
+                enableFacetedValues
+                renderTopToolbar={({ table }) => {
+                    return (
+                <Box
+                                sx={{
+                                    display: "flex",
+                                    justifyContent: "start",
+                                    alignItems: "center",
+                                    m: 3,
+                                }}
+                            >
+                                <Typography variant="h4"></Typography>
+                                <Button
+                                    variant="outlined"
+                                    color="secondary"
+                                    sx={{ backgroundColor: colors.primary[400] }}
+                                    onClick={() => setShowModal(true)}
+                                >
+                                    Upload Attendance
+                                </Button>
+                            </Box>
+                    )}}
                 // enableEditing
                 paginationDisplayMode="pages"
                 muiPaginationProps={{
