@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
 import {
     Box,
@@ -10,58 +10,24 @@ import {
     Divider,
     MenuItem,
     Select,
+    Typography,
     useTheme,
 } from "@mui/material";
 import { Link } from "react-router-dom";
 import UserImg from "../../assets/user.jpg";
 import { tokens } from "../../theme";
-
-const departments = [
-    "HR",
-    "Technical Office",
-    "Sales",
-    "Supply Chain",
-    "Warehouse",
-    "Operation",
-    "Carpenter",
-    "Solid Surface Factory Worker",
-    "Site Engineer",
-    "Financial Department",
-    "IT",
-    "Administration",
-    "Buffet",
-    "Software Department",
-];
-
-const mockData = [
-    {
-        id: 1,
-        profileimage: "/path/to/image1.jpg",
-        name: "John Doe",
-        hr_code: "EMP001",
-        department: "HR",
-        warning_count: 2,
-    },
-    {
-        id: 2,
-        profileimage: "/path/to/image2.jpg",
-        name: "Jane Smith",
-        hr_code: "EMP002",
-        department: "Technical Office",
-        warning_count: 1,
-    },
-    // Add more mock data as needed
-];
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json";
+import { getAllWarningLogs, getAllEmployeeWarningLog, storeWarning } from "../../apis/HumanRecourse/WarningLog";
 
 const Warning = () => {
-    const [tableData, setTableData] = useState(mockData);
+    const [tableData, setTableData] = useState([]);
     const [editDialogOpen, setEditDialogOpen] = useState(false);
+    const [historyDialogOpen, setHistoryDialogOpen] = useState(false);
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [warningLevel, setWarningLevel] = useState('');
     const [reason, setReason] = useState('');
-    const [departmentFilter, setDepartmentFilter] = useState("");
-    const [sortBy, setSortBy] = useState("");
-    const [searchQuery, setSearchQuery] = useState("");
+    const [employeeLogs, setEmployeeLogs] = useState([]);
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
@@ -72,40 +38,59 @@ const Warning = () => {
         "Violation of Policy"
     ];
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const response = await getAllWarningLogs();
+                setTableData(response.data);
+            } catch (err) {
+                console.error('Error fetching data', err);
+            }
+        }
+        fetchData();
+    }, []);
+
     const handleClose = () => {
         setEditDialogOpen(false);
+        setHistoryDialogOpen(false);
         setWarningLevel('');
         setReason('');
     };
 
     const handleEdit = (item) => {
         setSelectedEmployee(item);
-        setWarningLevel(item.warning_count); // Set warning level to the selected employee's warning count
+        setWarningLevel(''); // Reset warning level
+        setReason(''); // Reset reason
         setEditDialogOpen(true);
     };
 
-    const filteredEmployees = () => {
-        let filteredData = tableData;
+    const handleStoreWarning = async () => {
+        const warningData = {
+            userid: selectedEmployee.id,
+            level: warningLevel,
+            date: new Date().toISOString().split('T')[0], // current date
+            text: reason,
+        };
 
-        if (searchQuery) {
-            filteredData = filteredData.filter((item) =>
-                item.name.toLowerCase().includes(searchQuery.toLowerCase())
-            );
+        try {
+            await storeWarning(warningData);
+            const updatedData = await getAllWarningLogs();
+            setTableData(updatedData.data);
+            handleClose();
+        } catch (error) {
+            console.error("Error storing warning", error);
         }
+    };
 
-        if (departmentFilter) {
-            filteredData = filteredData.filter(
-                (item) => item.department === departmentFilter
-            );
+    const handleShowHistory = async (employee) => {
+        try {
+            const logs = await getAllEmployeeWarningLog(employee.id);
+            setEmployeeLogs(logs.data.data);
+            setSelectedEmployee(employee);
+            setHistoryDialogOpen(true);
+        } catch (error) {
+            console.error("Error fetching employee logs", error);
         }
-
-        if (sortBy === "Warning Level Up") {
-            filteredData = filteredData.sort((a, b) => a.warning_count - b.warning_count);
-        } else if (sortBy === "Warning Level Down") {
-            filteredData = filteredData.sort((a, b) => b.warning_count - a.warning_count);
-        }
-
-        return filteredData;
     };
 
     const columns = useMemo(
@@ -130,21 +115,20 @@ const Warning = () => {
                         onMouseLeave={(e) => e.target.style.color = colors.primary[100]} // Restore color on hover out
                     >
                         <img
-                        src={UserImg}
-                        alt="Employee"
-                        style={{ width: "40px", borderRadius: "50%" }}
-                    />
+                            src={`https://erpsystem.darakoutlet.com/${cell.row.original.profileimage}` || UserImg}
+                            alt="Employee"
+                            style={{ width: "50px", height: "50px", borderRadius: "50%" }}
+                        />
                     </Link>
-                    
                 ),
             },
             {
                 accessorKey: "name",
                 header: "Full Name",
                 Cell: ({ cell }) => (
-                <Box>
-                    {cell.getValue()}
-                </Box>
+                    <Box>
+                        {cell.getValue()}
+                    </Box>
                 ),
                 size: 140,
             },
@@ -155,32 +139,69 @@ const Warning = () => {
             {
                 accessorKey: "department",
                 header: "Department",
-                muiTableBodyCellEditTextFieldProps: {
-                    select: true,
-                    children: departments.map((department) => (
-                        <MenuItem key={department} value={department}>
-                            {department}
-                        </MenuItem>
-                    )),
-                },
             },
             {
-                accessorKey: "warning_count",
+                accessorKey: "latest_warning_log.level",
                 header: "Warning Level",
-                Cell: ({ cell }) => `Level ${cell.getValue()}`,
+                Cell: ({ cell }) => cell.getValue() ? `Level ${cell.getValue()}` : 'N/A',
+            },
+            {
+                accessorKey: "latest_warning_log.date",
+                header: "Date",
+                Cell: ({ cell }) => cell.getValue() || 'N/A',
+            },
+            {
+                accessorKey: "latest_warning_log.text",
+                header: "Reason",
+                Cell: ({ cell }) => cell.getValue() || 'N/A',
             },
             {
                 accessorKey: "action",
                 header: "Action",
                 Cell: ({ cell }) => (
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={() => handleEdit(cell.row.original)}
-                    >
-                        Edit
-                    </Button>
+                    <Box display="flex" gap={1}>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() => handleEdit(cell.row.original)}
+                        >
+                            Edit
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={() => handleShowHistory(cell.row.original)}
+                        >
+                            Show History
+                        </Button>
+                    </Box>
                 ),
+            },
+        ],
+        [colors.primary, colors.blueAccent]
+    );
+
+    const historyColumns = useMemo(
+        () => [
+            {
+                accessorKey: "id",
+                header: "Log ID",
+            },
+            {
+                accessorKey: "date",
+                header: "Date",
+            },
+            {
+                accessorKey: "level",
+                header: "Level",
+            },
+            {
+                accessorKey: "text",
+                header: "Description",
+            },
+            {
+                accessorKey: "created_date",
+                header: "Created Date",
             },
         ],
         []
@@ -190,10 +211,19 @@ const Warning = () => {
         <>
             <MaterialReactTable
                 columns={columns}
-                data={filteredEmployees()}
-                editingMode="modal"
+                data={tableData}
                 enableColumnOrdering
                 enableColumnActions={false}
+                initialState =  {{ density: 'compact' }}
+                enableStickyHeader
+                enableStickyFooter
+                muiPaginationProps={{
+                    color: 'secondary',
+                    rowsPerPageOptions: [10, 20, 30],
+                    shape: 'rounded',
+                    variant: 'outlined',
+                }}
+                paginationDisplayMode='pages'
                 muiTablePaperProps={{
                     elevation: 2,
                     sx: {
@@ -210,99 +240,139 @@ const Warning = () => {
                 })}
             />
 
-            <Dialog
-                open={editDialogOpen}
-                onClose={handleClose}
-            >
-                <DialogTitle>Edit Warning Level for {selectedEmployee?.name}</DialogTitle>
-                <Divider />
-
-                <DialogContent>
-                    <Box
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: 2,
-                            mt: 2,
-                            width: '450px',
-                        }}>
-                        <Select
-                            value={warningLevel}
-                            onChange={(e) => setWarningLevel(e.target.value)}
-                            displayEmpty
-                            fullWidth
-                            sx={{
-                                "&.Mui-focused": {
-                                    borderColor: colors.blueAccent[300],
-                                }
-                            }}
-                        >
-                            <MenuItem value="" disabled>Select Warning Level</MenuItem>
-                            <MenuItem value={1}>Level 1</MenuItem>
-                            <MenuItem value={2}>Level 2</MenuItem>
-                            <MenuItem value={3}>Level 3</MenuItem>
-                            <MenuItem value={4}>Level 4</MenuItem>
-                        </Select>
-                        <Select
-                            value={reason}
-                            onChange={(e) => setReason(e.target.value)}
-                            defaultValue=""
-                            displayEmpty
-                            fullWidth
-                        >
-                            <MenuItem value="" disabled>Select Reason</MenuItem>
-                            {reasons.map((reason) => (
-                                <MenuItem key={reason} value={reason}>
-                                    {reason}
-                                </MenuItem>
-                            ))}
-                        </Select>
-                    </Box>
-                </DialogContent>
-                <Divider />
-
-                <DialogActions>
-                    <Button
-                    variant="outlined"
+            <Dialog open={editDialogOpen} onClose={handleClose}>
+                <Box
                     sx={{
-                        color:colors.redAccent[300],
-                        borderColor:colors.redAccent[300],
-                        "&:hover": {
-                            borderColor:colors.redAccent[300]
-                        }
-                    }}
-                    onClick={handleClose}
-                    
-                    >
-                        Close
-                    </Button>
-                    <Button
-                        variant="outlined"
-                        sx={{
-                            color:colors.greenAccent[300],
-                            borderColor:colors.greenAccent[300],
-                            marginRight:'15px',
-                            "&:hover": {
-                                borderColor:colors.greenAccent[300]
-                            }
-                        }}
-                        onClick={() => {
-                            const updatedData = tableData.map((emp) =>
-                                emp.id === selectedEmployee.id
-                                    ? { ...emp, warning_count: warningLevel }
-                                    : emp
-                            );
+                        bgcolor: colors.grey[800],
+                        borderRadius: '5px'
+                    }}>
+                    <DialogTitle>
+                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
+                            <Lottie style={{ width: '30px', display: 'flex' }} animationData={Document} />
+                            Edit Warning Level for {selectedEmployee?.name}
+                        </Box>
+                    </DialogTitle>
+                    <Divider />
 
-                            setTableData(updatedData);
-                            handleClose();
-                        }}
-                    >
-                        Save
-                    </Button>
-                </DialogActions>
+                    <DialogContent>
+                        <Box
+                            sx={{
+                                display: 'flex',
+                                flexDirection: 'column',
+                                gap: 2,
+                                mt: 2,
+                                width: '450px',
+                            }}>
+                            <Select
+                                value={warningLevel}
+                                onChange={(e) => setWarningLevel(e.target.value)}
+                                displayEmpty
+                                fullWidth
+                                sx={{
+                                    "&.Mui-focused": {
+                                        borderColor: colors.blueAccent[300],
+                                    }
+                                }}
+                            >
+                                <MenuItem value="" disabled>Select Warning Level</MenuItem>
+                                <MenuItem value={1}>Level 1</MenuItem>
+                                <MenuItem value={2}>Level 2</MenuItem>
+                                <MenuItem value={3}>Level 3</MenuItem>
+                                <MenuItem value={4}>Level 4</MenuItem>
+                            </Select>
+                            <Select
+                                value={reason}
+                                onChange={(e) => setReason(e.target.value)}
+                                defaultValue=""
+                                displayEmpty
+                                fullWidth
+                            >
+                                <MenuItem value="" disabled>Select Reason</MenuItem>
+                                {reasons.map((reason) => (
+                                    <MenuItem key={reason} value={reason}>
+                                        {reason}
+                                    </MenuItem>
+                                ))}
+                            </Select>
+                        </Box>
+                    </DialogContent>
+                    <Divider />
+
+                    <DialogActions>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={handleClose}
+                        >
+                            Close
+                        </Button>
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            onClick={handleStoreWarning}
+                        >
+                            Save
+                        </Button>
+                    </DialogActions>
+                </Box>
+            </Dialog>
+
+            <Dialog open={historyDialogOpen} onClose={handleClose} maxWidth="lg" fullWidth>
+                <Box
+                    sx={{
+                        bgcolor: colors.grey[800],
+                        borderRadius: '5px'
+                    }}>
+                    <DialogTitle>
+                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
+                            <Lottie style={{ width: '30px', display: 'flex' }} animationData={Document} />
+                            Warning History for {selectedEmployee?.name}
+                        </Box>
+                    </DialogTitle>
+                    <Divider />
+
+                    <DialogContent>
+                        <MaterialReactTable
+                            columns={historyColumns}
+                            data={employeeLogs}
+                            enableColumnOrdering
+                            enableColumnActions={false}
+                            muiTablePaperProps={{
+                                elevation: 2,
+                                sx: {
+                                    borderRadius: '20px',
+                                    padding: '20px 0 0 0',
+                                },
+                            }}
+                            muiTableContainerProps={{ sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } }}
+                            muiTableHeadCellProps={{ sx: { backgroundColor: colors.grey[900] } }}
+                            muiTableBodyCellProps={{ sx: { backgroundColor: colors.grey[800] } }}
+                            muiTableBodyProps={{ sx: { backgroundColor: colors.grey[800] } }}
+                            muiBottomToolbarProps={({ table }) => ({
+                                sx: { backgroundColor: colors.grey[800] },
+                            })}
+                            mrtTheme = {(theme) => ({
+                                baseBackgroundColor: colors.grey[700],
+                                draggingBorderColor: theme.palette.secondary.main,
+                            })}
+                        />
+                    </DialogContent>
+                    <Divider />
+
+                    <DialogActions>
+                        <Button
+                            variant="outlined"
+                            color="error"
+                            onClick={handleClose}
+                        >
+                            Close
+                        </Button>
+                    </DialogActions>
+                </Box>
             </Dialog>
         </>
     );
 };
 
 export default Warning;
+

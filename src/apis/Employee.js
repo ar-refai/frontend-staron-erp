@@ -19,7 +19,7 @@ export const ShowAllEmployee = async () => {
   };
   export const showEmployee = async (id) => {
     try {
-      const response = await instance.get('/users/'+id);
+      const response = await instance.get('/humanresource/employee/'+id);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
@@ -67,7 +67,7 @@ export const ShowAllEmployee = async () => {
   };
   export const CreateEmployee = async (formdata) => {
     try {
-      const response = await instance.post('/users/create',formdata);
+      const response = await instance.post('/humanresource/employee/create',formdata);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
@@ -75,7 +75,7 @@ export const ShowAllEmployee = async () => {
   };
   export const UpdateEmployees = async (formdata , id) => {
     try {
-      const response = await instance.post('/users/'+id+'/update',formdata);
+      const response = await instance.post('/humanresource/employee/'+id+'/update',formdata);
       return response.data;
     } catch (error) {
       throw new Error('data failed');

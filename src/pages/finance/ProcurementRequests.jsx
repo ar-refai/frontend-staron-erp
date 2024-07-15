@@ -23,7 +23,6 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import Lottie from 'lottie-react';
 import Document from "../../assets/lottie/document.json"
 
-
 const ProcurementRequests = () => {
   const [data, setData] = useState([]);
   const [isRequestModalOpen, setIsRequestModalOpen] = useState(false);
@@ -220,17 +219,15 @@ const ProcurementRequests = () => {
         fullWidth
         maxWidth="sm"
       >
-        <Box 
-        sx={{
-          borderRadius:'5px',
-        }}
-        >
         <DialogTitle>
           <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" , gap:"10px" , textTransform:"uppercase"}}>
-          <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
-  <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+ 
+<Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+                <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+
             Request Procurement
-</Box>
+                </Box>
+            
           </Box>          
         </DialogTitle>
         <Divider />
@@ -321,7 +318,6 @@ const ProcurementRequests = () => {
           <Button onClick={handleCloseRequestModal} color="error" variant="outlined">Close</Button>
           <Button onClick={handleSubmitRequest} color="secondary" variant="outlined">Submit</Button>
         </DialogActions>
-        </Box>
       </Dialog>
     </Box>
   );

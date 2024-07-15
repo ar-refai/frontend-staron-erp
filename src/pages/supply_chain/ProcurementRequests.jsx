@@ -20,6 +20,8 @@ import { MaterialReactTable } from "material-react-table";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import { TransitionGroup } from "react-transition-group";
 import DeleteIcon from "@mui/icons-material/Delete";
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json"
 
 const ProcurementRequests = () => {
   const [data, setData] = useState([]);
@@ -73,6 +75,8 @@ const ProcurementRequests = () => {
   };
 
   const handleRemoveToLocation = () => {
+    if(formData.to.length === 1 ) 
+      return;
     const newToLocations = [...formData.to];
     newToLocations.pop();
     setFormData({
@@ -91,14 +95,18 @@ const ProcurementRequests = () => {
   };
 
   const handleOpenRequestModal = () => {
+    formData.to[0] = "";
     setIsRequestModalOpen(true);
   };
 
   const handleCloseRequestModal = () => {
+    formData.to.length = 1;
+    if(formData.to[0])
+      formData.to[0] = "";
     setIsRequestModalOpen(false);
     setFormErrorData({});
   };
-
+  
   const handleSubmitRequest = (event) => {
     event.preventDefault();
     if (!formData.priority || !formData.time || !formData.from || !formData.to.length || !formData.description) {
@@ -217,7 +225,11 @@ const ProcurementRequests = () => {
       >
         <DialogTitle>
           <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" , gap:"10px" , textTransform:"uppercase"}}>
+       
+<Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+                <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
             Request Procurement
+                </Box>
           </Box>          
         </DialogTitle>
         <Divider />
@@ -235,7 +247,7 @@ const ProcurementRequests = () => {
               error={!!formErrorData.priority}
               helperText={formErrorData.priority}
             >
-              <option value="">Choose...</option>
+              <option value=""></option>
               <option value="High">High</option>
               <option value="Medium">Medium</option>
               <option value="Low">Low</option>

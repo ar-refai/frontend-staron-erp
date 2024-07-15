@@ -5,7 +5,7 @@ const instance = axios.create({
   headers: {
     'Content-Type': 'multipart/form-data',
     "Authorization": `Bearer ${token}`,
-   
+  
   }, withCredentials: true,
   // Replace with your Laravel backend URL
 });

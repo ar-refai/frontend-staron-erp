@@ -23,6 +23,8 @@ import {
 } from '@mui/material';
 import { QueryClient, QueryClientProvider, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { tokens } from 'theme';
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json"
 
 // Sample activity log data
 const fakeData = [
@@ -277,9 +279,23 @@ const ActivityLog = () => {
   return (
     <>
       <MaterialReactTable table={table} />
-      <Dialog open={openModal} onClose={() => setOpenModal(false)}>
-        <DialogTitle variant="h3">Add New Activity</DialogTitle>
-        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+      <Dialog open={openModal} maxWidth="lg" onClose={() => setOpenModal(false)}>
+        <Box
+        
+        sx={{
+          backgroundColor: colors.grey[800],
+          borderRadius:'5px',
+          width:'500px'
+        }}>
+        <DialogTitle  variant="h6">
+<Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+  <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+          Add New Activity
+</Box>
+        
+        </DialogTitle>
+        <Divider />
+        <DialogContent  sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' , marginTop:"10px" }}>
           <FormControl fullWidth>
             <InputLabel id="stakeholder-label">Stakeholder Name</InputLabel>
             <Select
@@ -366,25 +382,41 @@ const ActivityLog = () => {
             required
           />
         </DialogContent>
+        <Divider />
         <DialogActions>
-          <Button onClick={() => setOpenModal(false)} color="primary">
+          <Button variant='outlined' onClick={() => setOpenModal(false)} color="error" >
             Cancel
           </Button>
           <Button onClick={handleCreateUser} color="secondary" variant="outlined">
             Save
           </Button>
         </DialogActions>
+        </Box>
       </Dialog>
 
-      <Dialog open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <DialogTitle variant="h4">Confirm Delete</DialogTitle>
+      <Dialog maxWidth="lg"
+      
+      open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
+        <Box
+        sx={{
+          width: '500px',
+          background:colors.grey[800],
+          borderRadius:'5px',
+        }}>
+        <DialogTitle variant="h6">
+<Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+  <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+          Confirm Delete
+</Box>
+        
+        </DialogTitle>
         <Divider />
         <DialogContent>
           <Typography>Are you sure you want to delete this activity?</Typography>
         </DialogContent>
         <Divider />
         <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="primary" variant="outlined">
+          <Button onClick={handleCloseDeleteDialog} color="error" variant="outlined">
             Cancel
           </Button>
           <Button
@@ -395,6 +427,7 @@ const ActivityLog = () => {
             Delete
           </Button>
         </DialogActions>
+        </Box>
       </Dialog>
     </>
   );

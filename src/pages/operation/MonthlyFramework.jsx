@@ -25,15 +25,13 @@ import {
   QueryClientProvider,
   useMutation,
   useQueryClient,
-} from '@tanstack/react-query'; 
+} from '@tanstack/react-query';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { DatePicker } from '@mui/x-date-pickers';
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from 'dayjs';
 import { useTheme } from '@emotion/react';
 import { tokens } from "../../theme";
-import Lottie from 'lottie-react';
-import Document from "../../assets/lottie/document.json"
 
 const VisuallyHiddenInput = styled('input')({
   clip: 'rect(0 0 0 0)',
@@ -252,28 +250,17 @@ const MonthlyFramework = () => {
       </>
     ),
     renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
-      <Box
-      sx={{
-        backgroundColor:colors.grey[800],
-        borderRadius:'5px'
-      }}
-      >
-        <DialogTitle variant="h6">
-        <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
-  <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
-          Edit Record
-</Box>
-
-        </DialogTitle>
+      <>
+        <DialogTitle variant="h3">Edit Record</DialogTitle>
         <Divider />
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
           {internalEditComponents} {/* or render custom edit components here */}
         </DialogContent>
         <Divider />
         <DialogActions>
-          <MRT_EditActionButtons table={table} row={row} />
+          <MRT_EditActionButtons variant="outlined" color="secondary" table={table} row={row} />
         </DialogActions>
-      </Box>
+      </>
     ),
     renderRowActions: ({ row, table }) => (
       <Box sx={{ display: 'flex', gap: '1rem' }}>

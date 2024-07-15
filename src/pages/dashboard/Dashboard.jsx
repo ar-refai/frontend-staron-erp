@@ -46,7 +46,7 @@ const Dashboard = () => {
                         }}
                     >
                         Dashboard
-                        <Typography variant="h2"
+                        <Typography variant="h3"
                         sx={{
                             color: colors.primary[200],
                             display: 'inline'

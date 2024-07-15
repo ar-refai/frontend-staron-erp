@@ -20,6 +20,8 @@ import { useTheme } from "@mui/material";
 import { tokens } from "../../theme";
 import { MaterialReactTable } from "material-react-table";
 import { ShowAllSupplyerData } from "../../apis/SupplyChainApi/SupplyerApi";
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json"
 
 const SuppliersListing = () => {
     const [modalOpen, setModalOpen] = useState(false);
@@ -293,16 +295,20 @@ const SupplierModal = ({ open, mode, onClose, onSubmit, selectedRow, columns }) 
                     left: '50%',
                     transform: 'translate(-50%, -50%)',
                     width: 600,
-                    bgcolor: colors.primary[700],
-                    color: colors.primary[200],
-                    border: `3px solid ${colors.greenAccent[300]}`,
+                    bgcolor: colors.grey[800],
+                    color: colors.grey[100],
+                    border: `1px solid ${colors.greenAccent[300]}`,
                     boxShadow: 24,
                     p: 4,
                     borderRadius: '10px',
                 }}
             >
                 <Typography variant="h6" component="h2" sx={{ mb: 2 }}>
+          
+<Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+<Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
                     {mode === 'create' ? "Add Supplier" : mode === 'edit' ? "Edit Supplier" : "Supplier Profile"}
+</Box>
                 </Typography>
 
                 <form onSubmit={handleSubmit}>
@@ -328,11 +334,11 @@ const SupplierModal = ({ open, mode, onClose, onSubmit, selectedRow, columns }) 
                     </Stack>
 
                     <DialogActions sx={{ mt: 2 }}>
-                        <Button onClick={onClose} variant="outlined" color="secondary">
+                        <Button onClick={onClose} variant="outlined" color="error">
                             {mode === 'view' ? "Close" : "Cancel"}
                         </Button>
                         {mode !== 'view' && (
-                            <Button type="submit" variant="contained" color="secondary">
+                            <Button type="submit" variant="outlined" color="secondary">
                                 {mode === 'create' ? "Add" : "Save"}
                             </Button>
                         )}

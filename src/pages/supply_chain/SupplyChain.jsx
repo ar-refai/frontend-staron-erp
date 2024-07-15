@@ -35,7 +35,7 @@ export default function SupplyChain() {
         <Typography variant='h2' sx={{ display: 'flex', justifyContent: 'start', alignItems: 'center' }}>
           <TagIcon sx={{ color: colors.redAccent[500], fontSize: '40px' }} />
           {currentTitle && (
-            <Typography variant='h2' sx={{
+            <Typography variant='h3' sx={{
               color: colors.primary[200],
               marginLeft: '10px',
               padding: '10px 12px'

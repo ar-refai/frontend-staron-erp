@@ -5,18 +5,10 @@ const instance = axios.create({
   headers: {
     'Content-Type': 'multipart/form-data',
     "Authorization": `Bearer ${token}`,
-   
+  
   }, withCredentials: true,
   // Replace with your Laravel backend URL
 });
-export const ShowAllHrAttendance = async () => {
-  try {
-    const response = await instance.get('/humanresource/public/Attendance');
-    return response.data;
-  } catch (error) {
-    throw new Error('data failed');
-  }
-};
 export const ShowAllAttendance = async () => {
     try {
       const response = await instance.get('/humanresource/attendance');
@@ -27,7 +19,7 @@ export const ShowAllAttendance = async () => {
   };
   export const DeleteAttendance = async (id) => {
     try {
-      const response = await instance.delete('/attendance/'+id);
+      const response = await instance.delete('/humanresource/attendance/'+id);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
@@ -35,7 +27,7 @@ export const ShowAllAttendance = async () => {
   };
   export const ShowAttendance = async (id) => {
     try {
-      const response = await instance.get('/attendance/'+id);
+      const response = await instance.get('/humanresource/attendance/'+id);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
@@ -43,7 +35,7 @@ export const ShowAllAttendance = async () => {
   };
   export const addetionEmployee = async (id,formdata) => {
     try {
-      const response = await instance.post('/attendance/'+id+"/addetion",formdata);
+      const response = await instance.post('/humanresource/attendance/'+id+"/addetion",formdata);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
@@ -51,7 +43,8 @@ export const ShowAllAttendance = async () => {
   };
   export const deductionEmployee = async (id,formdata) => {
     try {
-      const response = await instance.post('/attendance/'+id+"/deduction",formdata);
+      console.log("form data" ,formdata);
+      const response = await instance.post('/humanresource/attendance/'+id+"/deduction",formdata);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
@@ -59,7 +52,9 @@ export const ShowAllAttendance = async () => {
   };
   export const UpdateUserAttendance = async (id,formdata) => {
     try {
-      const response = await instance.post('/attendance/'+id+"/update",formdata);
+      console.log("form data" ,formdata);
+
+      const response = await instance.post('/humanresource/attendance/'+id+"/update",formdata);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
@@ -67,7 +62,7 @@ export const ShowAllAttendance = async () => {
   };
   export const CreateAttendanceExel = async (formdata) => {
     try {
-      const response = await instance.post('/attendance/create',formdata);
+      const response = await instance.post('/humanresource/attendance/create',formdata);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
@@ -77,7 +72,7 @@ export const ShowAllAttendance = async () => {
     try {
       // console.log(formdata);
 
-      const response = await instance.post('/attendance/createmanual',formdata);
+      const response = await instance.post('/humanresource/attendance/createmanual',formdata);
       return response;
     } catch (error) {
       throw new Error(error);

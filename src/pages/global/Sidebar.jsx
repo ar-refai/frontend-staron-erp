@@ -29,16 +29,17 @@ import ControlLinks from './ControlLinks';
 import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import SupplyChainLinks from './SupplyChainLinks';
+import OperationLinks from './OperationLinks';
 
 const filteredItems = ControlLinks.filter(
   (item) => item.to === "/control/productivity-tracking" || item.to === "/control/procurement-requests"
 );
 
 const Item = ({ title, to, icon, selected, setSelected }) => {
-  
+
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  
+
   return (
     <LightTooltip title={title}>
       <ListItem
@@ -112,7 +113,7 @@ const LightTooltip = styled(({ className, ...props }) => (
     boxShadow: theme.shadows[1],
     fontSize: 12,
     padding: '4px 10px',
-    position:'absolute',
+    position: 'absolute',
   },
 }));
 
@@ -167,7 +168,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 export default function MiniDrawer() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const [openControlCollapse, setOpenControlCollapse] = React.useState(false);    
+  const [openControlCollapse, setOpenControlCollapse] = React.useState(false);
 
   const [open, setOpen] = React.useState(false);
   const [selected, setSelected] = React.useState('');
@@ -175,9 +176,9 @@ export default function MiniDrawer() {
   const handleDrawerToggle = () => {
     setOpen(!open);
   };
-  function handleOpenControlSettings(){
+  function handleOpenControlSettings() {
     setOpenControlCollapse(!openControlCollapse);
-}
+  }
 
 
   return (
@@ -198,7 +199,7 @@ export default function MiniDrawer() {
       >
         <DrawerHeader open={open}>
           {open && (
-            <Typography variant="h3" color={colors.grey[100]}>
+            <Typography key={1} variant="h3" color={colors.grey[100]}>
               Control Panel
             </Typography>
           )}
@@ -210,20 +211,23 @@ export default function MiniDrawer() {
         <List sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
           <Typography
+
             variant="h6"
             color={colors.grey[300]}
             sx={{ m: "15px 0 5px 20px" }}
           >
             {open ? (
-              <Box sx={{display:'flex',justifyContent:'start',fontSize:'16px',cursor:'default' , alignItems:'center',color:colors.primary[100],letterSpacing:'2px',fontWeight:'bold'}}>
-                  <TagIcon sx={{color:colors.redAccent[500], fontSize:'30px'}}/> GENERAL
-              </Box>) : <Box sx={{ cursor: 'default' }}> 
-              <Typography sx={{display:'flex',color:colors.redAccent[500], fontSize:'30px' ,justifyContent:'start'}}> ـــ </Typography>
+              <Box
+                sx={{ display: 'flex', justifyContent: 'start', fontSize: '16px', cursor: 'default', alignItems: 'center', color: colors.primary[100], letterSpacing: '2px', fontWeight: 'bold' }}>
+                <TagIcon sx={{ color: colors.redAccent[500], fontSize: '30px' }} /> GENERAL
+              </Box>) : <Box sx={{ cursor: 'default' }}>
+              <Typography sx={{ display: 'flex', color: colors.redAccent[500], fontSize: '30px', justifyContent: 'start' }}> ـــ </Typography>
             </Box> // Change cursor to pointer when hovered
 
             }
           </Typography>
           <Item
+            key={"dashboard"}
             title="Dashboard"
             to="/global/dashboard"
             icon={<SpaceDashboardOutlinedIcon />}
@@ -231,6 +235,8 @@ export default function MiniDrawer() {
             setSelected={setSelected}
           />
           <Item
+            key={"attendance"}
+
             title="Attendance"
             to="/global/attendance"
             icon={<ChecklistOutlinedIcon />}
@@ -238,6 +244,8 @@ export default function MiniDrawer() {
             setSelected={setSelected}
           />
           <Item
+            key={"requests"}
+
             title="Requests"
             to="/global/requests"
             icon={<MarkunreadMailboxOutlinedIcon />}
@@ -245,6 +253,8 @@ export default function MiniDrawer() {
             setSelected={setSelected}
           />
           <Item
+            key={"recuirtment"}
+
             title="Recruitment Requests"
             to="/global/recruitment-requests"
             icon={<LocalShippingOutlinedIcon />}
@@ -253,6 +263,8 @@ export default function MiniDrawer() {
           />
 
           <Item
+            key={"performance"}
+
             title="Targets & Performance"
             to="/global/target-performance"
             icon={<QueryStatsOutlinedIcon />}
@@ -266,104 +278,117 @@ export default function MiniDrawer() {
             sx={{ m: "15px 0 5px 20px" }}
           >
             {open ? (
-              <Box sx={{display:'flex',justifyContent:'start',fontSize:'16px',cursor:'default' , alignItems:'center',color:colors.primary[100],letterSpacing:'2px',fontWeight:'bold'}}>
-              <TagIcon sx={{color:colors.redAccent[500], fontSize:'30px'}}/> SPECIFIC
-        </Box>)
-        : (
-              <Box sx={{ cursor: 'default' }}>
-                <Typography sx={{display:'flex',color:colors.redAccent[500], fontSize:'30px',justifyContent:'start'}}> ـــ </Typography>
-              </Box> // Change cursor to pointer when hovered
-            )}
+              <Box sx={{ display: 'flex', justifyContent: 'start', fontSize: '16px', cursor: 'default', alignItems: 'center', color: colors.primary[100], letterSpacing: '2px', fontWeight: 'bold' }}>
+                <TagIcon sx={{ color: colors.redAccent[500], fontSize: '30px' }} /> SPECIFIC
+              </Box>)
+              : (
+                <Box sx={{ cursor: 'default' }}>
+                  <Typography sx={{ display: 'flex', color: colors.redAccent[500], fontSize: '30px', justifyContent: 'start' }}> ـــ </Typography>
+                </Box> // Change cursor to pointer when hovered
+              )}
 
           </Typography>
 
           {HRLinks.map((item, index) => (
-          <Item
-            key={index}
-            title={item.title}
-            to={item.to}
-            icon={item.icon}
-            selected={selected}
-            setSelected={setSelected}
-          />))}
-
-          {SalesLinks.map((item,index)=> (
             <Item
-            key={index}
-            title={item.title}
-            to={item.to}
-            icon={item.icon}
-            selected={selected}
-            setSelected={setSelected}
-            />
-          ))}        
+              key={item.title}
+              title={item.title}
+              to={item.to}
+              icon={item.icon}
+              selected={selected}
+              setSelected={setSelected}
+            />))}
 
-          {TechLinks.map((item,index)=> (
+          {SalesLinks.map((item, index) => (
             <Item
-            key={index}
-            title={item.title}
-            to={item.to}
-            icon={item.icon}
-            selected={selected}
-            setSelected={setSelected}
+              key={item.title}
+              title={item.title}
+              to={item.to}
+              icon={item.icon}
+              selected={selected}
+              setSelected={setSelected}
             />
-          ))} 
-         
-        
+          ))}
+
+          {TechLinks.map((item, index) => (
+            <Item
+              key={item.title}
+              title={item.title}
+              to={item.to}
+              icon={item.icon}
+              selected={selected}
+              setSelected={setSelected}
+            />
+          ))}
+
+
           {/* Weekly Control Items */}
           <List
-      sx={{ width: '100%', maxWidth: 360 }}
-      component="nav"
-      aria-labelledby="nested-list-subheader"
-    >
-      <ListItemButton onClick={handleOpenControlSettings}>
-        <ListItemIcon>
-          <ArchiveOutlinedIcon />
-        </ListItemIcon>
-        <ListItemText primary="Weekly Framework" />
-        {openControlCollapse ? <ExpandLess /> : <ExpandMore />}
-      </ListItemButton>
-      <Collapse in={openControlCollapse} timeout="auto" unmountOnExit>
-        <List component="div" disablePadding>
-          {filteredItems.map((item, index) => (
-            <Box pl={2}>
-            <Item
-            key={index}
-            title={item.title}
-            to={item.to}
-            icon={item.icon}
-            selected={selected}
-            setSelected={setSelected}
-            />
-            </Box>
-          ))}
-        </List>
-      </Collapse>
-    </List>
-    {/* REst of control items  */}
-            {ControlLinks.map((item,index)=> {
-                    if(item.to === "/control/productivity-tracking" || item.to === "/control/procurement-requests")
-                        return <></>              
-                      
-                  return (<Item
-                  key={index}
-                  title={item.title}
-                  to={item.to}
-                  icon={item.icon}
-                  selected={selected}
-                  setSelected={setSelected}
-                  />)
-                  })}
-          {SupplyChainLinks.map((item,index)=> {     
-          return (<Item
-          key={index}
-          title={item.title}
-          to={item.to}
-          icon={item.icon}
-          selected={selected}
-          setSelected={setSelected}
-          />)
+            sx={{ width: '100%', maxWidth: 360 }}
+            component="nav"
+            aria-labelledby="nested-list-subheader"
+          >
+            <ListItemButton onClick={handleOpenControlSettings}>
+              <ListItemIcon>
+                <ArchiveOutlinedIcon />
+              </ListItemIcon>
+              <ListItemText sx={{ color: colors.grey[200] }} primary="Weekly Framework" />
+              {openControlCollapse ? <ExpandLess /> : <ExpandMore />}
+            </ListItemButton>
+            <Collapse in={openControlCollapse} timeout="auto" unmountOnExit>
+              <List component="div" disablePadding>
+                {filteredItems.map((item, index) => (
+                  <Box key={item.title} pl={2}>
+                    <Item
+                      key={index}
+                      title={item.title}
+                      to={item.to}
+                      icon={item.icon}
+                      selected={selected}
+                      setSelected={setSelected}
+                    />
+                  </Box>
+                ))}
+              </List>
+            </Collapse>
+          </List>
+          {/* REst of control items  */}
+          {ControlLinks.map((item, index) => {
+            if (item.to === "/control/productivity-tracking" || item.to === "/control/procurement-requests")
+              return <></>
+
+            return (<Item
+              key={item.title}
+              title={item.title}
+              to={item.to}
+              icon={item.icon}
+              selected={selected}
+              setSelected={setSelected}
+            />)
           })}
+          {SupplyChainLinks.map((item, index) => {
+            return (<Item
+              key={item.title}
+              title={item.title}
+              to={item.to}
+              icon={item.icon}
+              selected={selected}
+              setSelected={setSelected}
+            />)
+          })}
+          {/* Operation Links */}
+          {OperationLinks.map((item, index) => {
+            return (<Item
+              key={item.title}
+              title={item.title}
+              to={item.to}
+              icon={item.icon}
+              selected={selected}
+              setSelected={setSelected}
+            />)
+          })}
+
+
           {/* The User Signed in */}
           <ListItem
             sx={{
@@ -372,7 +397,7 @@ export default function MiniDrawer() {
               justifyContent: 'center',
               alignItems: 'center',
               marginTop: 'auto', // Push the avatar to the bottom of the sidebar
-              translate: open? '-4px' : '0'
+              translate: open ? '-4px' : '0'
             }}
           >
             <StyledBadge
@@ -380,35 +405,35 @@ export default function MiniDrawer() {
               anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
               variant="dot"
             >
-              <Avatar 
-              alt="users name" 
-              src={UserAvatar}
-              sx={{ 
-                width:open ? '50px' : '40px', 
-                height:open ? '50px' : '40px',
-                transition:'all ease .4s'
-              }}
+              <Avatar
+                alt="users name"
+                src={UserAvatar}
+                sx={{
+                  width: open ? '50px' : '40px',
+                  height: open ? '50px' : '40px',
+                  transition: 'all ease .4s'
+                }}
               />
             </StyledBadge>
             {open && (
               <>
-              <ListItemText 
-              primary="Abdelrahman ElRefai" 
-              sx={{
-                marginTop: open ? '15px' : 0,
-                marginLeft:open ? '0' : '18px',
-                fontSize:'12px',
-                color:colors.primary[100]
-                
-              }} /> 
-              <ListItemText 
-              primary="Software Team" 
-              sx={{
-                marginLeft:open ? '0' : '18px',
-                color:colors.primary[200],
-                transform:'translateY(-10px)',
-                fontSize:'10px',
-              }} /> 
+                <ListItemText
+                  primary="Abdelrahman ElRefai"
+                  sx={{
+                    marginTop: open ? '15px' : 0,
+                    marginLeft: open ? '0' : '18px',
+                    fontSize: '12px',
+                    color: colors.primary[100]
+
+                  }} />
+                <ListItemText
+                  primary="Software Team"
+                  sx={{
+                    marginLeft: open ? '0' : '18px',
+                    color: colors.primary[200],
+                    transform: 'translateY(-10px)',
+                    fontSize: '10px',
+                  }} />
               </>
             )}
           </ListItem>

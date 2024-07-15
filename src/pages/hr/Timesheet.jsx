@@ -1,114 +1,55 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
-import {
-    Box,
-    Button,
-    Typography,
-    Modal,
-    TextField,
-    Radio,
-    RadioGroup,
-    FormControlLabel,
-    FormControl,
-    CardContent,
-    Collapse,
-    Divider,
-    Chip,
-    Tabs,
-    Tab,
-    InputAdornment,
-    FilledInput,
-} from "@mui/material";
+import { Box, Button, Typography, Modal, TextField, Radio, RadioGroup, FormControlLabel, FormControl, Divider,  Tabs, Tab, InputAdornment, FilledInput, } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
 import { styled, useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
-import UserImage from "../../assets/user.jpg";
-import Card from "@mui/material/Card";
-import Avatar from "@mui/material/Avatar";
-
-
-
-const Root = styled("div")(({ theme }) => ({
-    width: "100%",
-    ...theme.typography.body2,
-    color: theme.palette.text.secondary,
-    "& > :not(style) ~ :not(style)": {
-        marginTop: theme.spacing(2),
-    },
-}));
-
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json"
+import { ShowAllAttendance } from "../../apis/HumanRecourse/Attendance"
+import EmployeeTimesheetInfo from "../../components/EmployeeTimesheetInfo";
+import {addetionEmployee, deductionEmployee,CreateAttendanceExel} from "../../apis/HumanRecourse/Attendance";
 // Dummy data for demonstration
-const data = [
-    {
-        profileimage: UserImage,
-        name: "John Doe",
-        date: "2024-05-19",
-        hr_code: "HR001",
-        department: "Sales",
-        TimeStamp: "2024-05-19T08:00:00Z",
-        startwork: "2024-05-19T09:00:00Z",
-        endwork: "2024-05-19T17:00:00Z",
-        Absent: false,
-        clockin: "08:30",
-        Must_C_In: true,
-        Clock_In: "08:30",
-        clockout: "17:30",
-        Must_C_Out: true,
-        Clock_Out: "17:30",
-        Work_Time: "8h",
-        note: "bad Emplyee",
-        addetion: 0,
-        deduction: 0,
-        isemploee: 1,
-    },
-    {
-        profileimage: UserImage,
-        name: "Jane Smith",
-        date: "2024-05-21",
-        hr_code: "HR002",
-        department: "Marketing",
-        TimeStamp: "2024-05-21T08:00:00Z",
-        startwork: "2024-05-21T09:00:00Z",
-        endwork: "2024-05-21T17:00:00Z",
-        Absent: false,
-        clockin: "08:30",
-        Must_C_In: true,
-        Clock_In: "08:30",
-        clockout: "17:30",
-        Must_C_Out: true,
-        Clock_Out: "17:30",
-        Work_Time: "8h",
-        note: "good Employee",
-        addetion: 0,
-        deduction: 0,
-        isemploee: 1,
-    },
-    // Add more dummy data as needed
-];
 
+let data = [];
 const TimeSheet = () => {
     const [showModal, setShowModal] = useState(false);
     const [modalData, setModalData] = useState({});
     const [startDate, setStartDate] = useState(dayjs().subtract(1, "month"));
     const [endDate, setEndDate] = useState(dayjs());
     const [specificDate, setSpecificDate] = useState(dayjs());
-    const [filteredData, setFilteredData] = useState(data);
+    const [filteredData, setFilteredData] = useState([]);
     const [descriptionOpen, setDescriptionOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState("");
     const [value, setValue] = useState(0);
     const [filterOption, setFilterOption] = useState("specificDate");
+    const [editValue, setEditValue] = useState("");
+    const [selectedFile, setSelectedFile] = useState(null);
 
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                data = await ShowAllAttendance();
+                data = data.data;
+                setFilteredData(data);
+                console.log(data);
 
+
+            }
+            catch (err) {
+                console.error('Error Fetching Data', err);
+            }
+        }
+        fetchData();
+    }, []);
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
-
-
 
     const handleEditOpen = (rowData) => {
         // console.log(rowData);
@@ -118,62 +59,95 @@ const TimeSheet = () => {
 
     const handleEditClose = () => {
         setShowModal(false);
+        setEditValue("");
     };
 
-    const handleEditSave = () => {
-        // Save edited data
-        setShowModal(false);
+    const handleEditSave = async () => {
+        let formData = {}; // Initialize formData here
+        // console.log("*".repeat(20));
+        // console.log("*".repeat(20));
+        // console.log("Modal Data: ", modalData);
+        // console.log("Form Data: ", formData); // Ensure formData is initialized before logging
+        // console.log("*".repeat(20));
+        // console.log("*".repeat(20));
+    
+        try {
+            if (value === 0) {
+                console.log("Adding Days");
+                formData = { "addetion": editValue }; // Update formData for addition
+                await addetionEmployee(modalData.id, formData);
+            } else if (value === 1) {
+                console.log("Deducting Days");
+                formData = { "deduction": editValue }; // Update formData for deduction
+                await deductionEmployee(modalData.id, formData);
+            }
+            setShowModal(false);
+            setEditValue("");
+    
+            // Fetch and update the data again after saving
+            const updatedData = await ShowAllAttendance();
+            setFilteredData(updatedData.data);
+        } catch (error) {
+            console.error('Error saving data', error);
+        }
     };
+    
+
 
     const columns = useMemo(
         () => [
             {
-                accessorKey: "profileimage",
+                accessorKey: "user.profileimage",
                 header: "Profile Image",
-                Cell: ({ cell }) => (
-                    <img
-                        src={UserImage}
+                Cell: ({ cell }) => {
+                    // console.log("#".repeat(55))
+                    // console.log(cell.row.original.user.profileimage)
+                    // console.log(cell.getValue())
+
+                    return (<img
+                        src={`https://erpsystem.darakoutlet.com/${cell.getValue()}`}
                         alt="profile"
                         style={{ width: "50px", height: "50px", borderRadius: "50%" }}
                     />
-                ),
+                    )
+                },
                 size: 140,
                 enableEditing: false,
             },
             {
-                accessorKey: "name",
+                accessorKey: "user.name",
                 header: "Full Name",
                 size: 120,
                 enableEditing: false,
             },
             {
-                accessorKey: "hr_code",
+                accessorKey: "user.hr_code",
                 header: "Employee ID",
                 size: 120,
                 enableEditing: false,
             },
             {
-                accessorKey: "department",
+                accessorKey: "user.department",
                 header: "Department",
                 size: 120,
                 enableEditing: false,
             },
             {
-                accessorKey: "clockin",
+                accessorKey: "Clock_In",
                 header: "Clock In",
                 Cell: ({ cell }) => cell.getValue(),
                 size: 120,
                 enableEditing: false,
             },
             {
-                accessorKey: "clockout",
+                accessorKey: "Clock_Out",
                 header: "Clock Out",
                 Cell: ({ cell }) => cell.getValue(),
                 size: 120,
                 enableEditing: false,
             },
             {
-                accessorKey: "TimeStamp",
+                accessorKey: "date",
                 header: "Date",
                 enableEditing: false,
 
@@ -264,9 +238,40 @@ const TimeSheet = () => {
         }
     }, [filterOption, startDate, endDate, specificDate]);
 
+    
+    const handleFileChange = (event) => {
+        const file = event.target.files && event.target.files[0];
+        if (file) {
+            setSelectedFile(file);
+        }
+    };
+
+    const handleUpload = async () => {
+        if (!selectedFile) {
+            console.error("No file selected");
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append("file", selectedFile);
+
+        try {
+            await CreateAttendanceExel(formData);
+            console.log("File uploaded successfully");
+            setSelectedFile(null);
+
+            // Fetch and update the data again after uploading
+            const updatedData = await ShowAllAttendance();
+            setFilteredData(updatedData.data);
+        } catch (error) {
+            console.error("Error uploading file", error);
+        }
+    };
+
+
     return (
         <Box>
-           
+
 
             <FormControl component="fieldset" sx={{ mb: 3 }}>
                 <RadioGroup
@@ -413,49 +418,81 @@ const TimeSheet = () => {
                             }}
                         />
                     </LocalizationProvider>
-                    
+
                 </Box>
-                
+
             )}
-                
-                
-            
-
-
             {/* OUR TABLE */}
             <MaterialReactTable
                 columns={columns}
                 data={filteredData}
                 layoutMode="grid"
-                muiTableContainerProps={{ sx: { maxHeight: "600px" } }}
-                enableColumnFilterModes
-                enableColumnOrdering
-                enableGrouping
-                enableColumnPinning
-                enableGlobalFilterModes = {true}
-                globalFilterModeOptions =  {['fuzzy', 'startsWith']} 
-                enableFacetedValues
+                enableColumnFilterModes={true}
+                enableColumnOrdering={true}
+                enableGrouping={true}
+                enableColumnPinning={true}
+                enableGlobalFilterModes={true}
+                enableFacetedValues={true}
+                enableStickyHeader={true}
+                initialState={{
+                    showColumnFilters: true,
+                    showGlobalFilter: true,
+                    columnPinning: {
+                        left: ['mrt-row-expand', 'mrt-row-select'],
+                        right: ['mrt-row-actions'],
+                    },
+                }}
+                muiSearchTextFieldProps={{
+                    size: 'small',
+                    variant: 'outlined',
+                }}
+
+                globalFilterModeOptions={['fuzzy', 'startsWith']}
                 renderTopToolbar={({ table }) => {
                     return (
-                <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "start",
-                                    alignItems: "center",
-                                    m: 3,
-                                }}
-                            >
-                                <Typography variant="h4"></Typography>
-                                <Button
-                                    variant="outlined"
-                                    color="secondary"
-                                    sx={{ backgroundColor: colors.primary[400] }}
-                                    onClick={() => setShowModal(true)}
-                                >
-                                    Upload Attendance
-                                </Button>
-                            </Box>
-                    )}}
+                        <>
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "start",
+                                alignItems: "center",
+                                m: 3,
+                            }}
+                        >
+                            <Typography variant="h4"></Typography>
+                            <Button
+                variant="outlined"
+                component="label"
+                color="secondary"
+            >
+                Upload Attendance
+                <input
+                    type="file"
+                    accept=".xlsx, .xls"
+                    hidden
+                    onChange={handleFileChange}
+                />
+            </Button>
+                        </Box>
+                        {selectedFile && (
+                <Box sx={{ mb:3 , ml:3 }}>
+                    <Typography variant="body2" color={colors.primary[200]}>
+                        {selectedFile.name}
+                    </Typography>
+                    <Button
+                        variant="outlined"
+                        color="secondary"
+                        onClick={handleUpload}
+                        
+                    >
+                        Upload
+                    </Button>
+                </Box>
+            )}
+
+                                </>
+                    )
+                }}
                 // enableEditing
                 paginationDisplayMode="pages"
                 muiPaginationProps={{
@@ -494,84 +531,96 @@ const TimeSheet = () => {
                         left: "50%",
                         transform: "translate(-50%, -50%)",
                         width: 400,
-                        bgcolor: colors.primary[400],
-                        border: `2px solid ${colors.primary[100]}`,
+                        bgcolor: colors.grey[800],
                         borderRadius: "10px",
                         boxShadow: 24,
                         padding: "15px 30px",
                     }}
                 >
                     <Typography id="modal-description" sx={{ mt: 2 }}>
-                        Edit Addition && Deduction Time :
+                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
+                            <Lottie style={{ width: '30px', display: 'flex' }} animationData={Document} />
+                            Edit Addition && Deduction Time :
+                        </Box>
                     </Typography>
                     <Divider />
 
                     {/* Two tabs for addition and deduction */}
                     <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            flexDirection: "column",
-                        }}
-                    >
-                        <Tabs
-                            value={value}
-                            onChange={handleChange}
-                            aria-label="edit type tabs"
-                            indicatorColor="secondary"
-                            textColor="secondary"
-                            variant="fullWidth"
-                            aria-label="full width"
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Tab label="Addition" />
-                            <Tab label="Deduction" />
-                        </Tabs>
-                        {value === 0 && (
-                            <Box>
-                                {/* Addition input field */}
-                                <FormControl sx={{ m: 1 }} variant="filled" fullWidth>
-                                    <FilledInput
-                                        id="filled-adornment-weight"
-                                        endAdornment={
-                                            <InputAdornment position="end">hours</InputAdornment>
-                                        }
-                                        aria-describedby="filled-weight-helper-text"
-                                        inputProps={{
-                                            "aria-label": "Addition",
-                                        }}
-                                    />
-                                </FormControl>
-                            </Box>
-                        )}
-                        {value === 1 && (
-                            <Box>
-                                {/* Deduction input field */}
-                                <FormControl sx={{ m: 1 }} variant="filled" fullWidth>
-                                    <FilledInput
-                                        id="filled-adornment-weight"
-                                        endAdornment={
-                                            <InputAdornment position="end">hours</InputAdornment>
-                                        }
-                                        aria-describedby="filled-weight-helper-text"
-                                        inputProps={{
-                                            "aria-label": "Deduction",
-                                        }}
-                                    />
-                                </FormControl>
-                            </Box>
-                        )}
-                    </Box>
+    sx={{
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        flexDirection: "column",
+    }}
+>
+    <Tabs
+        value={value}
+        onChange={handleChange}
+        aria-label="edit type tabs"
+        indicatorColor="secondary"
+        textColor="secondary"
+        variant="fullWidth"
+        sx={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+        }}
+    >
+        <Tab label="Addition" />
+        <Tab label="Deduction" />
+    </Tabs>
+    {value === 0 && (
+        <Box>
+            {/* Addition input field */}
+            <FormControl sx={{ m: 1 }} variant="filled" fullWidth>
+                <FilledInput
+                    id="filled-adornment-weight"
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    endAdornment={
+                        <InputAdornment position="end">Days</InputAdornment>
+                    }
+                    aria-describedby="filled-weight-helper-text"
+                    inputProps={{
+                        "aria-label": "Addition",
+                    }}
+                />
+            </FormControl>
+        </Box>
+    )}
+    {value === 1 && (
+        <Box>
+            {/* Deduction input field */}
+            <FormControl sx={{ m: 1 }} variant="filled" fullWidth>
+                <FilledInput
+                    id="filled-adornment-weight"
+                    value={editValue}
+                    onChange={(e) => setEditValue(e.target.value)}
+                    endAdornment={
+                        <InputAdornment position="end">Days</InputAdornment>
+                    }
+                    aria-describedby="filled-weight-helper-text"
+                    inputProps={{
+                        "aria-label": "Deduction",
+                    }}
+                />
+            </FormControl>
+        </Box>
+    )}
+    <Button
+        variant="outlined"
+        color="secondary"
+        sx={{mb:2}}
+        onClick={handleEditSave}
+    >
+        Save
+    </Button>
+</Box>
                     <Divider />
-
                     <Box
-                        sx={{ mt: 2 }}
                         sx={{
+                            mt: 2,
                             display: "flex",
                             justifyContent: "end",
                             alignItems: "center",
@@ -581,298 +630,19 @@ const TimeSheet = () => {
                         <Button
                             variant="outlined"
                             onClick={() => setShowModal(false)}
-                            sx={{
-                                mr: 2,
-                                color: colors.redAccent[400],
-                                borderColor: colors.redAccent[400],
-                                "&:hover": {
-                                    color: colors.redAccent[400],
-                                    borderColor: colors.redAccent[400],
-                                },
-                            }}
+                            color="error"
                         >
-                            Cancel
+                        Close
                         </Button>
-                        <Button
-                            variant="outlined"
-                            onClick={handleEditSave}
-                            sx={{
-                                color: colors.greenAccent[400],
-                                borderColor: colors.greenAccent[400],
-                                "&:hover": {
-                                    color: colors.greenAccent[400],
-                                    borderColor: colors.greenAccent[400],
-                                },
-                            }}
-                        >
-                            Save
-                        </Button>
+                        
                     </Box>
                 </Box>
             </Modal>
             {selectedRow && (
-                <Modal open={descriptionOpen} onClose={handleDescriptionClose}>
-                    <Box
-                        sx={{
-                            position: "absolute",
-                            top: "50%",
-                            left: "50%",
-                            transform: "translate(-50%, -50%)",
-                            width: 900,
-                            maxHeight: "100%",
-                            overflow: "scroll",
-                            bgcolor: colors.primary[700],
-                            color: colors.primary[200],
-                            border: `3px solid ${colors.greenAccent[300]}`,
-                            boxShadow: 24,
-                            p: 4,
-                            display: "flex",
-                            flexDirection: "column",
-                            gap: "1rem",
-                            borderRadius: "10px",
-                        }}
-                    >
-                        <Typography
-                            variant="h6"
-                            sx={{
-                                textTransform: "uppercase",
-                                fontWeight: "bold",
-                            }}
-                            component="h2"
-                        >
-                            Employee Profile:
-                        </Typography>
-                        <Divider />
-                        <Box>
-                            <Card
-                                sx={{
-                                    maxWidth: "100%",
-                                    p: "10px",
-                                    backgroundColor: colors.primary[700],
-                                }}
-                            >
-                                <Box
-                                    sx={{
-                                        diplay: "flex",
-                                        flexDirection: "column",
-                                        justifyContent: "center",
-                                        textAlign: "center",
-                                        alignItems: "center",
-                                    }}
-                                >
-                                    <Avatar
-                                        sx={{
-                                            bgcolor: colors.greenAccent[500],
-                                            display: "flex",
-                                            justifyContent: "center",
-                                            fontWeight: "bold",
-                                            fontSize: "16px",
-                                            margin: "auto",
-                                            marginBottom: "10px",
-                                        }}
-                                        aria-label="recipe"
-                                    >
-                                        {selectedRow.name.slice(0, 1)}
-                                    </Avatar>
-                                    <Typography variant="h5">{selectedRow.name}</Typography>
-                                    <Typography
-                                        sx={{
-                                            opacity: "75%",
-                                        }}
-                                    >
-                                        {selectedRow.isemploee === 1 ? "Active" : "NOT Active"}
-                                    </Typography>
-                                </Box>
-
-                                <Collapse in={true} timeout="auto" unmountOnExit>
-                                    <CardContent
-                                        sx={{
-                                            display: "flex",
-                                        }}
-                                    >
-                                        {/* Employee Information */}
-                                        <Root>
-                                            <Divider>
-                                                <Chip label="Employee Id:" size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.note ? selectedRow.hr_code : "ـــــ"}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="Note:" size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.note ? selectedRow.note : "ـــــ"}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="Start Work: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.startwork}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="End Work: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.endwork}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="Timestamp: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.TimeStamp}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="Absent: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.Absent === 1 ? "Absent " : "Not Appsent"}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="Clock In: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.clockin}
-                                            </Typography>
-                                        </Root>
-
-                                        <Divider orientation="vertical" flexItem />
-
-                                        <Root>
-                                            <Divider>
-                                                <Chip label="Clock Out: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.clockout}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="Clock_IN: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.Clock_In}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="Clock_Out: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.Clock_Out}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="Working Duration: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.Work_Time}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="Addition: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.addetion}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="Deduction: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.deduction}
-                                            </Typography>
-
-                                            <Divider>
-                                                <Chip label="Is Employee: " size="small" />
-                                            </Divider>
-                                            <Typography
-                                                sx={{
-                                                    textAlign: "center",
-                                                }}
-                                            >
-                                                {selectedRow.isemploee === 1 ? "Active" : "NOT Active"}
-                                            </Typography>
-                                        </Root>
-                                    </CardContent>
-                                </Collapse>
-                            </Card>
-                        </Box>
-                        <Divider />
-                        <Button
-                            variant="outlined"
-                            onClick={handleDescriptionClose}
-                            sx={{
-                                color:colors.redAccent[400],
-                                border:`1px solid ${colors.redAccent[400]}`,
-                                width:'100px',
-                                marginInline:'auto',
-                                "&:hover" : {
-                                    color:colors.redAccent[500],
-                                    border:`1px solid ${colors.redAccent[500]}`,
-                                }
-                            }}
-                        >
-                            Close
-                        </Button>
-                    </Box>
-                </Modal>
+                <EmployeeTimesheetInfo
+                    selectedRow={selectedRow}
+                    descriptionOpen={descriptionOpen}
+                    handleDescriptionClose={handleDescriptionClose} />
             )}
         </Box>
     );

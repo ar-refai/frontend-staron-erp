@@ -1,26 +1,27 @@
+import * as React from 'react';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import CloseIcon from '@mui/icons-material/Close';
+import Lottie from 'lottie-react';
+import Document from '../../../src/assets/lottie/document.json';
 import { useCallback, useMemo, useState, useEffect } from "react";
 import {
-    Box,
-    Button,
-    Chip,
-    DialogActions,
-    IconButton,
     MenuItem,
     Modal,
-    Stack,
-    TextField,
     Tooltip,
-    Avatar,
-    Card,
-    Divider,
-    Typography,
+    Chip,
+    IconButton,
+    Button,
+    Box,
+    useTheme
 } from "@mui/material";
 import { Edit, AccountCircle } from "@mui/icons-material";
-import { fakeData as data } from "./makeData"; // Make sure to import other necessary data such as usStates if needed
-import { useTheme } from "@mui/material";
-import { tokens } from "../../theme";
+import { ShowAllEmployee, CreateEmployee, UpdateEmployees } from "../../apis/Employee";
+import Create from "./Employee/Create";
+import Update from "./Employee/Update";
 import { MaterialReactTable } from "material-react-table";
-import {  ShowAllEmployee } from "../../apis/Employee";
+import { tokens } from "theme";
+import Profile from './Employee/Profile';
 
 const departments = [
     "HR",
@@ -45,7 +46,12 @@ const EmployeeList = () => {
     const [selectedRow, setSelectedRow] = useState(null);
     const [tableData, setTableData] = useState([]);
     const [validationErrors, setValidationErrors] = useState({});
-    const [loading,setLoading] = useState(true);
+    const [loading, setLoading] = useState(true);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
 
     useEffect(() => {
         const fetchData = async () => {
@@ -55,36 +61,69 @@ const EmployeeList = () => {
             } catch (error) {
                 console.error('Error fetching user data:', error);
                 // Handle error if necessary
+            } finally {
+                setLoading(false);
             }
         };
-        
+
         fetchData();
-        const interval = setInterval(() => {
-              setLoading(false);
-          }, 2000);
-          return () => clearInterval(interval);
-
-
-
     }, []);
 
+    const handleCreateNewRow = async (values) => {
+        try {
+            const response = await CreateEmployee(values);
+            setTableData([...tableData, response.data]);
+            setModalOpen(false); // Close modal after successful creation
+            setSnackbarSeverity('success');
+            setSnackbarMessage('Employee created successfully');
+            setSnackbarOpen(true);
+        } catch (error) {
+            console.error('Error creating employee:', error);
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Failed to create employee');
+            setSnackbarOpen(true);
+        }
+    };
 
-    // console.log(users?.data)
-    console.log(tableData)
+    const handleUpdateRow = async (id, values) => {
+        try {
+            const response = await UpdateEmployees(id, values);
+            
+            if (response && response.data) {
+                setTableData((prevTableData) =>
+                    prevTableData.map((row) =>
+                        row.id === response.data.id ? response.data : row
+                    )
+                );
+                setModalOpen(false); // Close modal after successful update
+                setSnackbarSeverity('success');
+                setSnackbarMessage('Employee updated successfully');
+                setSnackbarOpen(true);
+            } else {
+                throw new Error('Update failed: Empty response data');
+            }
+        } catch (error) {
+            console.error('Error updating employee:', error.message);
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Failed to update employee');
+            setSnackbarOpen(true);
+        }
+    };
 
-    const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
-
-    const handleCreateNewRow = (values) => {
-        tableData.push(values);
-        setTableData([...tableData]);
+    const handleUpdateSuccess = (updatedEmployee) => {
+        setTableData((prevTableData) =>
+            prevTableData.map((row) =>
+                row.id === updatedEmployee.id ? updatedEmployee : row
+            )
+        );
+        setSnackbarSeverity('success');
+        setSnackbarMessage('Employee updated successfully');
+        setSnackbarOpen(true);
     };
 
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
         try {
             if (!Object.keys(validationErrors).length) {
-                tableData[row.index] = values;
-                setTableData([...tableData]);
                 exitEditingMode();
             }
         } catch (error) {
@@ -123,7 +162,7 @@ const EmployeeList = () => {
                     <img
                         src={`https://erpsystem.darakoutlet.com/${cell.getValue()}`}
                         alt="Employee"
-                        style={{ width: "40px" , height:"40px", borderRadius: "50%" }}
+                        style={{ width: "40px", height: "40px", borderRadius: "50%" }}
                     />
                 ),
             },
@@ -155,13 +194,13 @@ const EmployeeList = () => {
                 }),
             },
             {
-                accessorKey: "isemploee",
+                accessorKey: "isemployee",
                 header: "Status",
                 Cell: ({ cell }) => (
                     <Chip
                         variant="outlined"
-                        label={cell.getValue() == 1 ? "active" : "inactive"}
-                        color={cell.getValue() == 1 ? "info" : "error"}
+                        label={cell.getValue() === "1" ? "Active" : "Inactive"}
+                        color={cell.getValue() === "1" ? "info" : "error"}
                         style={{ width: "80px", fontSize: "12px" }}
                     />
                 ),
@@ -169,7 +208,7 @@ const EmployeeList = () => {
                     select: true,
                     children: [1, 0].map((status) => (
                         <MenuItem key={status} value={status}>
-                            {status}
+                            {status === 1 ? "Active" : "Inactive"}
                         </MenuItem>
                     )),
                 },
@@ -187,6 +226,13 @@ const EmployeeList = () => {
     const handleCloseModal = () => {
         setModalOpen(false);
         setSelectedRow(null);
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
     };
 
     return (
@@ -213,12 +259,11 @@ const EmployeeList = () => {
                     animation: 'pulse',
                     height: 28,
                 }}
-            
-                muiLinearProgressProps= {
-                {color: 'secondary',}
-                }
-                enableColumnOrdering
+                muiLinearProgressProps={{
+                    color: 'secondary',
+                }}
                 enableEditing
+                enableColumnOrdering
                 enableStickyHeader
                 enableStickyFooter
                 muiPaginationProps={{
@@ -236,12 +281,12 @@ const EmployeeList = () => {
                         borderRadius: '20px',
                     },
                 }}
-                muiTableContainerProps={{ sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } }}
-                muiTableHeadCellProps={{ sx: { backgroundColor: colors.primary[400] } }}
-                muiTableBodyCellProps={{ sx: { backgroundColor: colors.primary[400] } }}
-                muiTableBodyProps={{ sx: { backgroundColor: colors.primary[400] } }}
+                muiTableContainerProps={{ sx: { maxHeight: '600px', backgroundColor: 'primary' } }}
+                muiTableHeadCellProps={{ sx: { backgroundColor: 'primary' } }}
+                muiTableBodyCellProps={{ sx: { backgroundColor: 'primary' } }}
+                muiTableBodyProps={{ sx: { backgroundColor: 'primary' } }}
                 muiBottomToolbarProps={({ table }) => ({
-                    sx: { backgroundColor: colors.primary[400] },
+                    sx: { backgroundColor: 'primary' },
                 })}
                 renderRowActions={({ row, table }) => (
                     <Box sx={{ display: "flex", gap: "1rem" }}>
@@ -259,7 +304,6 @@ const EmployeeList = () => {
                 )}
                 renderTopToolbarCustomActions={() => (
                     <Button
-                        
                         onClick={() => handleOpenModal('create')}
                         variant="outlined"
                         color="secondary"
@@ -269,193 +313,65 @@ const EmployeeList = () => {
                 )}
             />
 
-            <EmployeeModal
-                open={modalOpen}
-                mode={modalMode}
-                onClose={handleCloseModal}
-                // here mode is either 'create' or 'edit' 
-                onSubmit={modalMode === 'create' ? handleCreateNewRow : handleSaveRowEdits}
-                selectedRow={selectedRow}
-                columns={columns}
-            />
+            {modalOpen && (
+                <Modal open={modalOpen} onClose={handleCloseModal}>
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: 800,
+                            bgcolor: "background.paper",
+                            border: `1px solid ${colors.greenAccent[500]}`,
+                            borderRadius: "8px",
+                            boxShadow: 24,
+                            p:2,
+                            pb:4
+
+                        }}
+                    >
+                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase",pl:3,pr:3,pb:2, }}>
+                            <Lottie style={{ width: '25px', display: 'flex', }} animationData={Document} />
+                            {modalMode === 'create' && "Onboard New Employee"}
+                            {modalMode === 'edit' && `Edit Employee: ${selectedRow?.name}`}
+                            {modalMode === 'view' && `Profile of :  ${selectedRow?.name}`}
+                            <IconButton onClick={handleCloseModal} sx={{ 
+                                marginLeft: 'auto',
+                                "&:hover":{color:colors.redAccent[400] }}}>
+                                <CloseIcon />
+                            </IconButton>
+                        </Box>
+                        {modalMode === 'create' && <Create onSubmit={handleCreateNewRow} onClose={handleCloseModal} />}
+                        {modalMode === 'edit' && <Update onSubmit={handleUpdateRow} onClose={handleCloseModal} selectedRow={selectedRow} onUpdateSuccess={handleUpdateSuccess} />}
+                        {modalMode === 'view' && <Profile employee={selectedRow} />}
+                    </Box>
+                </Modal>
+            )}
+
+            {/* <CustomizedSnackbars
+                open={snackbarOpen}
+                handleClose={handleSnackbarClose}
+                severity={snackbarSeverity}
+                message={snackbarMessage}
+            /> */}
         </>
     );
 };
 
-const EmployeeModal = ({ open, mode, onClose, onSubmit, selectedRow, columns }) => {
-    const theme = useTheme();
-    const colors = tokens(theme.palette.mode);
-    const [values, setValues] = useState(() =>
-        columns.reduce((acc, column) => {
-            acc[column.accessorKey ?? ""] = selectedRow ? selectedRow[column.accessorKey] : "";
-            return acc;
-        }, {})
-    );
-
-    useEffect(() => {
-        if (selectedRow) {
-            const newValues = columns.reduce((acc, column) => {
-                acc[column.accessorKey ?? ""] = selectedRow[column.accessorKey] ?? "";
-                return acc;
-            }, {});
-            setValues(newValues);
-        }
-    }, [selectedRow, columns]);
-
-    const handleInputChange = (e) => {
-        setValues({ ...values, [e.target.name]: e.target.value });
-    };
-
-    const handleFileChange = (e) => {
-        const file = e.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setValues({ ...values, profileimage: reader.result });
-            };
-            reader.readAsDataURL(file);
-        }
-    };
-
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        onSubmit(values);
-        onClose();
-    };
-
-    return (
-        <Modal open={open} onClose={onClose}>
-            <Box
-                sx={{
-                    position: 'absolute',
-                    top: '50%',
-                    left: '50%',
-                    transform: 'translate(-50%, -50%)',
-                    width: 900,
-                    bgcolor: colors.primary[700],
-                    color: colors.primary[200],
-                    border: `3px solid ${colors.greenAccent[300]}`,
-                    boxShadow: 24,
-                    p: 4,
-                    maxHeight: '100%',
-                    overflow: 'scroll',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '1rem',
-                    borderRadius: '10px'
-                }}
-            >
-                <Typography variant="h6" sx={{
-                    textTransform: "uppercase",
-                    fontWeight: 'bold',
-                }} component="h3">
-                    {mode === 'edit' ? 'Edit Employee' : mode === 'create' ? 'Onboard New Employee' : 'Employee Profile'}
-                </Typography>
-                <Divider />
-                <Box>
-                    <Card sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                        p: 2,
-                        backgroundColor: colors.primary[800]
-                    }}>
-                        <Avatar
-                            alt="Employee Photo"
-                            src={`https://erpsystem.darakoutlet.com${values.profileimage}`}
-                            sx={{ width: 120, height: 120, mb: 2 }}
-                        />
-                        {mode === 'view' ? (
-                            <>
-                                <Typography variant="h5" sx={{
-                                    textTransform: "uppercase",
-                                    fontWeight: 'bold',
-                                    textAlign: 'center',
-                                }}>
-                                    {values.name}
-                                </Typography>
-                                <Box sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    gap: '0.5rem',
-                                    mt: 2,
-                                    mb: 2
-                                }}>
-                                    <Typography sx={{ opacity: '75%' }}>
-                                        {values.department}
-                                    </Typography>
-                                    <Typography sx={{ opacity: '75%' }}>
-                                        {values.job_role}
-                                    </Typography>
-                                    <Typography sx={{ opacity: '75%' }}>
-                                        {values.isemploee == 1 ? 'Active' : 'Inactive'}
-                                    </Typography>
-                                </Box>
-                                <Box>
-                                    Here add all the data you need!
-                                </Box>
-                            </>
-                        ) : (
-                            <form onSubmit={handleSubmit}>
-                                <Stack sx={{ width: '100%', gap: '1.5rem' }}>
-                                    {columns.map((column) => (
-                                        <TextField
-                                            key={column.accessorKey}
-                                            label={column.header}
-                                            name={column.accessorKey}
-                                            value={values[column.accessorKey]}
-                                            onChange={handleInputChange}
-                                            select={column.muiTableBodyCellEditTextFieldProps?.select}
-                                            children={column.muiTableBodyCellEditTextFieldProps?.children}
-                                        />
-                                    ))}
-                                    <TextField
-                                        type="file"
-                                        label="Upload Image"
-                                        InputLabelProps={{ shrink: true }}
-                                        inputProps={{ accept: "image/*" }}
-                                        onChange={handleFileChange}
-                                    />
-                                </Stack>
-                                <DialogActions sx={{paddingTop:'20px',  display: 'flex', justifyContent: 'center', alignItems:"center" }}>
-                                    <Button
-                                        variant="outlined"
-                                        sx={{
-                                            color: colors.greenAccent[400],
-                                            borderColor: colors.greenAccent[400],
-                                            '&:hover': {
-                                                color: colors.greenAccent[600],
-                                                borderColor: colors.greenAccent[600],
-                                            }
-                                        }}
-                                        type="submit"
-                                    >
-                                        {mode === 'edit' ? 'Save Changes' : 'Onboard Employee'}
-                                    </Button>
-                                    <Button
-                                        variant="outlined"
-                                        onClick={onClose}
-                                        sx={{
-                                            color: colors.redAccent[400],
-                                            borderColor: colors.redAccent[400],
-                                            "&:hover": {
-                                                color: colors.redAccent[600],
-                                                borderColor: colors.redAccent[600],
-                                            },
-                                        }}
-                                    >
-                                        Close
-                                    </Button>
-                                </DialogActions>
-                            </form>
-                        )}
-                    </Card>
-                </Box>
-
-            </Box>
-        </Modal>
-    );
-};
+// const CustomizedSnackbars = ({ open, handleClose, severity, message }) => {
+//     return (
+//         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+//             <Alert
+//                 onClose={handleClose}
+//                 severity={severity}
+//                 variant="filled"
+//                 sx={{ width: '100%' }}
+//             >
+//                 {message}
+//             </Alert>
+//         </Snackbar>
+//     );
+// };
 
 export default EmployeeList;

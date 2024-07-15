@@ -17,10 +17,9 @@ import { tokens } from '../../theme';
 import Lottie from 'lottie-react';
 import Document from "../../assets/lottie/document.json"
 
-
-const ProductivityTracking = () => {
+const WeeklyFramework = () => {
   const [data, setData] = useState([]);
-  const [isPlanModalOpen, setIsPlanModalOpen] = useState(false);
+  const [isActualModalOpen, setIsActualModalOpen] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
   const [file, setFile] = useState(null);
   const theme = useTheme();
@@ -55,30 +54,30 @@ const ProductivityTracking = () => {
     setData(fetchData());
   }, []);
 
-  const handleEditPlan = (row) => {
-    // Implement edit plan functionality here
-    console.log("Edit plan for row:", row);
+  const handleEditActual = (row) => {
+    // Implement edit actual functionality here
+    console.log("Edit Actual for row:", row);
   };
 
-  const handleOpenPlanModal = (row) => {
+  const handleOpenActualModal = (row) => {
     setSelectedRow(row);
-    setIsPlanModalOpen(true);
+    setIsActualModalOpen(true);
   };
 
-  const handleClosePlanModal = () => {
+  const handleCloseActualModal = () => {
     setSelectedRow(null);
-    setIsPlanModalOpen(false);
+    setIsActualModalOpen(false);
   };
 
   const handleFileChange = (event) => {
     setFile(event.target.files[0]);
   };
 
-  const handleSubmitPlan = () => {
-    // Implement submit plan functionality here
-    console.log("Submit plan for row:", selectedRow);
+  const handleSubmitActual = () => {
+    // Implement submit actual functionality here
+    console.log("Submit actual for row:", selectedRow);
     console.log("File:", file);
-    handleClosePlanModal();
+    handleCloseActualModal();
   };
 
   const columns = useMemo(
@@ -105,14 +104,14 @@ const ProductivityTracking = () => {
       },
       {
         accessorKey: "Action",
-        header: "Action",
+        header: "Action", 
         Cell: ({ row }) => (
           <Button
             variant="outlined"
             color="secondary"
-            onClick={() => handleOpenPlanModal(row)}
+            onClick={() => handleOpenActualModal(row)}
           >
-            Edit Plan
+            edit actual
           </Button>
         ),
       },
@@ -127,15 +126,11 @@ const ProductivityTracking = () => {
         variant="outlined"
         color="secondary"
         startIcon={<CloudUploadIcon />}
-        onClick={() => setIsPlanModalOpen(true)}
+        onClick={() => setIsActualModalOpen(true)}
         sx={{ marginBottom: "20px" }}
       >
-        Upload Plan
+        Upload Actual
       </Button>
-
-      <Typography variant="h5" gutterBottom>
-        Productivity Tracking
-      </Typography>
       <MaterialReactTable
         columns={columns}
         data={data}
@@ -195,21 +190,18 @@ const ProductivityTracking = () => {
 
       {/* Plan Modal */}
       <Dialog
-        open={isPlanModalOpen}
-        onClose={handleClosePlanModal}
+        open={isActualModalOpen}
+        onClose={handleCloseActualModal}
         fullWidth
         maxWidth="sm"
       >
-        <Box sx={{
-          borderRadius:"5px ",
-          backgroundColor: colors.grey[800]
-        }}>
-
-        <DialogTitle>
+        <DialogTitle> 
+          
 <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
-  <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
-          Upload Plan
-</Box>
+                <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+
+          Edit Actual 
+                </Box>
 
 
         </DialogTitle>
@@ -222,30 +214,29 @@ const ProductivityTracking = () => {
             fullWidth
             margin="normal"
             disabled
-            />
+          />
           <Button
             component="label"
             variant="outlined"
             color="secondary"
             fullWidth
-            >
-            Upload Plan (Optional)
+          >
+            Upload Actual File (Optional)
             <input type="file" hidden onChange={handleFileChange} />
           </Button>
         </DialogContent>
         <Divider />
         <DialogActions>
-          <Button onClick={handleClosePlanModal} color="error" variant="outlined">
+          <Button onClick={handleCloseActualModal} color="error" variant="outlined">
             Close
           </Button>
-          <Button onClick={handleSubmitPlan} color="secondary" variant="outlined">
+          <Button onClick={handleSubmitActual} color="secondary" variant="outlined">
             Submit
           </Button>
         </DialogActions>
-            </Box>
       </Dialog>
     </Box>
   );
 };
 
-export default ProductivityTracking;
+export default WeeklyFramework;

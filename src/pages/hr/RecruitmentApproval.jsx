@@ -7,6 +7,8 @@ import IMAGE from "../../assets/user.jpg";
 import { tokens } from '../../theme';
 import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import styled from '@emotion/styled';
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json"
 
 // FileUploadModal Component
 const FileUploadModal = ({ open, onClose, onUpload }) => {
@@ -57,12 +59,25 @@ const FileUploadModal = ({ open, onClose, onUpload }) => {
 
     return (
         <Dialog
-
             open={open}
             onClose={onClose}
-
+            maxWidth="xl"
         >
-            <DialogTitle>Upload Files</DialogTitle>
+            <Box
+            sx={{
+                bgcolor:colors.grey[800],
+                borderRadius:`5px`,
+                
+            }}
+            >
+
+            <DialogTitle>          
+            <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+            <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+                Upload Files
+            </Box>
+
+            </DialogTitle>
             <Divider />
             <DialogContent
                 sx={{
@@ -74,15 +89,13 @@ const FileUploadModal = ({ open, onClose, onUpload }) => {
                     <Button
                         component="label"
                         role={undefined}
-                        variant="contained"
+                        variant="outlined"
+                        color='secondary'
                         tabIndex={-1}
                         fullWidth
                         startIcon={<CloudUploadIcon />}
-                        sx={{
-                            backgroundColor: colors.blueAccent[500],
-
-                        }}
-                    >
+                        
+                        >
                         Upload The CV (PDF file)
                         <VisuallyHiddenInput
                             type="file"
@@ -97,13 +110,13 @@ const FileUploadModal = ({ open, onClose, onUpload }) => {
                     <Button
                         component="label"
                         role={undefined}
-                        variant="contained"
+                        variant="outlined"
+                        color='secondary'
                         tabIndex={-1}
                         fullWidth
                         startIcon={<CloudUploadIcon />}
                         sx={{
-                            backgroundColor: colors.blueAccent[500],
-
+                            color:colors.greenAccent[500]
                         }}
                     >
                         Upload The Time Sheet (Excel file)
@@ -121,9 +134,10 @@ const FileUploadModal = ({ open, onClose, onUpload }) => {
             <Divider />
 
             <DialogActions>
-                <Button variant='outlined' color='secondary' onClick={onClose}>Cancel</Button>
+                <Button variant='outlined' color='error' onClick={onClose}>Cancel</Button>
                 <Button variant='outlined' color='secondary' onClick={handleUpload}>Upload</Button>
             </DialogActions>
+            </Box>
         </Dialog>
     );
 };
@@ -327,7 +341,18 @@ const RequestsApproval = () => {
                 onClose={handleCloseDescriptionModal}
                 aria-labelledby="description-dialog-title"
             >
-                <DialogTitle id="description-dialog-title">Request Description:</DialogTitle>
+                <Box
+                sx={{
+                    bgcolor:colors.grey[800]
+                }}
+                >
+
+                <DialogTitle id="description-dialog-title">
+                    <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+                    <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+                    Request Description
+                    </Box>
+                </DialogTitle>
                 <Divider />
                 <DialogContent sx={{ padding: "30px 80px" }}>
                     <DialogContentText sx={{ textAlign: 'start' }}>{selectedDescription}</DialogContentText>
@@ -337,16 +362,12 @@ const RequestsApproval = () => {
                     <Button 
                                 onClick={handleCloseDescriptionModal} 
                                 variant='outlined'
-                                sx={{
-                                color:colors.redAccent[300],
-                                borderColor:colors.redAccent[300],
-                                "&:hover": {
-                                    borderColor:colors.redAccent[300]
-                                }
-                            }}>
+                                color='error'
+                            >
                         Close
                     </Button>
                 </DialogActions>
+                </Box>
             </Dialog>
 
             <FileUploadModal
@@ -426,18 +447,18 @@ const RequestsApproval = () => {
                             <Box>
                                 <Box sx={{ display: 'flex', gap: '0.5rem' }}>
                                     <Button
-                                        color="success"
+                                        variant="outlined"
+                                        color="secondary"
                                         disabled={Object.keys(table.getState().rowSelection).length === 0}
                                         onClick={() => handleApprove(table)}
-                                        variant="contained"
                                     >
                                         Approve
                                     </Button>
                                     <Button
+                                        variant="outlined"
                                         color="error"
                                         disabled={Object.keys(table.getState().rowSelection).length === 0}
                                         onClick={() => handleReject(table)}
-                                        variant="contained"
                                     >
                                         Reject
                                     </Button>

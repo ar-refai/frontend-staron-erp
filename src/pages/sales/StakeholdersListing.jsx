@@ -10,6 +10,7 @@
     DialogActions,
     DialogContent,
     DialogTitle,
+    Divider,
     IconButton,
     Tooltip,
     useTheme,
@@ -24,6 +25,8 @@
   import EditIcon from '@mui/icons-material/Edit';
   import DeleteIcon from '@mui/icons-material/Delete';
   import { tokens } from 'theme';
+  import Lottie from 'lottie-react';
+  import Document from "../../assets/lottie/document.json"
 
   // Sample stakeholder data
   const fakeData = [
@@ -342,26 +345,52 @@
       onEditingRowCancel: () => setValidationErrors({}),
       onEditingRowSave: handleSaveUser,
       renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
-        <>
-          <DialogTitle variant="h3">Create New Stakeholder</DialogTitle>
+        <Box
+        sx={{
+          bgcolor: colors.grey[800],
+          borderRadius: "5px",
+        }}
+        >
+          <DialogTitle variant="h6">
+<Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+  <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+            Create New Stakeholder
+</Box>
+          
+          </DialogTitle>
+          <Divider />
           <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
             {internalEditComponents}
           </DialogContent>
+          <Divider />
           <DialogActions>
-            <MRT_EditActionButtons variant="text" table={table} row={row} />
+            <MRT_EditActionButtons table={table} row={row} />
           </DialogActions>
-        </>
+        </Box>
       ),
       renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
-        <>
-          <DialogTitle variant="h3">Edit Stakeholder</DialogTitle>
+        <Box
+        sx={{
+          background:`${colors.grey[800]} !important`,
+          borderRadius:'5px',
+        }}
+        >
+          <DialogTitle variant="h6">
+            <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+              <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+                        Edit Stakeholder
+            </Box>
+          
+          </DialogTitle>
+          <Divider/>
           <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
             {internalEditComponents}
           </DialogContent>
+          <Divider/>
           <DialogActions>
-            <MRT_EditActionButtons variant="text" table={table} row={row} />
+            <MRT_EditActionButtons table={table} row={row} />
           </DialogActions>
-        </>
+        </Box>
       ),
       renderRowActions: ({ row, table }) => (
         <Box sx={{ display: 'flex', gap: '1rem' }}>

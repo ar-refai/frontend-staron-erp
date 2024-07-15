@@ -37,7 +37,7 @@ export default function Tech() {
             }}>
                 <Typography variant='h2' sx={{ display: 'flex', alignItems: 'center' }}>
                     <TagIcon sx={{ color: colors.redAccent[500], fontSize: '40px' }} />
-                    <Typography variant='h2' sx={{
+                    <Typography variant='h3' sx={{
                         color: colors.primary[200],
                         marginLeft: '10px',
                         padding: '10px 12px'

@@ -22,6 +22,9 @@ import {
     Typography,
     useTheme,
 } from '@mui/material';
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json"
+
 import EditIcon from '@mui/icons-material/Edit';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import BallotIcon from '@mui/icons-material/Ballot';
@@ -216,22 +219,28 @@ const FunnelWorkFlow = () => {
             </>
         ),
         renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
-            <>
-                <DialogTitle variant="h3">Edit Dialog:</DialogTitle>
+            <Box
+            sx={{
+                bgcolor:colors.grey[800],
+                borderRadius:'5px',
+            }}>
+                <DialogTitle variant="h3">
+                <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+                <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+                                    Edit Dialog
+                </Box>
+                </DialogTitle>
                 <Divider/>
                 <DialogContent
                 sx={{ display: 'flex', flexDirection: 'column', gap: '2.5rem' }}
-                sx={{
-                    
-                }}
                 >
                 {internalEditComponents} {/* or render custom edit components here */}
                 </DialogContent>
                 <Divider/>
                 <DialogActions>
-                    <MRT_EditActionButtons variant="outlined" color="secondary" table={table} row={row} />
+                    <MRT_EditActionButtons   table={table} row={row} />
                 </DialogActions>
-            </>
+            </Box>
             ),
         
             renderRowActions: ({ row, table }) => (
@@ -279,7 +288,20 @@ const FunnelWorkFlow = () => {
                 width: '700px',
                 margin: 'auto',
             }} open={isAddNewLeadOpen} onClose={() => setIsAddNewLeadOpen(false)}>
-                <DialogTitle>Add New Lead</DialogTitle>
+                <Box
+                sx={{
+                    bgcolor: colors.grey[800],
+                    borderRadius: '5px',
+                }}
+                >
+                <DialogTitle>
+                
+                <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+                <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+                                    Add New Lead
+                </Box>
+
+                </DialogTitle>
                 <Divider/>
                 <DialogContent
                 sx={{
@@ -324,14 +346,28 @@ const FunnelWorkFlow = () => {
                         margin="normal"
                     />
                 </DialogContent>
+                <Divider/>
                 <DialogActions>
-                    <Button variant="outlined" color="secondary" onClick={() => setIsAddNewLeadOpen(false)}>Cancel</Button>
+                    <Button variant="outlined" color="error" onClick={() => setIsAddNewLeadOpen(false)}>Cancel</Button>
                     <Button variant="outlined" color="secondary" onClick={handleCreateNewLead}>Submit</Button>
                 </DialogActions>
+                </Box>
             </Dialog>
 
             <Dialog  open={isDescriptionModalOpen} onClose={handleCloseDescriptionModal}>
-                <DialogTitle>Description:</DialogTitle>
+                <Box sx={{
+                    bgcolor: colors.grey[800],
+                    borderRadius: '5px',
+                }}>
+
+                <DialogTitle>
+              
+<Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+  <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+                    Description
+</Box>
+
+                </DialogTitle>
                 <Divider/>
                 <DialogContent 
                 sx={
@@ -348,15 +384,29 @@ const FunnelWorkFlow = () => {
                 </DialogContent>
                 <Divider/>
                 <DialogActions>
-                    <Button variant='outlined' color="secondary" onClick={handleCloseDescriptionModal}>Close</Button>
+                    <Button variant='outlined' color="error" onClick={handleCloseDescriptionModal}>Close</Button>
                 </DialogActions>
+                </Box>
             </Dialog>
 
             <Dialog sx={{
                 width: '700px',
                 margin: 'auto',
             }} open={isFileUploadModalOpen} onClose={() => setIsFileUploadModalOpen(false)}>
-                <DialogTitle>Request Quantity Survey:</DialogTitle>
+                <Box
+                sx={{
+                    bgcolor:colors.grey[800],
+                    borderRadius: '5px',
+                }}
+                >
+                <DialogTitle>
+<Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+  <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+                    Request Quantity Survey:
+</Box>
+
+                    
+                </DialogTitle>
                 <Divider/>
                 <DialogContent 
                 sx={{
@@ -385,10 +435,11 @@ const FunnelWorkFlow = () => {
                         </Typography>
                     </label>
                 </DialogContent>
-                <Divider/>
                 <DialogActions>
-                    <Button variant='outlined' color="secondary" onClick={() => setIsFileUploadModalOpen(false)}>Close</Button>
+                <Divider/>  
+                    <Button variant='outlined' color="error" onClick={() => setIsFileUploadModalOpen(false)}>Close</Button>
                 </DialogActions>
+                </Box>
             </Dialog>
         </Box>
     );

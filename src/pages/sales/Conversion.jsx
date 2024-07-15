@@ -18,6 +18,8 @@ import {
     Divider
 } from '@mui/material';
 import { tokens } from 'theme';
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json"
 import {
     QueryClient,
     QueryClientProvider,
@@ -93,8 +95,9 @@ const Conversion = () => {
                     <Chip
                         label={cell.getValue()}
                         color={cell.getValue() === 'sold' ? 'success' : 'error'}
-                        sx={{width:'80px',
-                          fontSize:'15px'
+                        sx={{
+                            width: '80px',
+                            fontSize: '15px'
                         }}
                         variant="outlined"
                     />
@@ -135,43 +138,43 @@ const Conversion = () => {
             : undefined,
         muiSkeletonProps: {
             animation: 'wave',
-          },
-          muiLinearProgressProps: {
+        },
+        muiLinearProgressProps: {
             color: 'secondary',
-          },
-          muiCircularProgressProps: {
+        },
+        muiCircularProgressProps: {
             color: 'secondary',
-          },
-          initialState: {
+        },
+        initialState: {
             showColumnFilters: true,
             showGlobalFilter: true,
-          },
-          paginationDisplayMode: 'pages',
-          positionToolbarAlertBanner: 'bottom',
-          muiSearchTextFieldProps: {
+        },
+        paginationDisplayMode: 'pages',
+        positionToolbarAlertBanner: 'bottom',
+        muiSearchTextFieldProps: {
             size: 'small',
             variant: 'outlined',
-          },
-          muiPaginationProps: {
+        },
+        muiPaginationProps: {
             color: 'secondary',
             rowsPerPageOptions: [10, 20, 30],
             shape: 'rounded',
             variant: 'outlined',
-          },
-          muiBottomToolbarProps: ({ table }) => ({
+        },
+        muiBottomToolbarProps: ({ table }) => ({
             sx: { backgroundColor: colors.primary[400] }
-          }),
-          muiTablePaperProps: {
+        }),
+        muiTablePaperProps: {
             elevation: 2, //change the mui box shadow
             //customize paper styles
             sx: {
-              borderRadius: '20px',
+                borderRadius: '20px',
             }
-          },
-          muiTableContainerProps: { sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } },
-          muiTableHeadCellProps: { sx: { backgroundColor: colors.primary[400] } },
-          muiTableBodyCellProps: { sx: { backgroundColor: colors.primary[400] } },
-          muiTableBodyProps: { sx: { backgroundColor: colors.primary[400] } },
+        },
+        muiTableContainerProps: { sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } },
+        muiTableHeadCellProps: { sx: { backgroundColor: colors.primary[400] } },
+        muiTableBodyCellProps: { sx: { backgroundColor: colors.primary[400] } },
+        muiTableBodyProps: { sx: { backgroundColor: colors.primary[400] } },
         state: {
             isLoading: isLoadingUsers,
             showAlertBanner: isLoadingUsersError,
@@ -182,8 +185,21 @@ const Conversion = () => {
     return (
         <>
             <MaterialReactTable table={table} />
+            
             <Dialog open={openDialog} onClose={handleCloseDialog} maxWidth="sm" fullWidth>
-                <DialogTitle>Project Details</DialogTitle>
+                <Box
+                sx={{
+                    backgroundColor: colors.grey[800],
+                    borderRadius: '5px',
+                }}
+                >
+
+                <DialogTitle>
+                    <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+                    <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+                                        Project Details
+                    </Box>
+                </DialogTitle>
                 <Divider />
                 <DialogContent>
                     <Typography variant="body1">
@@ -194,12 +210,13 @@ const Conversion = () => {
                 <DialogActions>
                     <Button
                         variant="outlined"
-                        color="secondary"
+                        color="error"
                         onClick={handleCloseDialog}
                     >
                         Close
                     </Button>
                 </DialogActions>
+                </Box>
             </Dialog>
         </>
     );

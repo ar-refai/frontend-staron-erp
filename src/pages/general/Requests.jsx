@@ -5,8 +5,9 @@ import { tokens } from '../../theme';
 import TagIcon from '@mui/icons-material/Tag';
 import { MaterialReactTable, MRT_GlobalFilterTextField, MRT_ToggleFiltersButton } from 'material-react-table';
 import { makeData } from './makeData';
-import styled from '@emotion/styled';
 import { useNavigate } from 'react-router-dom';
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json"
 
 // Generate mock data
 const initialData = makeData();
@@ -117,7 +118,6 @@ const Requests = () => {
                 fontSize: '13px',
                 fontWeight: 'semiBold',
                 letterSpacing: "0.5px",
-                color: colors.grey[900]
               }}
             />
           );
@@ -249,8 +249,8 @@ const Requests = () => {
             left: '50%',
             transform: 'translate(-50%, -50%)',
             width: 900,
-            bgcolor: colors.primary[500],
-            border: `2px solid ${colors.greenAccent[400]}`,
+            bgcolor: colors.grey[800],
+            border: `1px solid ${colors.greenAccent[400]}`,
             borderRadius: '10px',
             boxShadow: 24,
             p: 4,
@@ -259,9 +259,10 @@ const Requests = () => {
             gap: '1rem',
           }}
         >
-          <Typography variant="h6" component="h2">
-            Add New Request
-          </Typography>
+          <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+              <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+              Add New Request
+            </Box>
           <Divider />
           <FormControl fullWidth variant="filled">
             <InputLabel>Request Type</InputLabel>

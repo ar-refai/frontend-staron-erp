@@ -419,7 +419,7 @@ const Attendance = () => {
                         gap: 2,
                     }}
                 >
-                    <Typography variant="h6" component="h2">
+                    <Typography variant="h6" component="h3">
                         Upload Attendance
                     </Typography>
                     <TextField label="Attendance Data" multiline rows={4} />

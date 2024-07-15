@@ -46,10 +46,6 @@ const WarehouseRequests = () => {
       return [
         { id: 1, stockCode: "SC001", type: "Type A", quantity: 10, source: "Source A", cost: 100, note: "Note A", status: "pending", date: "2024-07-05" },
         { id: 2, stockCode: "SC002", type: "Type B", quantity: 20, source: "Source B", cost: 200, note: "Note B", status: "in progress", date: "2024-07-06" },
-        { id: 3, stockCode: "SC003", type: "Type C", quantity: 20, source: "Source C", cost: 200, note: "Note C", status: "pending", date: "2024-07-06" },
-        { id: 4, stockCode: "SC004", type: "Type D", quantity: 20, source: "Source D", cost: 200, note: "Note D", status: "in progress", date: "2024-07-06" },
-        { id: 5, stockCode: "SC005", type: "Type E", quantity: 20, source: "Source E", cost: 200, note: "Note E", status: "in progress", date: "2024-07-06" },
-        
         // More data...
       ];
     };
@@ -187,9 +183,10 @@ const WarehouseRequests = () => {
         <DialogTitle>
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
           <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
-          <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
-                      Warehouse Request
-          </Box>
+<Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+            Warehouse Request
+</Box>
+            
           </Box>
         </DialogTitle>
         <Divider />

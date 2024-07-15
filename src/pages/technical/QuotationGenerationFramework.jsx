@@ -361,7 +361,7 @@
                   <TransitionGroup>
                     {app.items.map((item, itemIndex) => (
                       <Collapse key={itemIndex}>
-                        <Box display="flex" flexDirection="column" mt={2} sx={{background:colors.grey[900] , padding:'10px', borderRadius:'10px', boxShadow:"2px 3px 6px rgba(0,0,0,0.6)"}}>
+                        <Box display="flex" flexDirection="column" mt={2} sx={{background:colors.grey[800] , padding:'10px', borderRadius:'10px', boxShadow:"2px 3px 6px rgba(0,0,0,0.6)"}}>
                           <Typography variant='h5' mt={2} sx={{textTransform:"uppercase"}}>
                           <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" , gap:"10px" , textTransform:"uppercase"}}>
 

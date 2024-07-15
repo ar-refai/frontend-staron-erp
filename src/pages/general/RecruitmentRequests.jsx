@@ -10,6 +10,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json"
 
 // Generate mock data
 const makeRecruitmentData = () => [
@@ -305,8 +307,8 @@ const RecruitmentRequests = () => {
                               left: '50%',
                               transform: 'translate(-50%, -50%)',
                               width: 900,
-                              bgcolor: colors.primary[700],
-                              border: `2px solid ${colors.greenAccent[500]}`,
+                              background: colors.grey[800],
+                              border: `1px solid ${colors.greenAccent[500]}`,
                               boxShadow: 24,
                               p: 4,
                               display: 'flex',
@@ -316,7 +318,11 @@ const RecruitmentRequests = () => {
                          }}
                     >
                          <Typography variant="h6" component="h2">
+                        
+                              <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+                              <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
                               Add New Recruitment Request
+                              </Box>
                          </Typography>
                          <Divider />
 
@@ -383,9 +389,9 @@ const RecruitmentRequests = () => {
                               left: '50%',
                               transform: 'translate(-50%, -50%)',
                               width: 900,
-                              bgcolor: colors.primary[500],
-                              color: colors.primary[200],
-                              border: `3px solid ${colors.greenAccent[400]}`,
+                              background: colors.grey[900],
+                              color: colors.grey[100],
+                              border: `1px solid ${colors.greenAccent[400]}`,
                               boxShadow: 24,
                               p: 4,
                               display: 'flex',
@@ -398,7 +404,11 @@ const RecruitmentRequests = () => {
                               textTransform: "uppercase",
                               fontWeight: 'bold',
                          }} component="h2">
+
+                         <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+                         <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
                               Request Description
+                         </Box>
                          </Typography>
                          <Divider />
                          <Typography
@@ -410,15 +420,8 @@ const RecruitmentRequests = () => {
                          <Divider />
                          <Button
                               variant="outlined"
-                              color="primary"
+                              color="secondary"
                               onClick={handleDescriptionClose}
-                              sx={{
-                                   alignSelf: 'center',
-                                   backgroundColor: colors.greenAccent[600],
-                                   "&:hover": {
-                                        backgroundColor: colors.greenAccent[700],
-                                   },
-                              }}
                          >
                               Close
                          </Button>

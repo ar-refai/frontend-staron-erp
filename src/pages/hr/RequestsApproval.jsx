@@ -23,6 +23,11 @@ import {
 } from 'material-react-table';
 import { AccountCircle, Send } from '@mui/icons-material';
 import { data as initialData } from './makeDataApprovals';
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json"
+
+
+
 
 const RequestsApproval = () => {
     const theme = useTheme();
@@ -173,11 +178,26 @@ const RequestsApproval = () => {
             </Snackbar>
 
             <Dialog
+                maxWidth="lg"
                 open={showDescriptionModal}
                 onClose={handleCloseDescriptionModal}
                 aria-labelledby="description-dialog-title"
             >
-                <DialogTitle id="description-dialog-title">Request Description:</DialogTitle>
+                <Box
+                sx={{
+                    bgColor: `${colors.grey[800]}`,
+                    boxSizing:'border-box',
+                    borderRadius:'8px'
+                }}
+                >
+
+                <DialogTitle id="description-dialog-title">
+            
+                <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+                <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
+                    Request Description
+                </Box>
+                </DialogTitle>
                 <Divider />
                 <DialogContent sx={{ padding: "30px 80px", width:'600px' }}>
                     <DialogContentText sx={{ textAlign: 'center' }}>
@@ -200,6 +220,7 @@ const RequestsApproval = () => {
                         Close
                     </Button>
                 </DialogActions>
+                </Box>
             </Dialog>
 
             <Box sx={{ padding: '20px' }}>

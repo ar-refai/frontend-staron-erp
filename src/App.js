@@ -11,37 +11,57 @@ import Technical from './pages/technical/Technical';
 import Operation from './pages/operation/Operation';
 import Control from "./pages/control/Control";
 import SupplyChain from './pages/supply_chain/SupplyChain';
+// General
 import Dashboard from "./pages/dashboard/Dashboard";
-import AllEmployee from "./pages/hr/EmplyeesList";
 import Attendance from "./pages/general/Attendance";
 import Requests from "./pages/general/Requests";
 import RecruitmentRequests from "./pages/general/RecruitmentRequests";
 import TargetAndPerformence from "./pages/general/TargetAndPerformence";
+import Login from "pages/login/login";
+// Human Resources
 import AttendanceTimesheet from "./pages/hr/Timesheet";
+import AllEmployee from "./pages/hr/EmplyeesList";
 import WarningLog from "./pages/hr/WarningLog";
 import LeaveBalance from "./pages/hr/LeaveBalance";
 import IncentiveRemuneration from "./pages/hr/IncentiveRemuneration";
 import Payroll from "./pages/hr/Payroll";
 import RecruitmentApproval from "./pages/hr/RecruitmentApproval";
 import RequestsApproval from "./pages/hr/RequestsApproval";
-import Login from "pages/login/login";
+// Sales
 import FunnelWorkFlow from "pages/sales/FunnelWorkFlow";
 import StakeholdersListing from "pages/sales/StakeholdersListing";
 import Analytics from "pages/sales/Analytics";
 import ActivityLogs from "pages/sales/ActivityLogs";
 import Conversion from "pages/sales/Conversion";
+// Technical
 import QuotationGenerationFramework from "pages/technical/QuotationGenerationFramework";
+// Control
 import MonthlyFramework from 'pages/control/MonthlyFramework';
 import ProductivityTracking from 'pages/control/ProductivityTracking';
 import ProcurementRequests from 'pages/control/ProcurementRequests';
 import WarehouseRequests from 'pages/control/WarehouseRequests';
+import PackageDevelopment from 'pages/control/PackageDevelopment';
+// SupplyChain
 import SupplyProcurementRequests from 'pages/supply_chain/ProcurementRequests';
 import SupplyWarehouseRequests from 'pages/supply_chain/WarehouseRequests';
-import PackageDevelopment from 'pages/control/PackageDevelopment';
 import SupplyersListing from 'pages/supply_chain/SupplyersListing';
 import StockLog from 'pages/supply_chain/StockLog';
 import TreasuryRequests from 'pages/supply_chain/TreasuryRequests';
+// Operation
+import OperationProcurementRequests from 'pages/operation/ProcurementRequests';
+import OperationMonthlyFramework from 'pages/operation/MonthlyFramework';
+import OperationWeeklyFramework from 'pages/operation/WeeklyFramework';
+import OperationPackageDevelopment from 'pages/operation/PackageDevelopment';
+import OperationWarehouseRequests from 'pages/operation/WarehouseRequests';
+// Finance
+import FinanceProcurementRequests from 'pages/finance/ProcurementRequests';
+import FinanceStockListing from "pages/finance/StockListing";
+import FinanceStockLog from 'pages/finance/StockLog';
+import FinanceConversionValidation from "pages/finance/ConversionValidation.jsx";
+import FinanceWarehouseRequests from "pages/finance/WarehouseRequests";
+import FinanceFinancialReports from "pages/finance/FinancialReports"; 
 
+// Main Function
 function App() {
   const [theme, colorMode] = useMode();
   const [open, setOpen] = useState(false);
@@ -160,11 +180,20 @@ function App() {
                   {/* Finance Links */}
                   <Route path="/finance" element={<Finance />} >
                     {/* Add Finance-related routes here */}
+                    <Route path="finance-procurement-requests" element={<FinanceProcurementRequests />} />
+                    <Route path="finance-financial-reports" element={<FinanceFinancialReports />} />
+                    <Route path="finance-conversion-validation" element={<FinanceConversionValidation/>}/>
+npm 
                   </Route>
 
                   {/* Operation Links */}
                   <Route path="/operation" element={<Operation />} >
                   {/* Add operation-related routes here */}
+                  <Route path="operation-monthly-framework" element={<OperationMonthlyFramework />} />
+                  <Route path="operation-weekly-framework" element={<OperationWeeklyFramework />} />
+                  <Route path="operation-procurement-requests" element={<OperationProcurementRequests />} />
+                  <Route path="operation-package-development" element={<OperationPackageDevelopment />} />
+                  <Route path="operation-warehouse-requests" element={<OperationWarehouseRequests />} />
 
                   </Route>
 

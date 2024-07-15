@@ -19,9 +19,8 @@ import {
 import { useTheme } from '@mui/system';
 import { tokens } from '../../theme';
 import { MaterialReactTable } from "material-react-table";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import { TransitionGroup } from "react-transition-group";
-import DeleteIcon from "@mui/icons-material/Delete";
+import Lottie from 'lottie-react';
+import Document from "../../assets/lottie/document.json"
 
 const WarehouseRequests = () => {
   const [data, setData] = useState([]);
@@ -183,7 +182,10 @@ const WarehouseRequests = () => {
       >
         <DialogTitle>
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
+          <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
+<Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
             Warehouse Request
+</Box>
           </Box>
         </DialogTitle>
         <Divider />
