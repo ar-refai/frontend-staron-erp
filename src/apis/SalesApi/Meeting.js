@@ -43,6 +43,7 @@ const instance = axios.create({
       throw new Error('data failed');
     }
   };
+
   export const CreateMeetinglog = async (formdata) => {
     try {
       const response = await instance.post('/Communications/create',formdata);
@@ -51,6 +52,7 @@ const instance = axios.create({
       throw new Error('data failed');
     }
   };
+  
   export const UpdatMeetinglog = async (id,formdata) => {
     try {
       const response = await instance.post('/'+id+'/update',formdata);

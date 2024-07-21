@@ -1,7 +1,7 @@
 import axios from 'axios';
 const token=  localStorage.getItem('staron_token');
 const instance = axios.create({
-  baseURL: 'https://erpsystem.darakoutlet.com/api/v1/sales', 
+  baseURL: 'https://erpsystem.darakoutlet.com/api/v1/', 
   headers: {
     'Content-Type': 'multipart/form-data',
     "Authorization": `Bearer ${token}`,
@@ -11,41 +11,43 @@ const instance = axios.create({
 });
 
 
-  export const ShowAllClint = async () => {
+  export const showAllClients = async () => {
     try {
-      const response = await instance.get('/Clint');
+      const response = await instance.get('/sales/Clint');
       return response.data;
     } catch (error) {
       throw new Error('data failed');
     }
   };
-  export const showClint = async (id) => {
+  export const showClient = async (id) => {
     try {
-      const response = await instance.get('/Clint/'+id);
+      const response = await instance.get('/sales/Clint/'+id);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
     }
   };
-  export const DeleteClint = async (id) => {
+  export const deleteClient = async (id) => {
     try {
-      const response = await instance.delete('/Clint'+id);
+      const response = await instance.delete('/sales/Clint/'+id);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
     }
   };
-  export const CreateClint = async (formdata) => {
+  export const CreateClient = async (formdata) => {
     try {
-      const response = await instance.post('/Clint/create',formdata);
+      const response = await instance.post('/sales/Clint/create',formdata);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
     }
   };
-  export const UpdatClint = async (id,formdata) => {
+  export const updateClient = async (id,formdata) => {
     try {
-      const response = await instance.post('/Clint/'+id+'/update',formdata);
+      const response = await instance.post('/sales/Clint/'+id+'/update',formdata);
+      console.log(response);
+      console.log("-".repeat(55))
       return response.data;
     } catch (error) {
       throw new Error('data failed');

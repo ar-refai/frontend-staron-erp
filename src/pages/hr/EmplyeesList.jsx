@@ -194,7 +194,7 @@ const EmployeeList = () => {
                 }),
             },
             {
-                accessorKey: "isemployee",
+                accessorKey: "isemploee",
                 header: "Status",
                 Cell: ({ cell }) => (
                     <Chip
@@ -208,7 +208,7 @@ const EmployeeList = () => {
                     select: true,
                     children: [1, 0].map((status) => (
                         <MenuItem key={status} value={status}>
-                            {status === 1 ? "Active" : "Inactive"}
+                            {status === "1" ? "Active" : "Inactive"}
                         </MenuItem>
                     )),
                 },

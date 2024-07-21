@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Container, Paper, Typography, Grid, Avatar,  Divider, Box, useTheme } from "@mui/material";
+import { Container, Paper, Typography, Grid, Avatar,  Divider, Box, useTheme, Link, Button, IconButton } from "@mui/material";
 import { showEmployee } from "../../../apis/Employee";
 import { tokens } from "theme";
+import FileDownloadOutlinedIcon from '@mui/icons-material/FileDownloadOutlined';
 
 const Profile = (rowData) => {
     const [employeeData, setEmployeeData] = useState(null);
@@ -218,7 +219,11 @@ const Profile = (rowData) => {
                         <Typography variant="body2" color="textSecondary" gutterBottom>
                             pdf File
                         </Typography>
-                        <Typography variant="body1">{pdf}</Typography>
+                        <IconButton variant='text' color="info" sx={{borderRadius:"50%" , width:'30px' , height:'30px'}}>
+                        <a href={`https://erpsystem.darakoutlet.com${pdf}`} target="_blank" download color="inherit" >
+                        <FileDownloadOutlinedIcon/>
+                        </a>
+                        </IconButton>
                     </Grid>
                     <Grid item xs={12} sm={6}>
                         <Typography variant="body2" color="textSecondary" gutterBottom>
@@ -226,7 +231,6 @@ const Profile = (rowData) => {
                         </Typography>
                         <Typography variant="body1">{VacationBalance}</Typography>
                     </Grid>
-                   
                 </Grid>
             </Paper>
         </Container>

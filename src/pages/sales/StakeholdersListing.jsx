@@ -1,524 +1,417 @@
-  import React, { useMemo, useState } from 'react';
-  import {
-    MRT_EditActionButtons,
-    MaterialReactTable,
-    useMaterialReactTable,
-  } from 'material-react-table';
-  import {
-    Box,
-    Button,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Divider,
-    IconButton,
+import * as React from 'react';
+import Snackbar from '@mui/material/Snackbar';
+import Alert from '@mui/material/Alert';
+import CloseIcon from '@mui/icons-material/Close';
+import Lottie from 'lottie-react';
+import Document from '../../../src/assets/lottie/document.json';
+import { useCallback, useMemo, useState, useEffect } from "react";
+import {
+    MenuItem,
+    Modal,
     Tooltip,
+    Chip,
+    IconButton,
+    Button,
+    Box,
     useTheme,
-  } from '@mui/material';
-  import {
-    QueryClient,
-    QueryClientProvider,
-    useMutation,
-    useQuery,
-    useQueryClient,
-  } from '@tanstack/react-query';
-  import EditIcon from '@mui/icons-material/Edit';
-  import DeleteIcon from '@mui/icons-material/Delete';
-  import { tokens } from 'theme';
-  import Lottie from 'lottie-react';
-  import Document from "../../assets/lottie/document.json"
+    TextField,
+    FormControl,
+    InputLabel,
+    Select
+} from "@mui/material";
+import { Edit } from "@mui/icons-material";
+import { showAllClients, CreateClient, updateClient, deleteClient } from "../../apis/SalesApi/Clint";
+import { MaterialReactTable } from "material-react-table";
+import { tokens } from "theme";
 
-  // Sample stakeholder data
-  const fakeData = [
-    {
-      id: '1',
-      name: 'Mohamed Shaban',
-      phoneNumber: '01143104499',
-      email: 'mohamedgmshaban@gmail.com',
-      company: 'Staron Egypt',
-      position: 'Software',
-      source: 'Mr. Hussein El Behairy',
-      type: 'Sub Contractor',
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      phoneNumber: '01234567890',
-      email: 'john.doe@StakeholdersListing.com',
-      company: 'TechCorp',
-      position: 'Manager',
-      source: 'LinkedIn',
-      type: 'Vendor',
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      phoneNumber: '01234567890',
-      email: 'john.doe@StakeholdersListing.com',
-      company: 'TechCorp',
-      position: 'Manager',
-      source: 'LinkedIn',
-      type: 'Vendor',
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      phoneNumber: '01234567890',
-      email: 'john.doe@StakeholdersListing.com',
-      company: 'TechCorp',
-      position: 'Manager',
-      source: 'LinkedIn',
-      type: 'Vendor',
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      phoneNumber: '01234567890',
-      email: 'john.doe@StakeholdersListing.com',
-      company: 'TechCorp',
-      position: 'Manager',
-      source: 'LinkedIn',
-      type: 'Vendor',
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      phoneNumber: '01234567890',
-      email: 'john.doe@StakeholdersListing.com',
-      company: 'TechCorp',
-      position: 'Manager',
-      source: 'LinkedIn',
-      type: 'Vendor',
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      phoneNumber: '01234567890',
-      email: 'john.doe@StakeholdersListing.com',
-      company: 'TechCorp',
-      position: 'Manager',
-      source: 'LinkedIn',
-      type: 'Vendor',
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      phoneNumber: '01234567890',
-      email: 'john.doe@StakeholdersListing.com',
-      company: 'TechCorp',
-      position: 'Manager',
-      source: 'LinkedIn',
-      type: 'Vendor',
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      phoneNumber: '01234567890',
-      email: 'john.doe@StakeholdersListing.com',
-      company: 'TechCorp',
-      position: 'Manager',
-      source: 'LinkedIn',
-      type: 'Vendor',
-    },
-    {
-      id: '2',
-      name: 'John Doe',
-      phoneNumber: '01234567890',
-      email: 'john.doe@StakeholdersListing.com',
-      company: 'TechCorp',
-      position: 'Manager',
-      source: 'LinkedIn',
-      type: 'Vendor',
-    },
-    
-    // Add more sample data as needed
-  ];
+const sources = [
+    "Mr. Tarek El Behairy",
+    "Mr. Hussein El Behairy",
+    "Independent Effort",
+    "Eng. Eslam Moataz"
+];
 
-  const StakeholdersListing = () => {
-    const [validationErrors, setValidationErrors] = useState({});
+const types = [
+    "Project Owner",
+    "Main Contractor",
+    "Sub Contractor",
+    "Consultant"
+];
+
+const StakeholdersListing = () => {
+    const [modalOpen, setModalOpen] = useState(false);
+    const [modalMode, setModalMode] = useState('create'); // 'create', 'edit'
+    const [selectedRow, setSelectedRow] = useState(null);
+    const [tableData, setTableData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const clientsFromApi = await showAllClients();
+                setTableData(clientsFromApi.data);
+                // console.log("**".repeat(44));
+                // console.log(clientsFromApi.data);
+                // console.log("**".repeat(44));
+            } catch (error) {
+                console.error('Error fetching client data:', error);
+                // Handle error if necessary
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
+    }, []);
+
+    const handleCreateNewRow = async (values) => {
+      try {
+          const response = await CreateClient(values);
+          console.log(response);
+          console.log(response.message);
+  
+          console.log("=".repeat(44));
+          if (response && (response.status === 201 || response.status === 200)) {
+              // Fetch the updated list of clients after successful creation
+              const updatedClientsResponse = await showAllClients();
+              if (updatedClientsResponse && updatedClientsResponse.status === 200) {
+                  setTableData(updatedClientsResponse.data);
+              } else {
+                  throw new Error('Failed to fetch updated clients list');
+              }
+  
+              setModalOpen(false); // Close modal after successful creation
+              setSnackbarSeverity('success');
+              setSnackbarMessage(response.message);
+              setSnackbarOpen(true);
+          } else {
+              throw new Error('Creation failed: Empty response data');
+          }
+      } catch (error) {
+          console.error('Error creating client:', error);
+          setSnackbarSeverity('error');
+          setSnackbarMessage('Failed to create client');
+          setSnackbarOpen(true);
+      }
+  };
+  
+  
+
+    const handleUpdateRow = async (id, values) => {
+      try {
+          const response = await updateClient(id, values);
+          console.log(response);
+          console.log(response.message);
+          
+          console.log("=".repeat(44));
+          if (response && response.status === 201) {
+              setTableData((prevTableData) =>
+                  prevTableData.map((row) =>
+                      row.id === id ? { ...row, ...values } : row
+                  )
+              );
+              setModalOpen(false); // Close modal after successful update
+              setSnackbarSeverity('success');
+              setSnackbarMessage(response.message);
+              setSnackbarOpen(true);
+          } else {
+              throw new Error('Update failed: Empty response data');
+          }
+      } catch (error) {
+          console.error('Error updating client:', error.message);
+          setSnackbarSeverity('error');
+          setSnackbarMessage('Failed to update client');
+          setSnackbarOpen(true);
+      }
+  };
+  
+
+    const handleDeleteRow = async (id) => {
+        try {
+            await deleteClient(id);
+            setTableData((prevTableData) => prevTableData.filter((row) => row.id !== id));
+            setSnackbarSeverity('success');
+            setSnackbarMessage('Client deleted successfully');
+            setSnackbarOpen(true);
+        } catch (error) {
+            console.error('Error deleting client:', error);
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Failed to delete client');
+            setSnackbarOpen(true);
+        }
+    };
+
+    const handleOpenModal = (mode, row) => {
+        setModalMode(mode);
+        setSelectedRow(row);
+        setModalOpen(true);
+    };
+
+    const handleCloseModal = () => {
+        setModalOpen(false);
+        setSelectedRow(null);
+    };
+
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
+
     const columns = useMemo(
-      () => [
-        {
-          accessorKey: 'id',
-          header: 'Id',
-          enableEditing: false,
-          size: 80,
-        },
-        {
-          accessorKey: 'name',
-          header: 'Name',
-          muiEditTextFieldProps: {
-            required: true,
-            error: !!validationErrors?.name,
-            helperText: validationErrors?.name,
-            onFocus: () =>
-              setValidationErrors({
-                ...validationErrors,
-                name: undefined,
-              }),
-          },
-        },
-        {
-          accessorKey: 'phoneNumber',
-          header: 'Phone Number',
-          muiEditTextFieldProps: {
-            required: true,
-            error: !!validationErrors?.phoneNumber,
-            helperText: validationErrors?.phoneNumber,
-            onFocus: () =>
-              setValidationErrors({
-                ...validationErrors,
-                phoneNumber: undefined,
-              }),
-          },
-        },
-        {
-          accessorKey: 'email',
-          header: 'Email Address',
-          muiEditTextFieldProps: {
-            type: 'email',
-            required: true,
-            error: !!validationErrors?.email,
-            helperText: validationErrors?.email,
-            onFocus: () =>
-              setValidationErrors({
-                ...validationErrors,
-                email: undefined,
-              }),
-          },
-        },
-        {
-          accessorKey: 'company',
-          header: 'Company',
-          muiEditTextFieldProps: {
-            required: true,
-            error: !!validationErrors?.company,
-            helperText: validationErrors?.company,
-            onFocus: () =>
-              setValidationErrors({
-                ...validationErrors,
-                company: undefined,
-              }),
-          },
-        },
-        {
-          accessorKey: 'position',
-          header: 'Position',
-          muiEditTextFieldProps: {
-            required: true,
-            error: !!validationErrors?.position,
-            helperText: validationErrors?.position,
-            onFocus: () =>
-              setValidationErrors({
-                ...validationErrors,
-                position: undefined,
-              }),
-          },
-        },
-        {
-          accessorKey: 'source',
-          header: 'Source',
-          muiEditTextFieldProps: {
-            required: true,
-            error: !!validationErrors?.source,
-            helperText: validationErrors?.source,
-            onFocus: () =>
-              setValidationErrors({
-                ...validationErrors,
-                source: undefined,
-              }),
-          },
-        },
-        {
-          accessorKey: 'type',
-          header: 'Type',
-          muiEditTextFieldProps: {
-            required: true,
-            error: !!validationErrors?.type,
-            helperText: validationErrors?.type,
-            onFocus: () =>
-              setValidationErrors({
-                ...validationErrors,
-                type: undefined,
-              }),
-          },
-        },
-      ],
-      [validationErrors],
+        () => [
+            {
+                accessorKey: "id",
+                header: "ID",
+                enableColumnOrdering: false,
+                enableEditing: false,
+                enableSorting: false,
+                size: 80,
+            },
+            {
+                accessorKey: "name",
+                header: "Name",
+                size: 140,
+            },
+            {
+                accessorKey: "phone",
+                header: "Phone",
+                size: 140,
+            },
+            {
+                accessorKey: "email",
+                header: "Email",
+                size: 140,
+            },
+            {
+                accessorKey: "source",
+                header: "Source",
+                size: 140,
+            },
+            {
+                accessorKey: "type",
+                header: "Type",
+                size: 140,
+            },
+            {
+                accessorKey: "company",
+                header: "Company",
+                size: 140,
+            },
+            {
+                accessorKey: "Job_role",
+                header: "Job Role",
+                size: 140,
+            },
+            {
+                accessorKey: "status",
+                header: "Status",
+                Cell: ({ cell }) => (
+                    <Chip
+                        variant="outlined"
+                        label={cell.getValue() === "work" ? "Work" : "Not Working"}
+                        color={cell.getValue() === "work" ? "info" : "error"}
+                        style={{ width: "80px", fontSize: "12px" }}
+                    />
+                ),
+                size: 140,
+            },
+            {
+                accessorKey: "assign_by.name",
+                header: "Assigned By",
+                size: 140,
+            },
+        ],
+        []
     );
 
-    const { mutateAsync: createUser, isPending: isCreatingUser } = useCreateUser();
-    const { data: fetchedUsers = [], isError: isLoadingUsersError, isFetching: isFetchingUsers, isLoading: isLoadingUsers } = useGetUsers();
-    const { mutateAsync: updateUser, isPending: isUpdatingUser } = useUpdateUser();
-    const { mutateAsync: deleteUser, isPending: isDeletingUser } = useDeleteUser();
+    return (
+        <>
+            <MaterialReactTable
+                displayColumnDefOptions={{
+                    "mrt-row-actions": {
+                        muiTableHeadCellProps: {
+                            align: "center",
+                        },
+                        size: 120,
+                    },
+                }}
+                columns={columns}
+                data={tableData}
+                enableEditing
+                state={{ isLoading: loading }}
+                enableColumnOrdering
+                enableStickyHeader
+                enableStickyFooter
+                muiPaginationProps={{
+                    color: 'secondary',
+                    rowsPerPageOptions: [10, 20, 30],
+                    shape: 'rounded',
+                    variant: 'outlined',
+                }}
+                paginationDisplayMode='pages'
+                muiTablePaperProps={{
+                    elevation: 2,
+                    sx: {
+                        borderRadius: '20px',
+                    },
+                }}
+                muiTableContainerProps={{ sx: { maxHeight: '600px', backgroundColor: 'primary' } }}
+                muiTableHeadCellProps={{ sx: { backgroundColor: 'primary' } }}
+                muiTableBodyCellProps={{ sx: { backgroundColor: 'primary' } }}
+                muiTableBodyProps={{ sx: { backgroundColor: 'primary' } }}
+                muiBottomToolbarProps={({ table }) => ({
+                    sx: { backgroundColor: 'primary' },
+                })}
+                renderRowActions={({ row }) => (
+                    <Box sx={{ display: "flex", gap: "1rem" }}>
+                        <Tooltip arrow placement="left" title="Edit">
+                            <IconButton onClick={() => handleOpenModal('edit', row.original)}>
+                                <Edit />
+                            </IconButton>
+                        </Tooltip>
+                        <Tooltip arrow placement="left" title="Delete">
+                            <IconButton onClick={() => handleDeleteRow(row.original.id)}>
+                                <CloseIcon />
+                            </IconButton>
+                        </Tooltip>
+                    </Box>
+                )}
+                renderTopToolbarCustomActions={() => (
+                    <Button
+                        onClick={() => handleOpenModal('create')}
+                        variant="outlined"
+                        color="secondary"
+                    >
+                        Add New Client
+                    </Button>
+                )}
+            />
 
-    const handleCreateUser = async ({ values, table }) => {
-      const newValidationErrors = validateUser(values);
-      if (Object.values(newValidationErrors).some((error) => error)) {
-        setValidationErrors(newValidationErrors);
-        return;
-      }
-      setValidationErrors({});
-      await createUser(values);
-      table.setCreatingRow(null);
-    };
+            {modalOpen && (
+                <Modal open={modalOpen} onClose={handleCloseModal}>
+                    <Box
+                        sx={{
+                            position: "absolute",
+                            top: "50%",
+                            left: "50%",
+                            transform: "translate(-50%, -50%)",
+                            width: 800,
+                            bgcolor: colors.grey[800],
+                            border: `1px solid ${colors.greenAccent[500]}`,
+                            borderRadius: "8px",
+                            boxShadow: 24,
+                            p: 2,
+                            pb: 4
+                        }}
+                    >
+                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase", pl: 3, pr: 3, pb: 2 }}>
+                            <Lottie style={{ width: '25px', display: 'flex' }} animationData={Document} />
+                            {modalMode === 'create' && "Add New Client"}
+                            {modalMode === 'edit' && `Edit Client: ${selectedRow?.name}`}
+                            <IconButton onClick={handleCloseModal} sx={{ marginLeft: 'auto', "&:hover": { color: colors.redAccent[400] } }}>
+                                <CloseIcon />
+                            </IconButton>
+                        </Box>
+                        {modalMode === 'create' && (
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                const formData = new FormData(e.target);
+                                const values = Object.fromEntries(formData.entries());
+                                handleCreateNewRow(values);
+                            }}>
+                                <Box sx={{ p: 3 }}>
+                                    <TextField fullWidth label="Name" name="name" required sx={{ mb: 2 }} />
+                                    <TextField fullWidth label="Company" name="company" required sx={{ mb: 2 }} />
+                                    <TextField fullWidth label="Job Role" name="Job_role" required sx={{ mb: 2 }} />
+                                    <TextField fullWidth label="Phone" name="phone" required sx={{ mb: 2 }} />
+                                    <TextField fullWidth label="Email" name="email" sx={{ mb: 2 }} />
+                                    <FormControl fullWidth sx={{ mb: 2 }}>
+                                        <InputLabel id="source-label">Source</InputLabel>
+                                        <Select labelId="source-label" name="source" required>
+                                            {sources.map((source) => (
+                                                <MenuItem key={source} value={source}>
+                                                    {source}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                    <FormControl fullWidth sx={{ mb: 2 }}>
+                                        <InputLabel id="type-label">Type</InputLabel>
+                                        <Select labelId="type-label" name="type" required>
+                                            {types.map((type) => (
+                                                <MenuItem key={type} value={type}>
+                                                    {type}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                        <Button type="submit" variant="outlined" color="secondary">Add Client</Button>
+                                    </Box>
+                                </Box>
+                            </form>
+                        )}
+                        {modalMode === 'edit' && (
+                            <form onSubmit={(e) => {
+                                e.preventDefault();
+                                const formData = new FormData(e.target);
+                                const values = Object.fromEntries(formData.entries());
+                                handleUpdateRow(selectedRow.id, values);
+                            }}>
+                                <Box sx={{ p: 3 }}>
+                                    <TextField fullWidth label="Name" name="name" defaultValue={selectedRow?.name} required sx={{ mb: 2 }} />
+                                    <TextField fullWidth label="Company" name="company" defaultValue={selectedRow?.company} required sx={{ mb: 2 }} />
+                                    <TextField fullWidth label="Job Role" name="Job_role" defaultValue={selectedRow?.Job_role} required sx={{ mb: 2 }} />
+                                    <TextField fullWidth label="Phone" name="phone" defaultValue={selectedRow?.phone} required sx={{ mb: 2 }} />
+                                    <TextField fullWidth label="Email" name="email" defaultValue={selectedRow?.email} sx={{ mb: 2 }} />
+                                    <FormControl fullWidth sx={{ mb: 2 }}>
+                                        <InputLabel id="source-label">Source</InputLabel>
+                                        <Select labelId="source-label" name="source" defaultValue={selectedRow?.source} required>
+                                            {sources.map((source) => (
+                                                <MenuItem key={source} value={source}>
+                                                    {source}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                    <FormControl fullWidth sx={{ mb: 2 }}>
+                                        <InputLabel id="type-label">Type</InputLabel>
+                                        <Select labelId="type-label" name="type" defaultValue={selectedRow?.type} required>
+                                            {types.map((type) => (
+                                                <MenuItem key={type} value={type}>
+                                                    {type}
+                                                </MenuItem>
+                                            ))}
+                                        </Select>
+                                    </FormControl>
+                                    <Box sx={{ display: 'flex', justifyContent: 'flex-end' }}>
+                                        <Button type="submit" variant="outlined" color="secondary">Update Client</Button>
+                                    </Box>
+                                </Box>
+                            </form>
+                        )}
+                    </Box>
+                </Modal>
+            )}
+            <Snackbar
+                open={snackbarOpen}
+                autoHideDuration={6000}
+                onClose={handleSnackbarClose}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+            >
+                <Alert onClose={handleSnackbarClose} severity={snackbarSeverity} sx={{ width: '100%' }}>
+                    {snackbarMessage}
+                </Alert>
+            </Snackbar>
+        </>
+    );
+};
 
-    const handleSaveUser = async ({ values, table }) => {
-      const newValidationErrors = validateUser(values);
-      if (Object.values(newValidationErrors).some((error) => error)) {
-        setValidationErrors(newValidationErrors);
-        return;
-      }
-      setValidationErrors({});
-      await updateUser(values);
-      table.setEditingRow(null);
-    };
-
-    const openDeleteConfirmModal = (row) => {
-      if (window.confirm('Are you sure you want to delete this user?')) {
-        deleteUser(row.original.id);
-      }
-    };
-
-    const table = useMaterialReactTable({
-      columns,
-      data: fetchedUsers,
-      createDisplayMode: 'modal',
-      editDisplayMode: 'modal',
-      enableEditing: true,
-      getRowId: (row) => row.id,
-      muiSkeletonProps: {
-        animation: 'wave',
-      },
-      muiLinearProgressProps: {
-        color: 'secondary',
-      },
-      muiCircularProgressProps: {
-        color: 'secondary',
-      },
-      initialState: {
-        showColumnFilters: true,
-        showGlobalFilter: true,
-      },
-      paginationDisplayMode: 'pages',
-      positionToolbarAlertBanner: 'bottom',
-      muiSearchTextFieldProps: {
-        size: 'small',
-        variant: 'outlined',
-      },
-      muiPaginationProps: {
-        color: 'secondary',
-        rowsPerPageOptions: [10, 20, 30],
-        shape: 'rounded',
-        variant: 'outlined',
-      },
-      muiBottomToolbarProps: ({ table }) => ({
-        sx: { backgroundColor: colors.primary[400] }
-      }),
-      muiTablePaperProps: {
-        elevation: 2, //change the mui box shadow
-        //customize paper styles
-        sx: {
-          borderRadius: '20px',
-        }
-      },
-      muiTableContainerProps: { sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } },
-      muiTableHeadCellProps: { sx: { backgroundColor: colors.primary[400] } },
-      muiTableBodyCellProps: { sx: { backgroundColor: colors.primary[400] } },
-      muiTableBodyProps: { sx: { backgroundColor: colors.primary[400] } },
-      muiToolbarAlertBannerProps: isLoadingUsersError
-        ? {
-            color: 'error',
-            children: 'Error loading data',
-          }
-        : undefined,
-      muiTableContainerProps: {
-        sx: {
-          minHeight: '500px',
-        },
-      },
-      onCreatingRowCancel: () => setValidationErrors({}),
-      onCreatingRowSave: handleCreateUser,
-      onEditingRowCancel: () => setValidationErrors({}),
-      onEditingRowSave: handleSaveUser,
-      renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
-        <Box
-        sx={{
-          bgcolor: colors.grey[800],
-          borderRadius: "5px",
-        }}
-        >
-          <DialogTitle variant="h6">
-<Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
-  <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
-            Create New Stakeholder
-</Box>
-          
-          </DialogTitle>
-          <Divider />
-          <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            {internalEditComponents}
-          </DialogContent>
-          <Divider />
-          <DialogActions>
-            <MRT_EditActionButtons table={table} row={row} />
-          </DialogActions>
-        </Box>
-      ),
-      renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
-        <Box
-        sx={{
-          background:`${colors.grey[800]} !important`,
-          borderRadius:'5px',
-        }}
-        >
-          <DialogTitle variant="h6">
-            <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
-              <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
-                        Edit Stakeholder
-            </Box>
-          
-          </DialogTitle>
-          <Divider/>
-          <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-            {internalEditComponents}
-          </DialogContent>
-          <Divider/>
-          <DialogActions>
-            <MRT_EditActionButtons table={table} row={row} />
-          </DialogActions>
-        </Box>
-      ),
-      renderRowActions: ({ row, table }) => (
-        <Box sx={{ display: 'flex', gap: '1rem' }}>
-          <Tooltip title="Edit">
-            <IconButton onClick={() => table.setEditingRow(row)}>
-              <EditIcon />
-            </IconButton>
-          </Tooltip>
-          <Tooltip title="Delete">
-            <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
-              <DeleteIcon />
-            </IconButton>
-          </Tooltip>
-        </Box>
-      ),
-      renderTopToolbarCustomActions: ({ table }) => (
-        <Button
-          variant="outlined"
-          color="secondary"
-          onClick={() => {
-            table.setCreatingRow(true);
-          }}
-        >
-          Create New Stakeholder
-        </Button>
-      ),
-      state: {
-        isLoading: isLoadingUsers,
-        isSaving: isCreatingUser || isUpdatingUser || isDeletingUser,
-        showAlertBanner: isLoadingUsersError,
-        showProgressBars: isFetchingUsers,
-      },
-    });
-
-    return <MaterialReactTable table={table} />;
-  };
-
-  function useCreateUser() {
-    const queryClient = useQueryClient();
-    return useMutation({
-      mutationFn: async (user) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        return Promise.resolve();
-      },
-      onMutate: (newUserInfo) => {
-        queryClient.setQueryData(['users'], (prevUsers) => [
-          ...prevUsers,
-          {
-            ...newUserInfo,
-            id: (Math.random() + 1).toString(36).substring(7),
-          },
-        ]);
-      },
-    });
-  }
-
-  function useGetUsers() {
-    return useQuery({
-      queryKey: ['users'],
-      queryFn: async () => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        return Promise.resolve(fakeData);
-      },
-      refetchOnWindowFocus: false,
-    });
-  }
-
-  function useUpdateUser() {
-    const queryClient = useQueryClient();
-    return useMutation({
-      mutationFn: async (user) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        return Promise.resolve();
-      },
-      onMutate: (newUserInfo) => {
-        queryClient.setQueryData(['users'], (prevUsers) =>
-          prevUsers?.map((prevUser) =>
-            prevUser.id === newUserInfo.id ? newUserInfo : prevUser,
-          ),
-        );
-      },
-    });
-  }
-
-  function useDeleteUser() {
-    const queryClient = useQueryClient();
-    return useMutation({
-      mutationFn: async (userId) => {
-        await new Promise((resolve) => setTimeout(resolve, 1000));
-        return Promise.resolve();
-      },
-      onMutate: (userId) => {
-        queryClient.setQueryData(['users'], (prevUsers) =>
-          prevUsers?.filter((user) => user.id !== userId),
-        );
-      },
-    });
-  }
-
-  const queryClient = new QueryClient();
-
-  const StakeholdersListingWithProviders = () => (
-    <QueryClientProvider client={queryClient}>
-      <StakeholdersListing />
-    </QueryClientProvider>
-  );
-
-  export default StakeholdersListingWithProviders;
-
-  const validateRequired = (value) => !!value.length;
-  const validateEmail = (email) =>
-    !!email.length &&
-    email
-      .toLowerCase()
-      .match(
-        /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
-      );
-
-  function validateUser(user) {
-    return {
-      name: !validateRequired(user.name) ? 'Name is Required' : '',
-      phoneNumber: !validateRequired(user.phoneNumber)
-        ? 'Phone Number is Required'
-        : '',
-      email: !validateEmail(user.email) ? 'Incorrect Email Format' : '',
-      company: !validateRequired(user.company) ? 'Company is Required' : '',
-      position: !validateRequired(user.position) ? 'Position is Required' : '',
-      source: !validateRequired(user.source) ? 'Source is Required' : '',
-      type: !validateRequired(user.type) ? 'Type is Required' : '',
-    };
-  }
+export default StakeholdersListing;

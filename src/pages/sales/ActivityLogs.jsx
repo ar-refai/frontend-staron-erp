@@ -16,43 +16,32 @@ import {
   TextField,
   FormControl,
   InputLabel,
-  Stack,
   Typography,
-  useTheme,
   Divider,
+  useTheme,
+  IconButton,
 } from '@mui/material';
-import { QueryClient, QueryClientProvider, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { tokens } from 'theme';
 import Lottie from 'lottie-react';
-import Document from "../../assets/lottie/document.json"
+import Document from '../../assets/lottie/document.json';
+import { ShowAllMeetinglog, DeleteMeetinglog, CreateMeetinglog } from '../../apis/SalesApi/Meeting';
+import { showAllClients } from 'apis/SalesApi/Clint';
+import { GridCloseIcon } from '@mui/x-data-grid';
+import { tokens } from 'theme';
 
-// Sample activity log data
-const fakeData = [
-  {
-    id: '1',
-    name: 'Mohamed Shaban',
-    type: 'Phone Call',
-    purpose: 'New Project Order',
-    result: 'Got a deal',
-    status: 'Answered',
-    date: '2024-06-01',
-    time: '10:00 AM',
-  },
-  {
-    id: '2',
-    name: 'Stakeholder 1',
-    type: 'Meeting',
-    purpose: 'Project Discussion',
-    result: 'Follow-up Required',
-    status: 'Attended',
-    date: '2024-06-05',
-    time: '02:00 PM',
-  },
-  // Add more sample data as needed
-];
 
-// List of stakeholders
-const stakeholders = ['Mohamed Shaban', 'Stakeholder 1', 'Stakeholder 2', 'Stakeholder 3'];
+
+const validateUser = (values) => {
+  const errors = {};
+  if (!values.clients_id) errors.clients_id = 'Stakeholder is required';
+  if (!values.type) errors.type = 'Activity type is required';
+  if (!values.status) errors.status = 'Status is required';
+  if (!values.reason) errors.reason = 'Purpose is required';
+  if (!values.result) errors.result = 'Result is required';
+  if (!values.date) errors.date = 'Date is required';
+  if (!values.time) errors.time = 'Time is required';
+  if (!values.nextactivity) errors.nextactivity = 'Next activity is required';
+  return errors;
+};
 
 const ActivityLog = () => {
   const [validationErrors, setValidationErrors] = useState({});
@@ -61,48 +50,37 @@ const ActivityLog = () => {
   const [openModal, setOpenModal] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [deleteId, setDeleteId] = useState('');
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [stakeholdersList , setStakeholdersList] = useState([]);
+  // const [modalOpen, setModalOpen] = useState(false);
+
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  const handleCloseModal = () => {
+    setOpenModal(false);
+    // setSelectedRow(null);
+  };
   const [values, setValues] = useState({
-    id: '',
-    name: '',
+    // id: '',
+    clients_id: '',
     type: '',
-    purpose: '',
+    reason: '',
     result: '',
     status: '',
     date: '',
     time: '',
+    nextactivity: '',
   });
 
   const columns = useMemo(
     () => [
-      {
-        accessorKey: 'id',
-        header: 'Id',
-        enableEditing: false,
-        size: 80,
-      },
-      {
-        accessorKey: 'name',
-        header: 'Name',
-        enableEditing: false,
-      },
-      {
-        accessorKey: 'type',
-        header: 'Type',
-        enableEditing: false,
-      },
-      {
-        accessorKey: 'purpose',
-        header: 'Purpose',
-        enableEditing: false,
-      },
-      {
-        accessorKey: 'result',
-        header: 'Result',
-        enableEditing: false,
-      },
+      { accessorKey: 'id', header: 'Id', enableEditing: false, size: 80 },
+      { accessorKey: 'client.name', header: 'Name', enableEditing: false },
+      { accessorKey: 'type', header: 'Type', enableEditing: false },
+      { accessorKey: 'reason', header: 'Purpose', enableEditing: false },
+      { accessorKey: 'result', header: 'Result', enableEditing: false },
       {
         accessorKey: 'status',
         header: 'Status',
@@ -111,16 +89,9 @@ const ActivityLog = () => {
           <Chip label={cell.getValue()} color="secondary" variant="outlined" />
         ),
       },
-      {
-        accessorKey: 'date',
-        header: 'Date',
-        enableEditing: false,
-      },
-      {
-        accessorKey: 'time',
-        header: 'Time',
-        enableEditing: false,
-      },
+      { accessorKey: 'date', header: 'Date', enableEditing: false },
+      { accessorKey: 'time', header: 'Time', enableEditing: false },
+      { accessorKey: 'nextactivity', header: 'Next Activity', enableEditing: false },
       {
         id: 'actions',
         header: 'Actions',
@@ -138,13 +109,38 @@ const ActivityLog = () => {
     [],
   );
 
-  const { mutateAsync: createUser, isPending: isCreatingUser } = useCreateUser();
-  const {
-    data: fetchedUsers = [],
-    isError: isLoadingUsersError,
-    isFetching: isFetchingUsers,
-    isLoading: isLoadingUsers,
-  } = useGetUsers();
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await ShowAllMeetinglog();
+        if (response.status === 200 || response.status === 201) {
+          setData(response.data);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    const fetchStakeholders = async () => {
+      try {
+        const response = await showAllClients();
+        console.log(response);
+        
+        if (response.status === 200 || response.status === 201) {
+          setStakeholdersList(response?.data);
+        }
+      }
+      catch (error) {
+        console.log("Error fetching data:",error);
+      }
+      finally {
+        setIsLoading(false)
+      }
+    }
+    fetchData();
+    fetchStakeholders();
+  }, []);
 
   const handleCreateUser = async () => {
     const newValidationErrors = validateUser(values);
@@ -153,25 +149,39 @@ const ActivityLog = () => {
       return;
     }
     setValidationErrors({});
-    await createUser(values);
-    setOpenModal(false);
-    setValues({
-      id: '',
-      name: '',
-      type: '',
-      purpose: '',
-      result: '',
-      status: '',
-      date: '',
-      time: '',
-    });
+
+    try {
+      console.log(values);
+      const response = await CreateMeetinglog(values);
+      console.log(response);
+      if (response.status === 201 || response.status === 200) {
+        setData((prevData) => [...prevData, values]);
+        setOpenModal(false);
+        setValues({
+          // id: '',
+          clients_id: '',
+          type: '',
+          reason: '',
+          result: '',
+          status: '',
+          date: '',
+          time: '',
+          nextactivity: '',
+        });
+      }
+    } catch (error) {
+      console.error('Error creating activity:', error);
+    }
   };
 
-  const handleDelete = (id) => {
-    // Implement delete functionality here
-    const updatedData = fetchedUsers.filter((user) => user.id !== id);
-    queryClient.setQueryData(['users'], updatedData);
-    setOpenDeleteDialog(false);
+  const handleDelete = async (id) => {
+    try {
+      await DeleteMeetinglog(id);
+      setData((prevData) => prevData.filter((item) => item.id !== id));
+      setOpenDeleteDialog(false);
+    } catch (error) {
+      console.error('Error deleting activity:', error);
+    }
   };
 
   const handleOpenDeleteDialog = (id) => {
@@ -209,11 +219,11 @@ const ActivityLog = () => {
 
   const table = useMaterialReactTable({
     columns,
-    data: fetchedUsers,
+    data,
     createDisplayMode: 'modal',
     enableEditing: false,
     getRowId: (row) => row.id,
-    muiToolbarAlertBannerProps: isLoadingUsersError
+    muiToolbarAlertBannerProps: isLoading
       ? {
           color: 'error',
           children: 'Error loading data',
@@ -241,251 +251,235 @@ const ActivityLog = () => {
       variant: 'outlined',
     },
     muiBottomToolbarProps: ({ table }) => ({
-      sx: { backgroundColor: colors.primary[400] },
+      sx: { backgroundColor: theme.palette.primary.main },
     }),
     muiTablePaperProps: {
-      elevation: 2, //change the mui box shadow
-      //customize paper styles
+      elevation: 2,
       sx: {
         borderRadius: '20px',
       },
     },
-    muiTableContainerProps: { sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } },
-    muiTableHeadCellProps: { sx: { backgroundColor: colors.primary[400] } },
-    muiTableBodyCellProps: { sx: { backgroundColor: colors.primary[400] } },
-    muiTableBodyProps: { sx: { backgroundColor: colors.primary[400] } },
-    onCreatingRowCancel: () => setValidationErrors({}),
-    renderTopToolbarCustomActions: ({ table }) => (
-      <Button
-        variant="outlined"
-        color="secondary"
-        onClick={() => setOpenModal(true)}
-      >
-        Add New Activity
-      </Button>
-    ),
-    state: {
-      isLoading: isLoadingUsers,
-      isSaving: isCreatingUser,
-      showAlertBanner: isLoadingUsersError,
-      showProgressBars: isFetchingUsers,
-    },
-  });
-
-  useEffect(() => {
-    setStatusOptions(getStatusOptions(activityType));
-  }, [activityType]);
-
-  return (
-    <>
-      <MaterialReactTable table={table} />
-      <Dialog open={openModal} maxWidth="lg" onClose={() => setOpenModal(false)}>
-        <Box
-        
-        sx={{
-          backgroundColor: colors.grey[800],
-          borderRadius:'5px',
-          width:'500px'
-        }}>
-        <DialogTitle  variant="h6">
-<Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
-  <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
-          Add New Activity
-</Box>
-        
-        </DialogTitle>
-        <Divider />
-        <DialogContent  sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' , marginTop:"10px" }}>
-          <FormControl fullWidth>
-            <InputLabel id="stakeholder-label">Stakeholder Name</InputLabel>
-            <Select
-              labelId="stakeholder-label"
-              name="name"
-              value={values.name}
-              onChange={handleChange}
-              required
-            >
-              {stakeholders.map((stakeholder) => (
-                <MenuItem key={stakeholder} value={stakeholder}>
-                  {stakeholder}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <FormControl fullWidth>
-            <InputLabel id="activity-type-label">Activity Type</InputLabel>
-            <Select
-              labelId="activity-type-label"
-              name="type"
-              value={values.type}
-              onChange={handleChange}
-              required
-            >
-              <MenuItem value="Phone Call">Phone Call</MenuItem>
-              <MenuItem value="Meeting">Meeting</MenuItem>
-            </Select>
-          </FormControl>
-          <FormControl fullWidth>
-            <InputLabel id="status-label">Status</InputLabel>
-            <Select
-              labelId="status-label"
-              name="status"
-              value={values.status}
-              onChange={handleChange}
-              required
-            >
-              {statusOptions.map((status) => (
-                <MenuItem key={status} value={status}>
-                  {status}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          <TextField
-            name="date"
-            label="Date"
-            type="date"
-            value={values.date}
-            onChange={handleChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            required
-          />
-          <TextField
-            name="time"
-            label="Time"
-            type="time"
-            value={values.time}
-            onChange={handleChange}
-            InputLabelProps={{
-              shrink: true,
-            }}
-            required
-          />
-          <TextField
-            name="purpose"
-            label="Purpose"
-            value={values.purpose}
-            onChange={handleChange}
-            multiline
-            rows={3}
-            required
-          />
-          <TextField
-            name="result"
-            label="Result"
-            value={values.result}
-            onChange={handleChange}
-            multiline
-            rows={3}
-            required
-          />
-        </DialogContent>
-        <Divider />
-        <DialogActions>
-          <Button variant='outlined' onClick={() => setOpenModal(false)} color="error" >
-            Cancel
-          </Button>
-          <Button onClick={handleCreateUser} color="secondary" variant="outlined">
-            Save
-          </Button>
-        </DialogActions>
-        </Box>
-      </Dialog>
-
-      <Dialog maxWidth="lg"
-      
-      open={openDeleteDialog} onClose={handleCloseDeleteDialog}>
-        <Box
-        sx={{
-          width: '500px',
-          background:colors.grey[800],
-          borderRadius:'5px',
-        }}>
-        <DialogTitle variant="h6">
-<Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
-  <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
-          Confirm Delete
-</Box>
-        
-        </DialogTitle>
-        <Divider />
-        <DialogContent>
-          <Typography>Are you sure you want to delete this activity?</Typography>
-        </DialogContent>
-        <Divider />
-        <DialogActions>
-          <Button onClick={handleCloseDeleteDialog} color="error" variant="outlined">
-            Cancel
-          </Button>
-          <Button
-            onClick={() => handleDelete(deleteId)}
-            color="secondary"
-            variant="outlined"
-          >
-            Delete
-          </Button>
-        </DialogActions>
-        </Box>
-      </Dialog>
-    </>
-  );
-};
-
-function useCreateUser() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: async (user) => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return Promise.resolve();
-    },
-    onMutate: (newUserInfo) => {
-      queryClient.setQueryData(['users'], (prevUsers) => [
-        ...prevUsers,
-        {
-          ...newUserInfo,
-          id: (Math.random() + 1).toString(36).substring(7),
+    muiTableContainerProps: {
+        sx: {
+          border: `1px solid ${theme.palette.divider}`,
+          borderRadius: '10px',
         },
-      ]);
-    },
-  });
-}
+      },
+      muiTableProps: {
+        size: 'small',
+      },
+      muiTableBodyProps: {
+        sx: {
+          '& tr:nth-of-type(odd)': {
+            backgroundColor: theme.palette.action.hover,
+          },
+        },
+      },
+    });
 
-function useGetUsers() {
-  return useQuery({
-    queryKey: ['users'],
-    queryFn: async () => {
-      await new Promise((resolve) => setTimeout(resolve, 1000));
-      return Promise.resolve(fakeData);
-    },
-    refetchOnWindowFocus: false,
-  });
-}
+    return (
+      <>
+        <Button
+          variant="outlined"
+          color="secondary"
+          sx={{
+            mb:2
+          }}
+          onClick={() => setOpenModal(true)}
+        >
+          Create Activity
+        </Button>
+  
+        <MaterialReactTable table={table} />
+        <Dialog
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <Box
+          sx={{
+            border:`1px solid ${colors.greenAccent[400]}`,
+            borderRadius:"8px"
+          }}
+          >
+          <DialogTitle>
+          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase"  }}>
+                            <Lottie style={{ width: '25px', display: 'flex' }} animationData={Document} />
+                            Create Activity
+                            <IconButton onClick={handleCloseModal} sx={{ marginLeft: 'auto', "&:hover": { color: colors.redAccent[400] } }}>
+                                <GridCloseIcon />
+                            </IconButton>
+                        </Box>
 
-const queryClient = new QueryClient();
+          </DialogTitle>
+          <Divider />
+          <DialogContent>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="stakeholder-label">Stakeholder</InputLabel>
+              <Select
+                labelId="stakeholder-label"
+                name="clients_id"
+                value={values.clients_id}
+                onChange={handleChange}
+                required
+              >
+                {stakeholdersList.map((stakeholder, index) => (
+                  <MenuItem key={index} value={stakeholder.id}>
+                    {stakeholder.name}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="activity-type-label">Activity Type</InputLabel>
+              <Select
+                labelId="activity-type-label"
+                name="type"
+                value={values.type}
+                onChange={handleChange}
+                required
+              >
+                <MenuItem value="Phone Call">Phone Call</MenuItem>
+                <MenuItem value="Meeting">Meeting</MenuItem>
+              </Select>
+            </FormControl>
+            <FormControl fullWidth margin="normal">
+              <InputLabel id="status-label">Status</InputLabel>
+              <Select
+                labelId="status-label"
+                name="status"
+                value={values.status}
+                onChange={handleChange}
+                required
+              >
+                {statusOptions.map((status, index) => (
+                  <MenuItem key={index} value={status}>
+                    {status}
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
+            <TextField
+              name="reason"
+              label="Purpose"
+              value={values.reason}
+              onChange={handleChange}
+              required
+              error={!!validationErrors?.reason}
+              helperText={validationErrors?.reason}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="result"
+              label="Result"
+              value={values.result}
+              onChange={handleChange}
+              required
+              error={!!validationErrors?.result}
+              helperText={validationErrors?.result}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="date"
+              label="Date"
+              type="date"
+              value={values.date}
+              onChange={handleChange}
+              required
+              error={!!validationErrors?.date}
+              helperText={validationErrors?.date}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="time"
+              label="Time"
+              type="time"
+              value={values.time}
+              onChange={handleChange}
+              required
+              error={!!validationErrors?.time}
+              helperText={validationErrors?.time}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              margin="normal"
+            />
+            <TextField
+              name="nextactivity"
+              label="Next Activity"
+              type="date"
+              value={values.nextactivity}
+              onChange={handleChange}
+              required
+              error={!!validationErrors?.date}
+              helperText={validationErrors?.date}
+              InputLabelProps={{ shrink: true }}
+              fullWidth
+              margin="normal"
+            />
+          </DialogContent>
+          <Divider/>
+          <DialogActions
+          sx={{
+            mr:2,
+            mb:1,
+            mt:1
+          }}
+          >
+            <Button onClick={() => setOpenModal(false)} color="secondary" variant="outlined">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleCreateUser}
+              color="secondary"
+              variant="outlined"
+            >
+              Create
+            </Button>
+          </DialogActions>
+          </Box>
+        </Dialog>
+  
+        <Dialog
+          open={openDeleteDialog}
+          onClose={handleCloseDeleteDialog}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+          fullWidth
+          maxWidth="xs"
+        >
+          <DialogTitle id="alert-dialog-title">
+          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase"  }}>
+              <Lottie style={{ width: '25px', display: 'flex' }} animationData={Document} />
+              Delete Activity
+              <IconButton onClick={handleCloseModal} sx={{ marginLeft: 'auto', "&:hover": { color: colors.redAccent[400] } }}>
+                  <GridCloseIcon />
+              </IconButton>
+          </Box>
 
-const ActivityLogWithProviders = () => (
-  <QueryClientProvider client={queryClient}>
-    <ActivityLog />
-  </QueryClientProvider>
-);
-
-export default ActivityLogWithProviders;
-
-// Validation functions
-const validateRequired = (value) => {
-  return value !== undefined && value !== null && value.trim().length > 0;
-};
-
-const validateUser = (user) => {
-  return {
-    name: !validateRequired(user.name) ? 'Stakeholder Name is Required' : '',
-    type: !validateRequired(user.type) ? 'Activity Type is Required' : '',
-    purpose: !validateRequired(user.purpose) ? 'Purpose is Required' : '',
-    result: !validateRequired(user.result) ? 'Result is Required' : '',
-    status: !validateRequired(user.status) ? 'Status is Required' : '',
-    date: !validateRequired(user.date) ? 'Date is Required' : '',
-    time: !validateRequired(user.time) ? 'Time is Required' : '',
+          </DialogTitle>
+          <Divider/>
+          <DialogContent>
+            <Typography>
+              Are you sure you want to delete this activity?
+            </Typography>
+          </DialogContent>
+          <Divider />
+          <DialogActions sx={{mb:1, mt:1}}>
+            <Button onClick={handleCloseDeleteDialog} variant="outlined" color="error">
+              Cancel
+            </Button>
+            <Button onClick={() => handleDelete(deleteId)} variant="outlined" color="secondary" autoFocus>
+              Delete
+            </Button>
+          </DialogActions>
+        </Dialog>
+      </>
+    );
   };
-};
+  
+  export default ActivityLog;

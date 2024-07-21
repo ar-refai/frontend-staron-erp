@@ -73,11 +73,11 @@ const TimeSheet = () => {
     
         try {
             if (value === 0) {
-                console.log("Adding Days");
+                // console.log("Adding Days");
                 formData = { "addetion": editValue }; // Update formData for addition
                 await addetionEmployee(modalData.id, formData);
             } else if (value === 1) {
-                console.log("Deducting Days");
+                // console.log("Deducting Days");
                 formData = { "deduction": editValue }; // Update formData for deduction
                 await deductionEmployee(modalData.id, formData);
             }
@@ -121,7 +121,7 @@ const TimeSheet = () => {
                 enableEditing: false,
             },
             {
-                accessorKey: "user.hr_code",
+                accessorKey: "user.id",
                 header: "Employee ID",
                 size: 120,
                 enableEditing: false,
@@ -147,14 +147,12 @@ const TimeSheet = () => {
                 enableEditing: false,
             },
             {
-                accessorKey: "date",
+                accessorKey: "Date",
                 header: "Date",
                 enableEditing: false,
 
                 Cell: ({ cell }) => (
-                    <>
-                        <div>{dayjs(cell.getValue()).format("YYYY-MM-DD")}</div>
-                    </>
+                    <div>{dayjs(cell.getValue()).format("YYYY-MM-DD")}</div>
                 ),
                 size: 150,
             },
@@ -228,15 +226,22 @@ const TimeSheet = () => {
     useEffect(() => {
         if (filterOption === "specificDate") {
             const selectedDate = specificDate.format("YYYY-MM-DD");
-            setFilteredData(data.filter((entry) => entry.date === selectedDate));
+            setFilteredData(data.filter((entry) => {
+                return dayjs(entry.Date).format("YYYY-MM-DD") === selectedDate;
+            }));
         } else {
             const filtered = data.filter((entry) => {
-                const entryDate = dayjs(entry.date);
+                const entryDate = dayjs(entry.Date);
+                console.log("Entry : ", entryDate.format("YYYY-MM-DD"));
+                console.log("Start Date : ", startDate.format("YYYY-MM-DD"));
+                console.log("End Date: ", endDate.format("YYYY-MM-DD"));
+                console.log(entryDate.isAfter(startDate) && entryDate.isBefore(endDate));
                 return entryDate.isAfter(startDate) && entryDate.isBefore(endDate);
             });
             setFilteredData(filtered);
         }
-    }, [filterOption, startDate, endDate, specificDate]);
+    }, [filterOption, startDate, endDate, specificDate, data]);
+    
 
     
     const handleFileChange = (event) => {
@@ -318,9 +323,11 @@ const TimeSheet = () => {
                             value={startDate}
                             onChange={(newValue) => setStartDate(newValue)}
                             slots={{
-                                textField: (params) => (
-                                    <TextField variant="filled" {...params} />
-                                ),
+                                textField: (params) => {
+                                    // console.log("Start Date: ", params  )
+                                    return  <TextField variant="filled" {...params} />
+                                }
+                                ,
                             }}
                             sx={{
                                 "& .MuiInputLabel-root.Mui-focused": {
@@ -388,7 +395,9 @@ const TimeSheet = () => {
                             label="Select Date"
                             format="YYYY/MM/DD"
                             value={specificDate}
-                            onChange={(newValue) => setSpecificDate(newValue)}
+                            onChange={(newValue) => {
+                                // console.log("Select:" ,specificDate);
+                                return setSpecificDate(newValue)}}
                             slots={{
                                 textField: (params) => (
                                     <TextField variant="filled" {...params} />

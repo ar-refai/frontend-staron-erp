@@ -2,7 +2,6 @@
   import { Box, Typography, IconButton, Button, Dialog, DialogActions, DialogContent, DialogTitle, FormControl, InputLabel, Select, MenuItem, TextField, Chip, useTheme, Divider, List, Collapse } from '@mui/material';
   import { MaterialReactTable } from 'material-react-table';
   import PreviewIcon from '@mui/icons-material/Preview';
-  import { fakeData } from './fakeData'; // assuming you have some fake data
   import { tokens } from 'theme';
   import Document from  '../../assets/lottie/document.json';
   import Lottie from 'lottie-react';
@@ -12,6 +11,7 @@
   import { TransitionGroup } from 'react-transition-group';
   import Basket from '../../assets/lottie/busket.json';
   import Book from '../../assets/lottie/book.json';
+  import { ShowAllRequests } from 'apis/TechnicalApi/TechnicalApi';
 
   const VisuallyHiddenInput = styled('input')({
     clip: 'rect(0 0 0 0)',
@@ -25,7 +25,7 @@
   });
 
   const QuotationGenerationFramework = () => {
-    const [data, setData] = useState(fakeData);
+    const [data, setData] = useState([]);
     const [isDescriptionModalOpen, setIsDescriptionModalOpen] = useState(false);
     const [descriptionData, setDescriptionData] = useState({});
     const [isQSModalOpen, setIsQSModalOpen] = useState(false);
@@ -58,6 +58,27 @@
       setTotalCost(newTotalCost);
     }, [applications]);
 
+    // Fetch all data
+    useEffect(() => {
+      fetchAllRequests();
+
+    });
+    const fetchAllRequests = async () => {
+
+      try {
+        const response = await ShowAllRequests();
+        console.log("#".repeat(11))
+        console.log("----Response: ",response);
+        if (response.status === 200 || response.status === 201) {
+          console.log('Works');
+          setData(response.data);
+        }
+      } catch (error) {
+        console.error('Error updating lead:', error);
+      }
+    }
+
+
     const handlePreviewQSData = (row) => {
       setQsData(row.original.qsData); // assuming each row has a qsData property
       setIsQSModalOpen(true);
@@ -88,7 +109,7 @@
       }
       const newData = data.map(row => {
         if (row === selectedRow) {
-          return { ...row, status: 'completed', qsData: applications };
+          return { ...row, qcstatus: 'completed', qsData: applications };
         }
         return row;
       });
@@ -147,12 +168,13 @@
     };
 
     const columns = useMemo(() => [
-      { accessorKey: 'clientName', header: 'Client Name' },
+      { accessorKey: 'id', header: '#' },
+      { accessorKey: 'sales_crm.client.name', header: 'Client Name' },
       { accessorKey: 'type', header: 'Type' },
       { accessorKey: 'location', header: 'Location' },
       { accessorKey: 'description', header: 'Description' },
       {
-        accessorKey: 'status',
+        accessorKey: 'qcstatus',
         header: 'Status',
         Cell: ({ cell }) => (
           <Chip label={cell.getValue()} sx={{
@@ -168,7 +190,7 @@
             <Button variant="outlined" color="secondary" sx={{m:'10px'}} onClick={() => handlePreviewInquiryData(row)}>
               Inquiry Data
             </Button>
-            {row.original.status === 'in progress' && (
+            {row.original.qcstatus === 'in progress' && (
               <>
                 <Button variant="outlined" color="secondary" sx={{m:'10px'}} onClick={() => handleSubmitQS(row)}>
                   Submit QS
@@ -178,7 +200,7 @@
                 </Button>
               </>
             )}
-            {row.original.status === 'completed' && (
+            {row.original.qcstatus === 'completed' && (
               <Button variant="outlined" color="secondary" sx={{m:'10px'}} onClick={() => handlePreviewQSData(row)}>
                 QS Preview
               </Button>

@@ -9,7 +9,8 @@ const instance = axios.create({
   }, withCredentials: true,
   // Replace with your Laravel backend URL
 });
-export const ShowAllEmployee = async () => {
+
+export const ShowAllRequests = async () => {
     try {
       const response = await instance.get('/technical/requests');
       return response.data;
@@ -17,6 +18,7 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
   export const ShowAlloperationrequest = async () => {
     try {
       const response = await instance.get('/technical/requests/operation-request');
@@ -25,6 +27,7 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
   export const showEmployee = async (id) => {
     try {
       const response = await instance.get('/technical/requests/'+id);
@@ -33,6 +36,7 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
   export const StartTask = async (id) => {
     try {
       const response = await instance.get('/technical/requests/'+id+"/starttask");
@@ -41,6 +45,7 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
   export const RejectTask = async (formData,id) => {
     try {
       const response = await instance.post('/technical/requests/'+id+"/RejectTask",formData);
@@ -49,6 +54,7 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
   export const StartPackage = async (id) => {
     try {
       const response = await instance.get('/technical/requests/'+id+"/startPackage");
@@ -57,6 +63,7 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
   export const RejectPackage = async (formData,id) => {
     try {
       const response = await instance.post('/technical/requests/'+id+"/RejectPackage",formData);
@@ -65,6 +72,7 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
   export const SendQC = async (id,formdata) => {
     try {
       const response = await instance.post('/technical/requests/'+id+"/SendQC",formdata);
@@ -73,6 +81,7 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
   export const SendAsBuild = async (id,formdata) => {
     try {
       const response = await instance.post('/technical/requests/'+id+"/SendQC",formdata);
@@ -90,6 +99,7 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
   export const DeleteEmployee = async (id) => {
     try {
       const response = await instance.delete('/technical/requests/'+id);
@@ -98,6 +108,7 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
   export const CreateEmployee = async (formdata) => {
     try {
       const response = await instance.post('/technical/requests/create',formdata);
@@ -106,6 +117,7 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
   export const UpdateEmployees = async (formdata , id) => {
     try {
       const response = await instance.post('/technical/requests/'+id+'/update',formdata);
