@@ -26,11 +26,7 @@ const SalesLinks = [
         to: "/sales/activity-log",
         icon: <WebStoriesIcon />,
     },
-    {
-        title: "Conversion",
-        to: "/sales/conversion",
-        icon: <RefreshIcon />,
-    },
+
 
 
     

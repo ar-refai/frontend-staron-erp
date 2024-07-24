@@ -206,11 +206,11 @@ const Requests = () => {
 
 
 
-  const user = JSON.parse(localStorage.getItem('user'));
+  const user = JSON.parse(localStorage.getItem('staron_user'));
   const navigate = useNavigate();
   // If the user is not authenticated or authorized, redirect to the login page
-  if (!(user.department === 'admin')) 
-      return navigate('/');
+  // if (!(user.department === 'admin')) 
+  //     return navigate('/');
 
   
   return (

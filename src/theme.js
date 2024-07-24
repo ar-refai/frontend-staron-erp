@@ -1,5 +1,6 @@
 import { createContext, useState, useMemo } from "react";
 import { createTheme } from "@mui/material/styles";
+import { lime } from "@mui/material/colors";
 
 // color design tokens export
 export const tokens = (mode) => ({
@@ -135,6 +136,9 @@ export const themeSettings = (mode) => {
                     },
                     secondary: {
                         main: colors.greenAccent[500],
+                    },
+                    lime: {
+                        main:lime
                     },
                     neutral: {
                         dark: colors.grey[700],

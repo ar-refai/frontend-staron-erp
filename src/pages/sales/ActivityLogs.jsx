@@ -63,7 +63,8 @@ const ActivityLog = () => {
     // setSelectedRow(null);
   };
   const [values, setValues] = useState({
-    // id: '',
+    id: '',
+    name:"",
     clients_id: '',
     type: '',
     reason: '',
@@ -158,7 +159,8 @@ const ActivityLog = () => {
         setData((prevData) => [...prevData, values]);
         setOpenModal(false);
         setValues({
-          // id: '',
+          id: '',
+          name:"",
           clients_id: '',
           type: '',
           reason: '',
@@ -210,7 +212,7 @@ const ActivityLog = () => {
   const getStatusOptions = (type) => {
     if (type === 'Phone Call') {
       return ['Answered', 'Call Back', 'Canceled'];
-    } else if (type === 'Meeting') {
+    } else if (type === 'meeting') {
       return ['Attended', 'Rescheduled', 'No Show'];
     } else {
       return [];
@@ -341,7 +343,7 @@ const ActivityLog = () => {
                 required
               >
                 <MenuItem value="Phone Call">Phone Call</MenuItem>
-                <MenuItem value="Meeting">Meeting</MenuItem>
+                <MenuItem value="meeting">Meeting</MenuItem>
               </Select>
             </FormControl>
             <FormControl fullWidth margin="normal">

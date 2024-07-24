@@ -16,6 +16,11 @@ import {
 } from "@mui/material";
 import { CreateEmployee, ShowAllEmployee } from "../../../apis/Employee";
 import { CloudUploadOutlined } from "@mui/icons-material";
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { DesktopDatePicker, LocalizationProvider, renderTimeViewClock, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import moment from "moment";
 
 const Create = ({ onSubmit, onClose }) => {
     const [activeStep, setActiveStep] = useState(0);
@@ -34,7 +39,6 @@ const Create = ({ onSubmit, onClose }) => {
         email: "",
         password: "",
         password_confirm: "",
-        date: "",
         hr_code: "",
         address: "",
         profileimage: null,
@@ -43,7 +47,6 @@ const Create = ({ onSubmit, onClose }) => {
         kpi: "",
         tax: "",
         Supervisor: "",
-        EmploymentDate: "",
         MedicalInsurance: "",
         SocialInsurance: "",
         phone: "",
@@ -56,10 +59,27 @@ const Create = ({ onSubmit, onClose }) => {
         segment: "",
         startwork: "",
         endwork: "",
-        clockin: "",
-        clockout: "",
-    };
 
+    };
+    const dateCorrector = (dateString) => {
+        const date = new Date(dateString);
+        const year = date.getUTCFullYear();
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+        const day = String(date.getUTCDate()).padStart(2, '0');
+        const formattedDate = `${year}-${month}-${day}`;
+        return formattedDate;
+        
+    }
+    const TimeCorrector =(timeString)=> {
+const date = new Date(timeString);
+
+const hours = String(date.getUTCHours()).padStart(2, '0');
+const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+
+const formattedTime = `${hours}:${minutes}:${seconds}`;
+
+return formattedTime;    }
     const validationSchema = [
         Yup.object().shape({
             name: Yup.string().required("Name is required"),
@@ -100,15 +120,28 @@ const Create = ({ onSubmit, onClose }) => {
     ];
 
     const handleSubmit = (values, { setSubmitting }) => {
+        console.log("-".repeat(22));
+        console.log(values);
+        console.log("-".repeat(22));
+        const newValues = {
+            ...values,
+            EmploymentDate: dateCorrector(values.EmploymentDate),
+            date: dateCorrector(values.date), // Corrected field name
+            clockin:TimeCorrector(values.clockin), // Corrected field name
+            clockout: TimeCorrector(values.clockout), // Corrected field name
+        };
+        console.log(newValues);
+        console.log("-".repeat(22));
+
         const formData = new FormData();
-        Object.keys(values).forEach((key) => {
-            formData.append(key, values[key]);
+        Object.keys(newValues).forEach((key) => {
+            formData.append(key, newValues[key]);
         });
 
         CreateEmployee(formData)
             .then((response) => {
                 console.log("Employee created successfully:", response);
-                onSubmit();
+                onSubmit(formData);
                 onClose();
             })
             .catch((error) => {
@@ -177,8 +210,27 @@ const Create = ({ onSubmit, onClose }) => {
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="password_confirm" as={TextField} label="Confirm Password" type="password" fullWidth helperText={<ErrorMessage name="password_confirm" />} />
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
-                                                    <Field name="date" as={TextField} label="Date" type="date" fullWidth InputLabelProps={{ shrink: true }} helperText={<ErrorMessage name="date" />} />
+                                                <Grid item xs={12}>
+                                                    {/* <Field name="date" as={TextField} label="Date" type="date" fullWidth InputLabelProps={{ shrink: true }} helperText={<ErrorMessage name="date" />} /> */}
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer
+                                                            components={[
+                                                                'DesktopDatePicker',
+                                                            ]}
+                                                        >
+                                                            <DesktopDatePicker
+                                                                name="date"
+                                                                label="Date"
+                                                                views={["year", "month", "day"]}
+                                                                format="YYYY-MM-DD"
+                                                                slotProps={{ textField: { fullWidth: true } }}
+                                                                value={dayjs(formikProps.values.date)}
+                                                                onChange={(value) => formikProps.setFieldValue("date", value)}
+                                                                renderInput={(params) => <TextField {...params} fullWidth/>}
+                                                            />
+
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="hr_code" as={TextField} label="HR Code" fullWidth helperText={<ErrorMessage name="hr_code" />} />
@@ -186,7 +238,7 @@ const Create = ({ onSubmit, onClose }) => {
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="address" as={TextField} label="Address" fullWidth helperText={<ErrorMessage name="address" />} />
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
+                                                <Grid item xs={12}>
                                                     <Field name="phone" as={TextField} label="Phone Number" fullWidth helperText={<ErrorMessage name="phone" />} />
                                                 </Grid>
                                             </Grid>
@@ -195,28 +247,23 @@ const Create = ({ onSubmit, onClose }) => {
                                             <Grid container spacing={2}>
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="department" as={TextField} label="Department" fullWidth select helperText={<ErrorMessage name="department" />}>
-                                                        <MenuItem value="Technical Office">Technical Office</MenuItem>
-                                                        <MenuItem value="Financial Department">Financial Department</MenuItem>
-                                                        <MenuItem value="Operation">Operation</MenuItem>
-                                                        <MenuItem value="Warehouse">Warehouse</MenuItem>
-                                                        <MenuItem value="Administration">Administration</MenuItem>
-                                                        <MenuItem value="Human Resource">Human Resource</MenuItem>
-                                                        <MenuItem value="IT">IT</MenuItem>
-                                                        <MenuItem value="Buffet">Buffet</MenuItem>
-                                                        <MenuItem value="Head Office">Head Office</MenuItem>
-                                                        <MenuItem value="Software">Software</MenuItem>
-                                                        <MenuItem value="Store">Store</MenuItem>
-                                                        <MenuItem value="Control Office">Control Office</MenuItem>
-                                                        <MenuItem value="Supply Chain">Supply Chain</MenuItem>
+                                                        <MenuItem key="Administration" value="Administration">Administration</MenuItem>
+                                                        <MenuItem key="Executive" value="Executive">Executive</MenuItem>
+                                                        <MenuItem key="Human Resources" value="Human Resources">Human Resources</MenuItem>
+                                                        <MenuItem key="Technical Office" value="Technical Office">Technical Office</MenuItem>
+                                                        <MenuItem key="Sales Office" value="Sales Office">Sales Office</MenuItem>
+                                                        <MenuItem key="Operation Office" value="Operation Office">Operation Office</MenuItem>
+                                                        <MenuItem key="Control Office" value="Control Office">Control Office</MenuItem>
+                                                        <MenuItem key="Supply Chain" value="Supply Chain">Supply Chain</MenuItem>
+                                                        <MenuItem key="Marketing" value="Marketing">Marketing</MenuItem>
+                                                        <MenuItem key="Research & Development" value="Research & Development">Research & Development</MenuItem>
+                                                        <MenuItem key="Finance" value="Finance">Finance</MenuItem>
+
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="job_role" as={TextField} label="Job Role" fullWidth select helperText={<ErrorMessage name="job_role" />}>
-                                                        <MenuItem value="Engineer">Engineer</MenuItem>
-                                                        <MenuItem value="Manager">Manager</MenuItem>
-                                                        <MenuItem value="Supervisor">Supervisor</MenuItem>
-                                                        <MenuItem value="Worker">Worker</MenuItem>
-                                                        <MenuItem value="Technician">Technician</MenuItem>
+                                                    <Field name="job_role" as={TextField} label="Job Role" fullWidth helperText={<ErrorMessage name="job_role" />}>
+
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
@@ -242,14 +289,33 @@ const Create = ({ onSubmit, onClose }) => {
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="Supervisor" as={TextField} label="Supervisor" fullWidth select helperText={<ErrorMessage name="Supervisor" />}>
                                                         {supervisors.map((supervisor) => (
-                                                            <MenuItem key={supervisor.id} value={supervisor.id}>
-                                                                {supervisor.name}
+                                                            <MenuItem key={supervisor?.id} value={supervisor?.id}>
+                                                                {supervisor?.name}
                                                             </MenuItem>
                                                         ))}
                                                     </Field>
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
-                                                    <Field name="EmploymentDate" as={TextField} label="Employment Date" type="date" fullWidth InputLabelProps={{ shrink: true }} helperText={<ErrorMessage name="EmploymentDate" />} />
+                                                <Grid item xs={12}>
+                                                    {/* <Field name="EmploymentDate" as={TextField} label="Employment Date" type="date" fullWidth InputLabelProps={{ shrink: true }} helperText={<ErrorMessage name="EmploymentDate" />} /> */}
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <DemoContainer
+                                                            components={[
+                                                                'DesktopDatePicker',
+                                                            ]}
+                                                        >
+                                                            <DesktopDatePicker
+                                                                name="EmploymentDate"
+                                                                label="Employment Date"
+                                                                views={["year", "month", "day"]}
+                                                                format="YYYY-MM-DD"
+                                                                value={dayjs(formikProps.values.EmploymentDate)}
+                                                                slotProps={{ textField: { fullWidth: true } }}
+                                                                onChange={(value) => formikProps.setFieldValue("EmploymentDate", value)}
+                                                                renderInput={(params) => <TextField {...params} fullWidth />}
+                                                            />
+
+                                                        </DemoContainer>
+                                                    </LocalizationProvider>
                                                 </Grid>
                                             </Grid>
                                         )}
@@ -262,7 +328,7 @@ const Create = ({ onSubmit, onClose }) => {
                                                     <Field name="SocialInsurance" as={TextField} label="Social Insurance" type="number" fullWidth helperText={<ErrorMessage name="SocialInsurance" />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                        {/* <Field name="TimeStamp" as={TextField} label="Timestamp" fullWidth helperText={<ErrorMessage name="TimeStamp" />} /> */}
+                                                    {/* <Field name="TimeStamp" as={TextField} label="Timestamp" fullWidth helperText={<ErrorMessage name="TimeStamp" />} /> */}
                                                     <Field name="TimeStamp" as={TextField} label="TimeStamp" fullWidth select helperText={<ErrorMessage name="TimeStamp" />}>
                                                         <MenuItem value="G & A">Office</MenuItem>
                                                         <MenuItem value="COR">Whats App</MenuItem>
@@ -300,10 +366,36 @@ const Create = ({ onSubmit, onClose }) => {
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="clockin" as={TextField} label="Clock-in Time" fullWidth helperText={<ErrorMessage name="clockin" />} />
+                                                    {/* <Field name="clockin" as={TextField} label="Clock-in Time" fullWidth helperText={<ErrorMessage name="clockin" />} /> */}
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <TimePicker
+                                                            label="Clock In"
+                                                            name="clockin"
+                                                        
+                                                            slotProps={{ textField: { fullWidth: true } }}
+                                                            value={dayjs(formikProps.values.clockin)}
+
+                                                            onChange={(value) => formikProps.setFieldValue("clockin", value)}
+                                                            renderInput={(params) => <TextField {...params} fullWidth />}
+                                                        />
+                                                    </LocalizationProvider>
+
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
-                                                    <Field name="clockout" as={TextField} label="Clock-out Time" fullWidth helperText={<ErrorMessage name="clockout" />} />
+                                                <Grid item xs={12} >
+                                                    {/* <Field name="clockout" as={TextField} label="Clock-out Time" fullWidth helperText={<ErrorMessage name="clockout" />} /> */}
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <TimePicker
+                                                            label="Clock Out"
+                                                            name="clockout"
+                                                            value={dayjs(formikProps.values.clockout)}
+
+                                                        
+                                                            slotProps={{ textField: { fullWidth: true } }}
+                                                            onChange={(value) => formikProps.setFieldValue("clockout", value)}
+                                                            renderInput={(params) => <TextField {...params} fullWidth />}
+                                                        />
+                                                    </LocalizationProvider>
+
                                                 </Grid>
                                             </Grid>
                                         )}

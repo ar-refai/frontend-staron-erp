@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Formik, Form, Field, ErrorMessage } from "formik";
 import * as Yup from "yup";
+
 import {
     TextField,
     Button,
@@ -16,13 +17,20 @@ import {
     CircularProgress,
     Avatar,
 } from "@mui/material";
+import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
+
 import { UpdateEmployees, showEmployee } from "../../../apis/Employee";
 import { CloudUploadOutlined } from "@mui/icons-material";
+import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
+import { DesktopDatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
+import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
+import dayjs from "dayjs";
+import moment from "moment";
 
-const Update = ({ onSubmit, onClose, selectedRow }) => {
+const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
     const [activeStep, setActiveStep] = useState(0);
     const [supervisors, setSupervisors] = useState([]);
-    const [initialValues, setInitialValues] = useState(null);
+    const [initialValues, setInitialValues] = useState();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
 
@@ -30,20 +38,41 @@ const Update = ({ onSubmit, onClose, selectedRow }) => {
 
     useEffect(() => {
         // Fetch selected employee data
-        showEmployee(selectedRow.id)
-            .then((response) => {
-                setInitialValues({
-                    ...response.data,
-                    profileimage: response.data.profileimage ? response.data.profileimage : null,
-                    pdf: response.data.pdf ? response.data.pdf : null,
-                });
-                setLoading(false);
-            })
-            .catch((error) => {
+        const getEmployeeData = async () => {
+            const response = await showEmployee(selectedRow.id);
+            try {
+                console.log("#".repeat(44));
+                console.log(response.data);
+                console.log("#".repeat(44));
+
+                if ([200, 201, 202].includes(response.status)) {
+                    console.log("Hellllllllllooooooo")
+                    console.log(response.data);
+                    setInitialValues({
+                        ...response.data,
+                        department:response.data.department ? response.data.department: null,
+                        date: response.data.date ? new Date(response.data.date) : null,
+                        EmploymentDate: response.data.EmploymentDate ? new Date(response.data.EmploymentDate) : null,
+                        clockin: response.data.clockin ? new Date(`1970-01-01T${response.data.clockin}:00`) : null,
+                        clockout: response.data.clockout ? new Date(`1970-01-01T${response.data.clockout}:00`) : null,
+                        profileimage: response.data.profileimage ? response.data.profileimage : null,
+                        pdf: response.data.pdf ? response.data.pdf : null,
+                        tax: response.data.tax ? response.data.tax : null,
+                        kpi: response.data.kpi ? response.data.kpi: null,
+                        transportation: response.data.transportation ? response.data.transportation: null,
+                        salary: response.data.salary ? response.data.salary: null,
+                        // put the rest of the data here
+                    });
+                    console.log("This is the initial values",initialValues); // here prints empty object values
+                    setLoading(false);
+                }
+            } catch (error) {
                 console.error("Error fetching employee data:", error);
                 setError("Failed to fetch employee data.");
                 setLoading(false);
-            });
+            }
+        }
+        getEmployeeData();
     }, [selectedRow]);
 
     const validationSchema = [
@@ -76,18 +105,8 @@ const Update = ({ onSubmit, onClose, selectedRow }) => {
             segment: Yup.string().required("Segment is required"),
             startwork: Yup.string().required("Start work time is required"),
             endwork: Yup.string().required("End work time is required"),
-            clockin: Yup.string()
-                .matches(
-                    /^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$/,
-                    "Invalid format. Use HH:mm:ss"
-                )
-                .required("Clock In is required"),
-            clockout: Yup.string()
-                .matches(
-                    /^(?:2[0-3]|[01][0-9]):[0-5][0-9]:[0-5][0-9]$/,
-                    "Invalid format. Use HH:mm:ss"
-                )
-                .required("Clock Out is required"),
+            clockin: Yup.date().required("Clock In is required"),
+            clockout: Yup.date().required("Clock Out is required"),
         }),
         Yup.object().shape({
             profileimage: Yup.mixed(),
@@ -96,23 +115,35 @@ const Update = ({ onSubmit, onClose, selectedRow }) => {
     ];
 
     const handleSubmit = (values, { setSubmitting }) => {
+        const newValues = {
+            ...values,
+            EmploymentDate:moment(values.EmploymentDate).format("YYYY-MM-DD"),
+            date:moment(values.Date).format("YYYY-MM-DD"),
+            clockin:moment(values.clockin).format("HH:mm:ss"),
+            clockout:moment(values.clockout).format("HH:mm:ss"),
+        }
+        
+        console.log(".........." , newValues);
+        
         const formData = new FormData();
-        Object.keys(values).forEach((key) => {
-            if (values[key]) {
-                formData.append(key, values[key]);
+        Object.keys(newValues).forEach((key) => {
+            if (newValues[key]) {
+                formData.append(key, newValues[key]);
             }
         });
-
+        
         UpdateEmployees(formData, selectedRow.id)
             .then((response) => {
-                console.log("Employee updated successfully:", response);
-                onSubmit(); // Call parent component's onSubmit function
+                // console.log("Employee updated successfully:", response);
+                // onSubmit(selectedRow.id,formData); // Call parent component's onSubmit function
                 onClose(); // Close the modal
             })
             .catch((error) => {
                 console.error("Error updating employee:", error);
                 setSubmitting(false);
             });
+            onUpdateSuccess(formData);
+
     };
 
     const handleNext = (formikProps) => {
@@ -159,10 +190,10 @@ const Update = ({ onSubmit, onClose, selectedRow }) => {
     return (
         <Container component="main" maxWidth="md">
             <Paper elevation={3} sx={{ p: 3 }}>
-                
+
                 <Grid container justifyContent="center" alignItems="center" sx={{ mb: 3 }}>
                     {initialValues.profileimage && (
-                        <Avatar alt="Profile Image" src={`https://erpsystem.darakoutlet.com/${initialValues.profileimage}`} sx={{ width: 100, height: 100, mb: 2 }} />
+                        <Avatar alt="Profile Image" src={`http://api.staronegypt.com.eg/${initialValues.profileimage}`} sx={{ width: 100, height: 100, mb: 2 }} />
                     )}
                 </Grid>
                 <Formik
@@ -200,8 +231,27 @@ const Update = ({ onSubmit, onClose, selectedRow }) => {
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="password_confirm" as={TextField} label="Confirm Password" type="" fullWidth helperText={<ErrorMessage name="password_confirm" />} />
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
-                                                    <Field name="date" as={TextField} label="Date" type="date" fullWidth InputLabelProps={{ shrink: true }} helperText={<ErrorMessage name="date" />} />
+                                                <Grid item xs={12} >
+                                                <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DemoContainer
+                                                    components={[
+                                                    'DesktopDatePicker',
+                                                    ]}
+                                                >
+                                                    <DesktopDatePicker
+                                                    name="date"
+                                                    label="Date"
+                                                    views={["year", "month", "day"]}
+                                                    format="YYYY-MM-DD"
+
+                                                    defaultValue={dayjs(formikProps.values.date)} 
+                                                    onChange={(value) => formikProps.setFieldValue("date", value)}
+                                                    renderInput={(params) => <TextField {...params} fullWidth />}
+
+                                                    />
+                                                    
+                                                </DemoContainer>
+                                                </LocalizationProvider>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="hr_code" as={TextField} label="HR Code" fullWidth helperText={<ErrorMessage name="hr_code" />} />
@@ -209,7 +259,7 @@ const Update = ({ onSubmit, onClose, selectedRow }) => {
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="address" as={TextField} label="Address" fullWidth helperText={<ErrorMessage name="address" />} />
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
+                                                <Grid item xs={12}>
                                                     <Field name="phone" as={TextField} label="Phone Number" fullWidth helperText={<ErrorMessage name="phone" />} />
                                                 </Grid>
                                             </Grid>
@@ -217,30 +267,31 @@ const Update = ({ onSubmit, onClose, selectedRow }) => {
                                         {activeStep === 1 && (
                                             <Grid container spacing={2}>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="department" as={TextField} label="Department" fullWidth select helperText={<ErrorMessage name="department" />}>
-                                                        <MenuItem value="Technical Office">Technical Office</MenuItem>
-                                                        <MenuItem value="Financial Department">Financial Department</MenuItem>
-                                                        <MenuItem value="Operation">Operation</MenuItem>
-                                                        <MenuItem value="Warehouse">Warehouse</MenuItem>
-                                                        <MenuItem value="Purchase">Purchase</MenuItem>
-                                                        <MenuItem value="HR">HR</MenuItem>
+                                                    <Field name="department" as={TextField} defaultValue={formikProps.values.department} label="Department" fullWidth select helperText={<ErrorMessage name="department" />}>
+                                                    {/* {console.log(initialValues.department)} */}
+                                                    <MenuItem key="Administration" value="Administration">Administration</MenuItem>
+                                                    <MenuItem key="Executive" value="Executive">Executive</MenuItem>
+                                                    <MenuItem key="Human Resources" value="Human Resources">Human Resources</MenuItem>
+                                                    <MenuItem key="Technical Office" value="Technical Office">Technical Office</MenuItem>
+                                                    <MenuItem key="Sales Office" value="Sales Office">Sales Office</MenuItem>
+                                                    <MenuItem key="Operation Office" value="Operation Office">Operation Office</MenuItem>
+                                                    <MenuItem key="Control Office" value="Control Office">Control Office</MenuItem>
+                                                    <MenuItem key="Supply Chain" value="Supply Chain">Supply Chain</MenuItem>
+                                                    <MenuItem key="Marketing" value="Marketing">Marketing</MenuItem>
+                                                    <MenuItem key="Research & Development" value="Research & Development">Research & Development</MenuItem>
+                                                    <MenuItem key="Finance" value="Finance">Finance</MenuItem>
+
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="job_role" as={TextField} label="Job Role" fullWidth select helperText={<ErrorMessage name="job_role" />}>
-                                                        <MenuItem value="CEO">CEO</MenuItem>
-                                                        <MenuItem value="Manager">Manager</MenuItem>
-                                                        <MenuItem value="Senior Developer">Senior Developer</MenuItem>
-                                                        <MenuItem value="Accountant">Accountant</MenuItem>
-                                                        <MenuItem value="Supervisor">Supervisor</MenuItem>
-                                                        <MenuItem value="Junior Developer">Junior Developer</MenuItem>
+                                                    <Field name="job_role" as={TextField} label="Job Role" fullWidth helperText={<ErrorMessage name="job_role" />}>
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="job_tybe" as={TextField} label="Job Tybe" fullWidth helperText={<ErrorMessage name="job_tybe" />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="salary" as={TextField} label="Salary" fullWidth helperText={<ErrorMessage name="salary" />} />
+                                                <Field name="salary" as={TextField} label="Salary" fullWidth helperText={<ErrorMessage name="salary" />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="Trancportation" as={TextField} label="Trancportation" fullWidth helperText={<ErrorMessage name="Trancportation" />} />
@@ -252,10 +303,29 @@ const Update = ({ onSubmit, onClose, selectedRow }) => {
                                                     <Field name="tax" as={TextField} label="Tax" fullWidth helperText={<ErrorMessage name="tax" />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="Supervisor" as={TextField} label="Supervisor" fullWidth helperText={<ErrorMessage name="Supervisor" />} />
+                                                    <Field name="Supervisor" as={TextField} label="Supervisor" fullWidth helperText={<ErrorMessage name="Supervisor" />}  />
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
-                                                    <Field name="EmploymentDate" as={TextField} label="Employment Date" type="date" fullWidth InputLabelProps={{ shrink: true }} helperText={<ErrorMessage name="EmploymentDate" />} />
+                                                <Grid item xs={12} >
+                                                    {/* <Field name="EmploymentDate" as={TextField} label="Employment Date" type="date" fullWidth InputLabelProps={{ shrink: true }} helperText={<ErrorMessage name="EmploymentDate" />} /> */}
+
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                <DemoContainer
+                                                    components={[
+                                                    'DesktopDatePicker',
+                                                    ]}
+                                                >
+                                                    <DesktopDatePicker
+                                                    name="EmploymentDate"
+                                                    label="Employment Date"
+                                                    views={["year", "month", "day"]}
+                                                    format="YYYY-MM-DD"
+                                                    defaultValue={dayjs(formikProps.values.EmploymentDate)} 
+                                                    onChange={(value) => formikProps.setFieldValue("EmploymentDate", value)}
+                                                    renderInput={(params) => <TextField {...params} fullWidth />}
+                                                    />
+                                                    
+                                                </DemoContainer>
+                                                </LocalizationProvider>
                                                 </Grid>
                                             </Grid>
                                         )}
@@ -273,46 +343,97 @@ const Update = ({ onSubmit, onClose, selectedRow }) => {
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="grade" as={TextField} label="Grade" fullWidth helperText={<ErrorMessage name="grade" />} />
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
+                                                <Grid item xs={12}>
                                                     <Field name="segment" as={TextField} label="Segment" fullWidth helperText={<ErrorMessage name="segment" />} />
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
-                                                    <Field name="startwork" as={TextField} label="Start Work" fullWidth helperText={<ErrorMessage name="startwork" />} />
+                                                <Grid item xs={12}>
+                                                    <Field name="startwork" as={TextField} label="Start Work" fullWidth select helperText={<ErrorMessage name="startwork" />} >
+                                                    <MenuItem value="Saturday">Saturday</MenuItem>
+                                                        <MenuItem value="Sunday">Sunday</MenuItem>
+                                                        <MenuItem value="Monday">Monday</MenuItem>
+                                                        <MenuItem value="Tuesday">Tuesday</MenuItem>
+                                                        <MenuItem value="Wednesday">Wednesday</MenuItem>
+                                                        <MenuItem value="Thursday">Thursday</MenuItem>
+                                                        <MenuItem value="Friday">Friday</MenuItem>
+                                                        </Field>
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
-                                                    <Field name="endwork" as={TextField} label="End Work" fullWidth helperText={<ErrorMessage name="endwork" />} />
+                                                <Grid item xs={12}>
+                                                    <Field name="endwork" as={TextField} label="End Work" fullWidth select helperText={<ErrorMessage name="endwork" />} >
+                                                    <MenuItem value="Saturday">Saturday</MenuItem>
+                                                        <MenuItem value="Sunday">Sunday</MenuItem>
+                                                        <MenuItem value="Monday">Monday</MenuItem>
+                                                        <MenuItem value="Tuesday">Tuesday</MenuItem>
+                                                        <MenuItem value="Wednesday">Wednesday</MenuItem>
+                                                        <MenuItem value="Thursday">Thursday</MenuItem>
+                                                        <MenuItem value="Friday">Friday</MenuItem>
+                                                    </Field>
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
-                                                    <Field name="clockin" as={TextField} label="Clock In" fullWidth helperText={<ErrorMessage name="clockin" />} />
-                                                    
+                                                <Grid item xs={12} sm={12}>
+                                                    {/* <Field name="clockin" as={TextField} label="Clock In" fullWidth helperText={<ErrorMessage name="clockin" />} /> */}
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <TimePicker
+                                                            label="Clock In"
+                                                            name="clockin"
+                                                            viewRenderers={{
+                                                                hours: renderTimeViewClock,
+                                                                minutes: renderTimeViewClock,
+                                                                seconds: renderTimeViewClock,
+                                                              }}
+                                                              slotProps={{ textField: { fullWidth: true } }}
+
+                                                            defaultValue={dayjs(formikProps.values.clockin)}
+                                                            onChange={(value) => formikProps.setFieldValue("clockin", value)}
+                                                            renderInput={(params) => <TextField {...params} fullWidth />}
+                                                        />
+                                                    </LocalizationProvider>
+
                                                 </Grid>
-                                                <Grid item xs={12} sm={6}>
-                                                    <Field name="clockout" as={TextField} label="Clock Out" fullWidth helperText={<ErrorMessage name="clockout" />} />
+                                                <Grid item xs={12} sm={12}>
+                                                    {/* <Field name="clockout" as={TextField} label="Clock Out" fullWidth helperText={<ErrorMessage name="clockout" />} /> */}
+                                                    <LocalizationProvider dateAdapter={AdapterDayjs}>
+                                                        <TimePicker
+                                                            label="Clock Out"
+                                                            name="clockout" 
+                                                            viewRenderers={{
+                                                                hours: renderTimeViewClock,
+                                                                minutes: renderTimeViewClock,
+                                                                seconds: renderTimeViewClock,
+                                                              }}
+                                                            slotProps={{ textField: { fullWidth: true } }}
+                                                            defaultValue={dayjs(formikProps.values.clockout)}
+                                                            onChange={(value) => formikProps.setFieldValue("clockout", value)}
+                                                            renderInput={(params) => <TextField {...params} fullWidth />}
+                                                        />
+                                                    </LocalizationProvider>
+
                                                 </Grid>
                                             </Grid>
                                         )}
                                         {activeStep === 3 && (
                                             <Grid container spacing={2}>
-                                                <Grid item xs={12} sm={6} sx={{display:'flex', justifyContent:'center' , alignItems:"center", gap:"10px"}}>
+                                                <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", gap: "10px" }}>
                                                     <input
                                                         accept="image/*"
                                                         style={{ display: "none" }}
                                                         id="profileimage"
                                                         multiple
+                                                        
                                                         onChange={(event) => formikProps.setFieldValue("profileimage", event.currentTarget.files[0])}
-
                                                         type="file"
                                                     />
-                                                    <label htmlFor="profileimage">
+                                                    <label htmlFor="profileimage" style={{width:'100%'}}>
                                                         <Button
                                                             variant="outlined"
                                                             color="secondary"
                                                             component="span"
+                                                            fullWidth
                                                         >
                                                             Upload Profile Image
                                                         </Button>
                                                     </label>
-                           
+                                                    </Grid>
+                                                    <Grid item xs={12} sx={{ display: 'flex', justifyContent: 'center', alignItems: "center", gap: "10px" }}>
+
                                                     <input
                                                         accept=".pdf"
                                                         style={{ display: "none" }}
@@ -320,16 +441,14 @@ const Update = ({ onSubmit, onClose, selectedRow }) => {
                                                         multiple
                                                         type="file"
                                                         onChange={(event) => formikProps.setFieldValue("pdf", event.currentTarget.files[0])}
-
-
                                                     />
-
-                                                    <label htmlFor="pdf">
+                                                    <label htmlFor="pdf" style={{width:'100%'}}>
                                                         <Button
                                                             variant="outlined"
                                                             color="secondary"
                                                             component="span"
-                                                            
+                                                            fullWidth
+
                                                         >
                                                             Upload PDF
                                                         </Button>
@@ -342,6 +461,8 @@ const Update = ({ onSubmit, onClose, selectedRow }) => {
                                                 disabled={activeStep === 0}
                                                 onClick={handleBack}
                                                 sx={{ mr: 1 }}
+                                                variant="outlined"
+                                                color="secondary"
                                             >
                                                 Back
                                             </Button>

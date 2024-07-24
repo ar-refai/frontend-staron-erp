@@ -27,6 +27,7 @@ const Login = () => {
         e.preventDefault();
         try {
             const response = await login(credentials);
+            console.log(response);
             if (response.status === 400) {
                 setLoginError("");
                 if (response.message.password) {

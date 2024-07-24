@@ -33,20 +33,17 @@ const TimeSheet = () => {
     const colors = tokens(theme.palette.mode);
     useEffect(() => {
         const fetchData = async () => {
-            try {
-                data = await ShowAllAttendance();
-                data = data.data;
-                setFilteredData(data);
-                console.log(data);
-
-
-            }
-            catch (err) {
-                console.error('Error Fetching Data', err);
-            }
+          try {
+            const response = await ShowAllAttendance();
+            data = Array.isArray(response?.data) ? response.data : [];
+            setFilteredData(data);
+          } catch (err) {
+            console.error('Error Fetching Data', err);
+          }
         }
         fetchData();
-    }, []);
+      }, []);
+
     const handleChange = (event, newValue) => {
         setValue(newValue);
     };
@@ -75,18 +72,18 @@ const TimeSheet = () => {
             if (value === 0) {
                 // console.log("Adding Days");
                 formData = { "addetion": editValue }; // Update formData for addition
-                await addetionEmployee(modalData.id, formData);
+                await addetionEmployee(modalData?.id, formData);
             } else if (value === 1) {
                 // console.log("Deducting Days");
                 formData = { "deduction": editValue }; // Update formData for deduction
-                await deductionEmployee(modalData.id, formData);
+                await deductionEmployee(modalData?.id, formData);
             }
             setShowModal(false);
             setEditValue("");
     
             // Fetch and update the data again after saving
             const updatedData = await ShowAllAttendance();
-            setFilteredData(updatedData.data);
+            setFilteredData(updatedData?.data);
         } catch (error) {
             console.error('Error saving data', error);
         }
@@ -105,7 +102,7 @@ const TimeSheet = () => {
                     // console.log(cell.getValue())
 
                     return (<img
-                        src={`https://erpsystem.darakoutlet.com/${cell.getValue()}`}
+                        src={`http://api.staronegypt.com.eg/${cell.getValue()}`}
                         alt="profile"
                         style={{ width: "50px", height: "50px", borderRadius: "50%" }}
                     />
@@ -226,11 +223,11 @@ const TimeSheet = () => {
     useEffect(() => {
         if (filterOption === "specificDate") {
             const selectedDate = specificDate.format("YYYY-MM-DD");
-            setFilteredData(data.filter((entry) => {
+            setFilteredData(data?.filter((entry) => {
                 return dayjs(entry.Date).format("YYYY-MM-DD") === selectedDate;
             }));
         } else {
-            const filtered = data.filter((entry) => {
+            const filtered = data?.filter((entry) => {
                 const entryDate = dayjs(entry.Date);
                 console.log("Entry : ", entryDate.format("YYYY-MM-DD"));
                 console.log("Start Date : ", startDate.format("YYYY-MM-DD"));

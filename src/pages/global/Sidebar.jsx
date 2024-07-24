@@ -39,6 +39,10 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
 
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+  const user = JSON.parse(localStorage.getItem('staron_user'));
+  // console.log("#".repeat(44));
+  // console.log(`http://api.staronegypt.com.eg/${user.profileimage}`);
+  // console.log("#".repeat(44));
 
   return (
     <LightTooltip title={title}>
@@ -169,6 +173,7 @@ export default function MiniDrawer() {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [openControlCollapse, setOpenControlCollapse] = React.useState(false);
+  const user = JSON.parse(localStorage.getItem('staron_user'));
 
   const [open, setOpen] = React.useState(false);
   const [selected, setSelected] = React.useState('');
@@ -288,8 +293,8 @@ export default function MiniDrawer() {
               )}
 
           </Typography>
-
-          {HRLinks.map((item, index) => (
+          
+          {user?.hraccess === "1" && HRLinks.map((item, index) => (
             <Item
               key={item.title}
               title={item.title}
@@ -299,7 +304,7 @@ export default function MiniDrawer() {
               setSelected={setSelected}
             />))}
 
-          {SalesLinks.map((item, index) => (
+          {user?.salesaccess === "1" && SalesLinks.map((item, index) => (
             <Item
               key={item.title}
               title={item.title}
@@ -310,7 +315,7 @@ export default function MiniDrawer() {
             />
           ))}
 
-          {TechLinks.map((item, index) => (
+          {user?.technicalaccess === "1" && TechLinks.map((item, index) => (
             <Item
               key={item.title}
               title={item.title}
@@ -323,6 +328,11 @@ export default function MiniDrawer() {
 
 
           {/* Weekly Control Items */}
+          {user?.controlaccess === "1"&& (
+
+          
+          <Box>
+          
           <List
             sx={{ width: '100%', maxWidth: 360 }}
             component="nav"
@@ -366,7 +376,9 @@ export default function MiniDrawer() {
               setSelected={setSelected}
             />)
           })}
-          {SupplyChainLinks.map((item, index) => {
+          </Box>
+          )}
+          {user?.supplychainaccess === "1" && SupplyChainLinks.map((item, index) => {
             return (<Item
               key={item.title}
               title={item.title}
@@ -377,7 +389,7 @@ export default function MiniDrawer() {
             />)
           })}
           {/* Operation Links */}
-          {OperationLinks.map((item, index) => {
+          {user?.operationaccess === "1" && OperationLinks.map((item, index) => {
             return (<Item
               key={item.title}
               title={item.title}
@@ -407,18 +419,19 @@ export default function MiniDrawer() {
             >
               <Avatar
                 alt="users name"
-                src={UserAvatar}
+                src={`http://api.staronegypt.com.eg${user?.profileimage}`}
                 sx={{
                   width: open ? '50px' : '40px',
                   height: open ? '50px' : '40px',
                   transition: 'all ease .4s'
                 }}
               />
+              {/* {true && console.log(`http://api.staronegypt.com.eg${user.profileimage}`)} */}
             </StyledBadge>
             {open && (
               <>
                 <ListItemText
-                  primary="Abdelrahman ElRefai"
+                  primary={user?.name}
                   sx={{
                     marginTop: open ? '15px' : 0,
                     marginLeft: open ? '0' : '18px',
@@ -427,7 +440,7 @@ export default function MiniDrawer() {
 
                   }} />
                 <ListItemText
-                  primary="Software Team"
+                  primary={user?.department}
                   sx={{
                     marginLeft: open ? '0' : '18px',
                     color: colors.primary[200],

@@ -32,7 +32,6 @@ import FunnelWorkFlow from "pages/sales/FunnelWorkFlow";
 import StakeholdersListing from "pages/sales/StakeholdersListing";
 import Analytics from "pages/sales/Analytics";
 import ActivityLogs from "pages/sales/ActivityLogs";
-import Conversion from "pages/sales/Conversion";
 // Technical
 import QuotationGenerationFramework from "pages/technical/QuotationGenerationFramework";
 // Control
@@ -156,7 +155,6 @@ function App() {
                     <Route path="stakeholders-listing" element={<StakeholdersListing />} />
                     <Route path="analytics" element={<Analytics />} />
                     <Route path="activity-log" element={<ActivityLogs />} />
-                    <Route path="conversion" element={<Conversion />} />
                   </Route>
 
                   {/* Technical Links */}

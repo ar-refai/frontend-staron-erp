@@ -16,7 +16,7 @@ import {
     useTheme
 } from "@mui/material";
 import { Edit, AccountCircle } from "@mui/icons-material";
-import { ShowAllEmployee, CreateEmployee, UpdateEmployees } from "../../apis/Employee";
+import { ShowAllEmployee, CreateEmployee } from "../../apis/Employee";
 import Create from "./Employee/Create";
 import Update from "./Employee/Update";
 import { MaterialReactTable } from "material-react-table";
@@ -24,20 +24,17 @@ import { tokens } from "theme";
 import Profile from './Employee/Profile';
 
 const departments = [
-    "HR",
+    "Adminstration",
+    "Executive",
+    "Human Resources",
     "Technical Office",
-    "Sales",
+    "Sales Office",
+    "Operation Office",
+    "Control Office",
     "Supply Chain",
-    "Warehouse",
-    "Operation",
-    "Carpenter",
-    "Solid Surface Factory Worker",
-    "Site Engineer",
-    "Financial Department",
-    "IT",
-    "Administration",
-    "Buffet",
-    "Software Department",
+    "Markiting",
+    "Research & Development",
+    "Finance"
 ];
 
 const EmployeeList = () => {
@@ -71,41 +68,22 @@ const EmployeeList = () => {
 
     const handleCreateNewRow = async (values) => {
         try {
+            
             const response = await CreateEmployee(values);
-            setTableData([...tableData, response.data]);
-            setModalOpen(false); // Close modal after successful creation
-            setSnackbarSeverity('success');
-            setSnackbarMessage('Employee created successfully');
-            setSnackbarOpen(true);
+            // console.log(response);
+            console.log(response.data);
+            if (response && response?.data) {
+                const newData = await ShowAllEmployee();
+                setTableData(newData.data);
+                setModalOpen(false); // Close modal after successful creation
+                setSnackbarSeverity('success');
+                setSnackbarMessage('Employee created successfully');
+                setSnackbarOpen(true);
+            }
         } catch (error) {
             console.error('Error creating employee:', error);
             setSnackbarSeverity('error');
             setSnackbarMessage('Failed to create employee');
-            setSnackbarOpen(true);
-        }
-    };
-
-    const handleUpdateRow = async (id, values) => {
-        try {
-            const response = await UpdateEmployees(id, values);
-            
-            if (response && response.data) {
-                setTableData((prevTableData) =>
-                    prevTableData.map((row) =>
-                        row.id === response.data.id ? response.data : row
-                    )
-                );
-                setModalOpen(false); // Close modal after successful update
-                setSnackbarSeverity('success');
-                setSnackbarMessage('Employee updated successfully');
-                setSnackbarOpen(true);
-            } else {
-                throw new Error('Update failed: Empty response data');
-            }
-        } catch (error) {
-            console.error('Error updating employee:', error.message);
-            setSnackbarSeverity('error');
-            setSnackbarMessage('Failed to update employee');
             setSnackbarOpen(true);
         }
     };
@@ -117,7 +95,7 @@ const EmployeeList = () => {
             )
         );
         setSnackbarSeverity('success');
-        setSnackbarMessage('Employee updated successfully');
+        setSnackbarMessage('Employee updated successfully refresh the page.');
         setSnackbarOpen(true);
     };
 
@@ -148,19 +126,11 @@ const EmployeeList = () => {
     const columns = useMemo(
         () => [
             {
-                accessorKey: "id",
-                header: "ID",
-                enableColumnOrdering: false,
-                enableEditing: false,
-                enableSorting: false,
-                size: 80,
-            },
-            {
                 accessorKey: "profileimage",
                 header: "Image",
                 Cell: ({ cell }) => (
                     <img
-                        src={`https://erpsystem.darakoutlet.com/${cell.getValue()}`}
+                        src={`http://api.staronegypt.com.eg/${cell.getValue()}`}
                         alt="Employee"
                         style={{ width: "40px", height: "40px", borderRadius: "50%" }}
                     />
@@ -343,35 +313,35 @@ const EmployeeList = () => {
                             </IconButton>
                         </Box>
                         {modalMode === 'create' && <Create onSubmit={handleCreateNewRow} onClose={handleCloseModal} />}
-                        {modalMode === 'edit' && <Update onSubmit={handleUpdateRow} onClose={handleCloseModal} selectedRow={selectedRow} onUpdateSuccess={handleUpdateSuccess} />}
+                        {modalMode === 'edit' && <Update  onClose={handleCloseModal} selectedRow={selectedRow} onUpdateSuccess={handleUpdateSuccess} />}
                         {modalMode === 'view' && <Profile employee={selectedRow} />}
                     </Box>
                 </Modal>
             )}
 
-            {/* <CustomizedSnackbars
+            <CustomizedSnackbars
                 open={snackbarOpen}
                 handleClose={handleSnackbarClose}
                 severity={snackbarSeverity}
                 message={snackbarMessage}
-            /> */}
+            />
         </>
     );
 };
 
-// const CustomizedSnackbars = ({ open, handleClose, severity, message }) => {
-//     return (
-//         <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-//             <Alert
-//                 onClose={handleClose}
-//                 severity={severity}
-//                 variant="filled"
-//                 sx={{ width: '100%' }}
-//             >
-//                 {message}
-//             </Alert>
-//         </Snackbar>
-//     );
-// };
+const CustomizedSnackbars = ({ open, handleClose, severity, message }) => {
+    return (
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert
+                onClose={handleClose}
+                severity={severity}
+                variant="filled"
+                sx={{ width: '100%' }}
+            >
+                {message}
+            </Alert>
+        </Snackbar>
+    );
+};
 
 export default EmployeeList;

@@ -1,6 +1,5 @@
 import React, { useMemo, useState } from 'react';
 import {
-    MRT_EditActionButtons,
     MaterialReactTable,
     useMaterialReactTable,
 } from 'material-react-table';
@@ -17,112 +16,20 @@ import {
 import {
     QueryClient,
     QueryClientProvider,
-    useMutation,
     useQuery,
-    useQueryClient,
 } from '@tanstack/react-query';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { tokens } from 'theme';
+import { AnalyticsList } from 'apis/SalesApi/Clint';
 
-// Sample analytics data
-const fakeData = [
-    {
-        id: '1',
-        name: 'Mustafa Hussien',
-        type: 'Project Owner',
-        source: 'Independent',
-        numberOfMeetings: 0,
-        numberOfCalls: 0,
-        numberOfQuotations: 0,
-        numberOfProjectsSold: 0,
-    },
-    {
-        id: '1',
-        name: 'Mustafa Hussien',
-        type: 'Project Owner',
-        source: 'Independent',
-        numberOfMeetings: 0,
-        numberOfCalls: 0,
-        numberOfQuotations: 0,
-        numberOfProjectsSold: 0,
-    },
-    {
-        id: '1',
-        name: 'Mustafa Hussien',
-        type: 'Project Owner',
-        source: 'Independent',
-        numberOfMeetings: 0,
-        numberOfCalls: 0,
-        numberOfQuotations: 0,
-        numberOfProjectsSold: 0,
-    },
-    {
-        id: '1',
-        name: 'Mustafa Hussien',
-        type: 'Project Owner',
-        source: 'Independent',
-        numberOfMeetings: 0,
-        numberOfCalls: 0,
-        numberOfQuotations: 0,
-        numberOfProjectsSold: 0,
-    },
-    {
-        id: '1',
-        name: 'Mustafa Hussien',
-        type: 'Project Owner',
-        source: 'Independent',
-        numberOfMeetings: 0,
-        numberOfCalls: 0,
-        numberOfQuotations: 0,
-        numberOfProjectsSold: 0,
-    },
-    {
-        id: '1',
-        name: 'Mustafa Hussien',
-        type: 'Project Owner',
-        source: 'Independent',
-        numberOfMeetings: 0,
-        numberOfCalls: 0,
-        numberOfQuotations: 0,
-        numberOfProjectsSold: 0,
-    },
-    {
-        id: '1',
-        name: 'Mustafa Hussien',
-        type: 'Project Owner',
-        source: 'Independent',
-        numberOfMeetings: 0,
-        numberOfCalls: 0,
-        numberOfQuotations: 0,
-        numberOfProjectsSold: 0,
-    },
-    {
-        id: '1',
-        name: 'Mustafa Hussien',
-        type: 'Project Owner',
-        source: 'Independent',
-        numberOfMeetings: 0,
-        numberOfCalls: 0,
-        numberOfQuotations: 0,
-        numberOfProjectsSold: 0,
-    },
-    // Add more sample data as needed
-];
-
+// Analytics component
 const Analytics = () => {
     const [validationErrors, setValidationErrors] = useState({});
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
+    // Table columns definition
     const columns = useMemo(
         () => [
-            {
-                accessorKey: 'id',
-                header: 'Id',
-                enableEditing: false,
-                size: 80,
-            },
             {
                 accessorKey: 'name',
                 header: 'Name',
@@ -138,90 +45,132 @@ const Analytics = () => {
                 },
             },
             {
-                accessorKey: 'type',
-                header: 'Type',
+                accessorKey: 'phone',
+                header: 'Phone',
                 muiEditTextFieldProps: {
                     required: true,
-                    error: !!validationErrors?.type,
-                    helperText: validationErrors?.type,
+                    error: !!validationErrors?.phone,
+                    helperText: validationErrors?.phone,
                     onFocus: () =>
                         setValidationErrors({
                             ...validationErrors,
-                            type: undefined,
+                            phone: undefined,
                         }),
                 },
             },
             {
-                accessorKey: 'source',
-                header: 'Source',
+                accessorKey: 'company',
+                header: 'Company',
                 muiEditTextFieldProps: {
                     required: true,
-                    error: !!validationErrors?.source,
-                    helperText: validationErrors?.source,
+                    error: !!validationErrors?.company,
+                    helperText: validationErrors?.company,
                     onFocus: () =>
                         setValidationErrors({
                             ...validationErrors,
-                            source: undefined,
+                            company: undefined,
                         }),
                 },
             },
             {
-                accessorKey: 'numberOfMeetings',
-                header: 'Number Of Meetings',
+                accessorKey: 'Job_role',
+                header: 'Job Role',
+                muiEditTextFieldProps: {
+                    required: true,
+                    error: !!validationErrors?.Job_role,
+                    helperText: validationErrors?.Job_role,
+                    onFocus: () =>
+                        setValidationErrors({
+                            ...validationErrors,
+                            Job_role: undefined,
+                        }),
+                },
+            },
+            {
+                accessorKey: 'email',
+                header: 'Email',
+                muiEditTextFieldProps: {
+                    required: true,
+                    error: !!validationErrors?.email,
+                    helperText: validationErrors?.email,
+                    onFocus: () =>
+                        setValidationErrors({
+                            ...validationErrors,
+                            email: undefined,
+                        }),
+                },
+            },
+            {
+                accessorKey: 'status',
+                header: 'Status',
+                muiEditTextFieldProps: {
+                    required: true,
+                    error: !!validationErrors?.status,
+                    helperText: validationErrors?.status,
+                    onFocus: () =>
+                        setValidationErrors({
+                            ...validationErrors,
+                            status: undefined,
+                        }),
+                },
+            },
+            {
+                accessorKey: 'meeting_count',
+                header: 'Meeting Count',
                 muiEditTextFieldProps: {
                     required: true,
                     type: 'number',
-                    error: !!validationErrors?.numberOfMeetings,
-                    helperText: validationErrors?.numberOfMeetings,
+                    error: !!validationErrors?.meeting_count,
+                    helperText: validationErrors?.meeting_count,
                     onFocus: () =>
                         setValidationErrors({
                             ...validationErrors,
-                            numberOfMeetings: undefined,
+                            meeting_count: undefined,
                         }),
                 },
             },
             {
-                accessorKey: 'numberOfCalls',
-                header: 'Number Of Calls',
+                accessorKey: 'phone_call_count',
+                header: 'Phone Call Count',
                 muiEditTextFieldProps: {
                     required: true,
                     type: 'number',
-                    error: !!validationErrors?.numberOfCalls,
-                    helperText: validationErrors?.numberOfCalls,
+                    error: !!validationErrors?.phone_call_count,
+                    helperText: validationErrors?.phone_call_count,
                     onFocus: () =>
                         setValidationErrors({
                             ...validationErrors,
-                            numberOfCalls: undefined,
+                            phone_call_count: undefined,
                         }),
                 },
             },
             {
-                accessorKey: 'numberOfQuotations',
-                header: 'Number Of Quotations',
+                accessorKey: 'completed_sales_count',
+                header: 'Completed Sales Count',
                 muiEditTextFieldProps: {
                     required: true,
                     type: 'number',
-                    error: !!validationErrors?.numberOfQuotations,
-                    helperText: validationErrors?.numberOfQuotations,
+                    error: !!validationErrors?.completed_sales_count,
+                    helperText: validationErrors?.completed_sales_count,
                     onFocus: () =>
                         setValidationErrors({
                             ...validationErrors,
-                            numberOfQuotations: undefined,
+                            completed_sales_count: undefined,
                         }),
                 },
             },
             {
-                accessorKey: 'numberOfProjectsSold',
-                header: 'Number Of Projects Sold',
+                accessorKey: 'incomplete_sales_count',
+                header: 'Incomplete Sales Count',
                 muiEditTextFieldProps: {
                     required: true,
                     type: 'number',
-                    error: !!validationErrors?.numberOfProjectsSold,
-                    helperText: validationErrors?.numberOfProjectsSold,
+                    error: !!validationErrors?.incomplete_sales_count,
+                    helperText: validationErrors?.incomplete_sales_count,
                     onFocus: () =>
                         setValidationErrors({
                             ...validationErrors,
-                            numberOfProjectsSold: undefined,
+                            incomplete_sales_count: undefined,
                         }),
                 },
             },
@@ -229,53 +178,20 @@ const Analytics = () => {
         [validationErrors],
     );
 
-    // const { mutateAsync: createUser, isPending: isCreatingUser } = useCreateUser();
-    const { data: fetchedUsers = [], isError: isLoadingUsersError, isFetching: isFetchingUsers, isLoading: isLoadingUsers } = useGetUsers();
-    // const { mutateAsync: updateUser, isPending: isUpdatingUser } = useUpdateUser();
-    // const { mutateAsync: deleteUser, isPending: isDeletingUser } = useDeleteUser();
+    // Fetch data using react-query
+    const { data: fetchedUsers = [], isError: isLoadingUsersError, isFetching: isFetchingUsers, isLoading: isLoadingUsers } = useGetAnalytics();
 
-    // const handleCreateUser = async ({ values, table }) => {
-    //     const newValidationErrors = validateUser(values);
-    //     if (Object.values(newValidationErrors).some((error) => error)) {
-    //         setValidationErrors(newValidationErrors);
-    //         return;
-    //     }
-    //     setValidationErrors({});
-    //     await createUser(values);
-    //     table.setCreatingRow(null);
-    // };
-
-    // const handleSaveUser = async ({ values, table }) => {
-    //     const newValidationErrors = validateUser(values);
-    //     if (Object.values(newValidationErrors).some((error) => error)) {
-    //         setValidationErrors(newValidationErrors);
-    //         return;
-    //     }
-    //     setValidationErrors({});
-    //     await updateUser(values);
-    //     table.setEditingRow(null);
-    // };
-
-    // const openDeleteConfirmModal = (row) => {
-    //     if (window.confirm('Are you sure you want to delete this user?')) {
-    //         deleteUser(row.original.id);
-    //     }
-    // };
-
+    // Table configuration
     const table = useMaterialReactTable({
         columns,
         data: fetchedUsers,
-        // createDisplayMode: 'modal',
-        // editDisplayMode: 'modal',
-        // enableEditing: true,
         getRowId: (row) => row.id,
         muiToolbarAlertBannerProps: isLoadingUsersError
             ? {
-                color: 'error',
-                children: 'Error loading data',
-            }
+                  color: 'error',
+                  children: 'Error loading data',
+              }
             : undefined,
-
         muiSkeletonProps: {
             animation: 'wave',
         },
@@ -302,72 +218,20 @@ const Analytics = () => {
             variant: 'outlined',
         },
         muiBottomToolbarProps: ({ table }) => ({
-            sx: { backgroundColor: colors.primary[400] }
+            sx: { backgroundColor: colors.primary[400] },
         }),
         muiTablePaperProps: {
-            elevation: 2, //change the mui box shadow
-            //customize paper styles
+            elevation: 2, // Change the MUI box shadow
             sx: {
                 borderRadius: '20px',
-            }
+            },
         },
         muiTableContainerProps: { sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } },
         muiTableHeadCellProps: { sx: { backgroundColor: colors.primary[400] } },
         muiTableBodyCellProps: { sx: { backgroundColor: colors.primary[400] } },
         muiTableBodyProps: { sx: { backgroundColor: colors.primary[400] } },
-        // onCreatingRowCancel: () => setValidationErrors({}),
-        // onCreatingRowSave: handleCreateUser,
-        // onEditingRowCancel: () => setValidationErrors({}),
-        // onEditingRowSave: handleSaveUser,
-        // renderCreateRowDialogContent: ({ table, row, internalEditComponents }) => (
-        //     <>
-        //         <DialogTitle variant="h3">Create New Analytics Entry</DialogTitle>
-        //         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        //             {internalEditComponents}
-        //         </DialogContent>
-        //         <DialogActions>
-        //             <MRT_EditActionButtons variant="text" table={table} row={row} />
-        //         </DialogActions>
-        //     </>
-        // ),
-        // renderEditRowDialogContent: ({ table, row, internalEditComponents }) => (
-        //     <>
-        //         <DialogTitle variant="h3">Edit Analytics Entry</DialogTitle>
-        //         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-        //             {internalEditComponents}
-        //         </DialogContent>
-        //         <DialogActions>
-        //             <MRT_EditActionButtons variant="text" table={table} row={row} />
-        //         </DialogActions>
-        //     </>
-        // ),
-        // renderRowActions: ({ row, table }) => (
-        //     <Box sx={{ display: 'flex', gap: '1rem' }}>
-        //         <Tooltip title="Edit">
-        //             <IconButton onClick={() => table.setEditingRow(row)}>
-        //                 <EditIcon />
-        //             </IconButton>
-        //         </Tooltip>
-        //         <Tooltip title="Delete">
-        //             <IconButton color="error" onClick={() => openDeleteConfirmModal(row)}>
-        //                 <DeleteIcon />
-        //             </IconButton>
-        //         </Tooltip>
-        //     </Box>
-        // ),
-        // renderTopToolbarCustomActions: ({ table }) => (
-        //     <Button
-        //         variant="contained"
-        //         onClick={() => {
-        //             table.setCreatingRow(true);
-        //         }}
-        //     >
-        //         Create New Analytics Entry
-        //     </Button>
-        // ),
         state: {
             isLoading: isLoadingUsers,
-            // isSaving: isCreatingUser || isUpdatingUser || isDeletingUser,
             showAlertBanner: isLoadingUsersError,
             showProgressBars: isFetchingUsers,
         },
@@ -376,70 +240,24 @@ const Analytics = () => {
     return <MaterialReactTable table={table} />;
 };
 
-// function useCreateUser() {
-//     const queryClient = useQueryClient();
-//     return useMutation({
-//         mutationFn: async (user) => {
-//             await new Promise((resolve) => setTimeout(resolve, 1000));
-//             return Promise.resolve();
-//         },
-//         onMutate: (newUserInfo) => {
-//             queryClient.setQueryData(['users'], (prevUsers) => [
-//                 ...prevUsers,
-//                 {
-//                     ...newUserInfo,
-//                     id: (Math.random() + 1).toString(36).substring(7),
-//                 },
-//             ]);
-//         },
-//     });
-// }
-
-function useGetUsers() {
+// Hook to fetch data using react-query
+function useGetAnalytics() {
     return useQuery({
-        queryKey: ['users'],
+        queryKey: ['analytics'],
         queryFn: async () => {
-            await new Promise((resolve) => setTimeout(resolve, 1000));
-            return Promise.resolve(fakeData);
+            const response = await AnalyticsList();
+            if (!response || response.status !== 200) {
+                throw new Error('Failed to fetch data');
+            }
+            return response.data;
         },
         refetchOnWindowFocus: false,
     });
 }
 
-// function useUpdateUser() {
-//     const queryClient = useQueryClient();
-//     return useMutation({
-//         mutationFn: async (user) => {
-//             await new Promise((resolve) => setTimeout(resolve, 1000));
-//             return Promise.resolve();
-//         },
-//         onMutate: (newUserInfo) => {
-//             queryClient.setQueryData(['users'], (prevUsers) =>
-//                 prevUsers.map((prevUser) =>
-//                     prevUser.id === newUserInfo.id ? newUserInfo : prevUser,
-//                 ),
-//             );
-//         },
-//     });
-// }
-
-// function useDeleteUser() {
-//     const queryClient = useQueryClient();
-//     return useMutation({
-//         mutationFn: async (userId) => {
-//             await new Promise((resolve) => setTimeout(resolve, 1000));
-//             return Promise.resolve();
-//         },
-//         onMutate: (userId) => {
-//             queryClient.setQueryData(['users'], (prevUsers) =>
-//                 prevUsers.filter((user) => user.id !== userId),
-//             );
-//         },
-//     });
-// }
-
 const queryClient = new QueryClient();
 
+// Main component with query client provider
 const AnalyticsWithProviders = () => (
     <QueryClientProvider client={queryClient}>
         <Analytics />
@@ -448,16 +266,20 @@ const AnalyticsWithProviders = () => (
 
 export default AnalyticsWithProviders;
 
+// Validation functions
 const validateRequired = (value) => !!value.length;
 
 function validateUser(user) {
     return {
         name: !validateRequired(user.name) ? 'Name is Required' : '',
-        type: !validateRequired(user.type) ? 'Type is Required' : '',
-        source: !validateRequired(user.source) ? 'Source is Required' : '',
-        numberOfMeetings: isNaN(user.numberOfMeetings) ? 'Number of Meetings is Required' : '',
-        numberOfCalls: isNaN(user.numberOfCalls) ? 'Number of Calls is Required' : '',
-        numberOfQuotations: isNaN(user.numberOfQuotations) ? 'Number of Quotations is Required' : '',
-        numberOfProjectsSold: isNaN(user.numberOfProjectsSold) ? 'Number of Projects Sold is Required' : '',
+        phone: !validateRequired(user.phone) ? 'Phone is Required' : '',
+        company: !validateRequired(user.company) ? 'Company is Required' : '',
+        Job_role: !validateRequired(user.Job_role) ? 'Job Role is Required' : '',
+        email: !validateRequired(user.email) ? 'Email is Required' : '',
+        status: !validateRequired(user.status) ? 'Status is Required' : '',
+        meeting_count: isNaN(user.meeting_count) ? 'Meeting Count is Required' : '',
+        phone_call_count: isNaN(user.phone_call_count) ? 'Phone Call Count is Required' : '',
+        completed_sales_count: isNaN(user.completed_sales_count) ? 'Completed Sales Count is Required' : '',
+        incomplete_sales_count: isNaN(user.incomplete_sales_count) ? 'Incomplete Sales Count is Required' : '',
     };
 }

@@ -10,10 +10,10 @@ const Sales = () => {
     const colors = tokens(theme.palette.mode);
     const url = useLocation();
     
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('staron_user'));
     const navigate = useNavigate();
     // If the user is not authenticated or authorized, redirect to the login page
-    if (!(user.salesaccess === 1 || user.department === 'admin')) 
+    if (!(user.salesaccess === "1" || user.department === 'admin')) 
         return navigate('/');
     
 
@@ -25,8 +25,6 @@ const Sales = () => {
                 return 'Stakeholders Listing';
             case '/sales/analytics':
                 return 'Relations Tracking';
-            case '/sales/conversion':
-                return 'Conversion';
             case '/sales/activity-log':
                 return 'Activity Log';
             default:

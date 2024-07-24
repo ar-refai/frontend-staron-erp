@@ -9,11 +9,11 @@ export default function Finance() {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const url = useLocation();
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('staron_user'));
     const navigate = useNavigate();
     // If the user is not authenticated or authorized, redirect to the login page
-    if (!(user.financeaccess === 1 || user.department === 'admin'))
-        return navigate('/');
+    // if (!(user.financeaccess === 1 || user.department === 'admin'))
+    //     return navigate('/');
     const titles = {
         '/finance/finance-monthly-framework': 'Monthly Framework',
         '/finance/finance-financial-reports': 'Financial Reports',

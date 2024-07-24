@@ -21,10 +21,10 @@ export default function Tech() {
                 return '';
         }
     };
-    const user = JSON.parse(localStorage.getItem('user'));
+    const user = JSON.parse(localStorage.getItem('staron_user'));
     const navigate = useNavigate();
     // If the user is not authenticated or authorized, redirect to the login page
-    if (!(user.technicalaccess === 1 || user.department === 'admin')) 
+    if (!(user.technicalaccess === "1" || user.department === 'admin')) 
         return navigate('/');
     // console.log(user)
     return (

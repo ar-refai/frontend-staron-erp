@@ -1,7 +1,7 @@
 import axios from 'axios';
 const token=  localStorage.getItem('api_token');
 const instance = axios.create({
-  baseURL: 'https://erpsystem.darakoutlet.com/api/v1/SupplyChain', 
+  baseURL: 'http://api.staronegypt.com.eg/api/v1/SupplyChain', 
   headers: {
     'Content-Type': 'multipart/form-data',
     "Authorization": `Bearer ${token}`,

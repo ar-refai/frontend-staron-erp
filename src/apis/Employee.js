@@ -1,7 +1,7 @@
 import axios from 'axios';
 const token=  localStorage.getItem('staron_token');
 const instance = axios.create({
-  baseURL: 'https://erpsystem.darakoutlet.com/api/v1', 
+  baseURL: 'http://api.staronegypt.com.eg/api/v1', 
   headers: {
     'Content-Type': 'multipart/form-data',
     "Authorization": `Bearer ${token}`,
@@ -74,6 +74,11 @@ export const ShowAllEmployee = async () => {
     }
   };
   export const UpdateEmployees = async (formdata , id) => {
+    console.log("*".repeat(24))
+    console.log(formdata);
+    console.log("*".repeat(24))
+
+
     try {
       const response = await instance.post('/humanresource/employee/'+id+'/update',formdata);
       return response.data;

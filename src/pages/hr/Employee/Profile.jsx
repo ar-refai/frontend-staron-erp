@@ -12,6 +12,26 @@ const Profile = (rowData) => {
   
     // console.log(rowData)
     // console.log(rowData.employee.id)
+    const TimeCorrector =(timeString)=> {
+        const date = new Date(timeString);
+        
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+        
+        const formattedTime = `${hours}:${minutes}:${seconds}`;
+        
+        return formattedTime;    }
+
+        const dateCorrector = (dateString) => {
+            const date = new Date(dateString);
+            const year = date.getUTCFullYear();
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0'); // Months are zero-based
+            const day = String(date.getUTCDate()).padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+            return formattedDate;
+            
+        }
 
     useEffect(() => {
         setLoading(true);
@@ -72,7 +92,7 @@ const Profile = (rowData) => {
                     <Grid item xs={12} sm={4}>
                         {/* {console.log(profileimage)} */}
                         <Avatar
-                            src={`https://erpsystem.darakoutlet.com/${profileimage}`}
+                            src={`http://api.staronegypt.com.eg/${profileimage}`}
                             alt={name}
                             sx={{ width: 128, height: 128, mb: 2, mx: "auto" }}
                         />
@@ -134,7 +154,7 @@ const Profile = (rowData) => {
                             Employment Date
                         </Typography>
                         <Typography variant="body1">
-                            {new Date(EmploymentDate).toLocaleDateString()}
+                            {dateCorrector(EmploymentDate)}
                         </Typography>
                     </Grid>
                     <Grid item xs={12} sm={6}>
@@ -220,7 +240,7 @@ const Profile = (rowData) => {
                             pdf File
                         </Typography>
                         <IconButton variant='text' color="info" sx={{borderRadius:"50%" , width:'30px' , height:'30px'}}>
-                        <a href={`https://erpsystem.darakoutlet.com${pdf}`} target="_blank" download color="inherit" >
+                        <a href={`http://api.staronegypt.com.eg${pdf}`} target="_blank" download color="inherit" >
                         <FileDownloadOutlinedIcon/>
                         </a>
                         </IconButton>

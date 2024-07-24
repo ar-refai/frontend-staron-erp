@@ -103,7 +103,7 @@ const LeaveBalance = () => {
                 header: "Image",
                 Cell: ({ cell }) => (
                     <img
-                        src={`https://erpsystem.darakoutlet.com/${cell.row.original.profileimage}` || UserImg}
+                        src={`http://api.staronegypt.com.eg/${cell.row.original.profileimage}` || UserImg}
                         alt="Employee"
                         style={{ width: "50px", height:"50px", borderRadius: "50%" }}
                     />
