@@ -660,8 +660,8 @@ const table = useMaterialReactTable({
                 </Typography>
             </label>
         </DialogContent>
-        <DialogActions>
             <Divider />
+        <DialogActions>
             <Button
                 variant='outlined'
                 color="secondary"
@@ -678,7 +678,7 @@ const table = useMaterialReactTable({
             </Button>
         </DialogActions>
     </Box>
-</Dialog>
+            </Dialog>
 
         </Box>
     );
