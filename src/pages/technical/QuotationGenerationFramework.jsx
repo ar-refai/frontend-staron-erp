@@ -12,7 +12,7 @@ import { TransitionGroup } from 'react-transition-group';
 import Document from '../../assets/lottie/document.json';
 import Basket from '../../assets/lottie/busket.json';
 import Book from '../../assets/lottie/book.json';
-import { ShowAllRequests, startQS, sendQS, rejectQS, showDeptEmployees, assignEmployee, rejectInReviewQS ,ShowRequest} from 'apis/TechnicalApi/QuantitySurvayApi';
+import { ShowAllRequests, startQS, sendQS, rejectQS, showDeptEmployees, assignEmployee, rejectInReviewQS ,ShowRequest, acceptQS} from 'apis/TechnicalApi/QuantitySurvayApi';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import PlayCircleFilledWhiteOutlinedIcon from '@mui/icons-material/PlayCircleFilledWhiteOutlined';
 import { CheckCircleOutlined, ThumbUpAlt, VisibilityOutlined } from '@mui/icons-material';
@@ -156,6 +156,18 @@ const QuotationGenerationFramework = () => {
       console.error('Error fetching data:', error);
     }
   }
+  const submitAcceptQuantitySurvay = async (id, formData)=> {
+    try {
+      const response = await acceptQS(id, formData);
+      if (response.status === 200 || response.status === 201 || response.status === 204) {
+        console.log("Successfully added quantity survay")
+        fetchAllRequests();
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+
+    }
+  }
 
   // add new QS
   const submitQuantitySurvay = async (id, formData) => {
@@ -163,6 +175,7 @@ const QuotationGenerationFramework = () => {
       const response = await sendQS(id, formData);
       if (response.status === 200 || response.status === 201 || response.status === 204) {
         console.log("Successfully added quantity survay")
+        fetchAllRequests();
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -346,17 +359,40 @@ const QuotationGenerationFramework = () => {
       alert('Please fill in all required fields.');
       return;
     }
-    
+    if (user?.Superviorr !== "1" && applications.some(app => !app.name || app.items.some(item => !item.stockid ||  !item.quantity || !item.description))) {
+      // console.log(app)
+      alert('Please fill in all required fields.');
+      return;
+    }
     const qsFormData = { ...quotationObj };
-    console.log("#".repeat(10));
-    console.log(qsFormData);
-    console.log("#".repeat(10));
-    submitQuantitySurvay(selectedRow.original.id, qsFormData);
+    // console.log("#".repeat(10));
+    // console.log(qsFormData);
+    // console.log("#".repeat(10));
+    if(selectedRow.original.qcstatus === "in review") {
+      submitAcceptQuantitySurvay(selectedRow.original.id,qsFormData);
+      setAccceptModalOpen(false);
+    }
+    else {
+      submitQuantitySurvay(selectedRow.original.id, qsFormData);
+      setIsTechnicalRFQModalOpen(false);
+    }
     
-    setIsTechnicalRFQModalOpen(false);
+    setApplications([{
+      name: '',
+      totalcost: 0,
+      grossmargen: 0,
+      salingprice: 0,
+      items: [
+        {
+          stockid: '',
+          price: 0,
+          quantity: 0,
+          description: '',
+        },
+      ],
+    }]);
+    
     fetchAllRequests();
-    fetchAllRequests();
-
   };
 
   // Add Application Button
@@ -537,7 +573,8 @@ const QuotationGenerationFramework = () => {
           )}
 
           {/* third state in progress */}
-          {row.original.qcstatus === 'in progress' && (
+          {row.original.qcstatus === 'in progress' &&
+          row.original.user.name === user.name && (
             <>
               {/* if the start request fulfilled show this button */}
               <Tooltip
@@ -581,9 +618,11 @@ const QuotationGenerationFramework = () => {
                   }
                 }}
               >
-                <IconButton color="success" sx={{ ml: '4px' }} onClick={() => {
+                <IconButton aria-hidden={true} color="success" sx={{ ml: '4px' }} onClick={() => {
                   setAccceptModalOpen(true); //
                   setSelectedRow(row);
+                  // console.log(row);
+                  // handleSubmitQS(row)
                   }}>
                   <ThumbUpAlt sx={{ fontSize: '26px' }} />
                 </IconButton>
@@ -610,6 +649,30 @@ const QuotationGenerationFramework = () => {
                 </IconButton>
               </Tooltip>
             </>
+          )}
+          {(row.original.qcstatus === 'reject back' && user?.Supervisor !== "1") && (
+            <>
+              {/* when clicked change the status that hides the submit QS button and shows the start button */}
+              <Tooltip
+                TransitionComponent={Zoom}
+                // arrow 
+                title="Start QS"
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      color: '#262625',
+                      backgroundColor: "#E1E1E1",
+                      fontSize: "12px"
+                    }
+                  }
+                }}
+              >
+                <IconButton color='secondary' sx={{ m: "4px" }} onClick={() => handleStartQS(row)}>
+                  <PlayCircleFilledWhiteOutlinedIcon sx={{ fontSize: '26px' }} />
+                </IconButton>
+              </Tooltip>
+            </>
+
           )}
 
 
@@ -725,46 +788,27 @@ const QuotationGenerationFramework = () => {
           seconedRejectReason={seconedRejectReason}
           handleSeconedRejectReasonChange={handleSeconedRejectReasonChange}
       />
-{/* 
-accceptedModalOpen,
-  setAccceptedModalOpen,
-  user,
-  totalCost,
-  totalProjectSellingPrice,
-  totalGrossMargin,
-  applications,
-  handleApplicationTitleChange,
-  handleGrossMarginChange,
-  handleAddItem,
-  handleItemChange,
-  handleRemoveItem,
-  handleAddApplication,
-  handleRemoveApplication,
-  setFile,
-  quotationObj,
-  setQuotationObj,
-  handleSubmitQSToComplete
-*/}
+
     <AcceptQSModal 
     accceptedModalOpen = {accceptedModalOpen}
     setAccceptedModalOpen= {setAccceptModalOpen}
     user= {user}
-    totalCost = {totalCost}
+    totalCost ={totalCost}
     totalProjectSellingPrice = {totalProjectSellingPrice}
     totalGrossMargin = {totalGrossMargin}
     applications = {applications}
-    handleApplicationTitleChange = {handleApplicationTitleChange}
+    handleApplicationTitleChange ={handleApplicationTitleChange}
     handleGrossMarginChange = {handleGrossMarginChange}
     handleAddItem = {handleAddItem}
-    handleItemChange = {handleItemChange}
+    handleItemChange = {handleItemChange} 
     handleRemoveItem = {handleRemoveItem}
     handleAddApplication = {handleAddApplication}
     handleRemoveApplication = {handleRemoveApplication}
     setFile ={setFile}
     quotationObj = {quotationObj}
     setQuotationObj = {setQuotationObj}
-    handleSubmitQSToComplete = {handleSubmitQSToComplete}
-    />
+    handleSubmitQSToComplete={handleSubmitQSToComplete}
+/>
       {/* Preview QS Data (completed) */}
       <Dialog maxWidth="lg" open={isQSModalOpen} onClose={() => setIsQSModalOpen(false)}>
         <DialogTitle>

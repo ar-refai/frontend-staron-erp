@@ -68,8 +68,7 @@ export const startQS = async (id) => {
 
 export const sendQS = async (id, formData) => {
     try {
-        console.log("HERE")
-        console.log(formData);
+       
         const response = await instanceWithFile.post(`/technical/requests/${id}/submit`, formData);
         return response.data;
     } catch (error) {
@@ -77,6 +76,14 @@ export const sendQS = async (id, formData) => {
     }
 };
 
+export const acceptQS = async (id, formData) => {
+    try {
+        const response = await instanceWithFile.put(`/technical/requests/${id}/review`, formData);
+        return response.data;
+    } catch (error) {
+        throw new Error('data failed');
+    }
+};
 // formData sample: 
 // {
 //     "qcdata": null,

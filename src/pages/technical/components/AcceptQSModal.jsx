@@ -41,7 +41,7 @@ const VisuallyHiddenInput = styled('input')({
   width: 1,
 });
 
-const AcceptQSModal = ({
+const QSModal = ({
   accceptedModalOpen,
   setAccceptedModalOpen,
   user,
@@ -61,6 +61,7 @@ const AcceptQSModal = ({
   setQuotationObj,
   handleSubmitQSToComplete
 }) => {
+
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -300,4 +301,4 @@ const AcceptQSModal = ({
   );
 };
 
-export default AcceptQSModal;
+export default QSModal;
