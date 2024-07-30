@@ -78,7 +78,7 @@ export const sendQS = async (id, formData) => {
 
 export const acceptQS = async (id, formData) => {
     try {
-        const response = await instanceWithFile.put(`/technical/requests/${id}/review`, formData);
+        const response = await instance.put(`/technical/requests/${id}/review`, formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');

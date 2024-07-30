@@ -179,3 +179,102 @@ export const SendContractdata = async (id, formdata) => {
     throw new Error('data failed');
   }
 };
+
+
+// latest functions 
+// switch to another 
+export const switchQSAssign = async (id, formdata) => {
+  try {
+    const response = await instance.post('/sales/Crm/' + id + '/switch', formdata);
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+// {
+//   "asignby":188
+// }
+
+// quotation approve in status: (pending quotation approve)
+export const quotationApprove = async (id) => {
+  try {
+    const response = await instance.post('/sales/Crm/' + id + '/QutationApprove');
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+// quotation reject in status: (pending quotation approve)
+export const quotationReject = async (id, formdata) => {
+  try {
+    const response = await instance.post('/sales/Crm/' + id + '/QutationReject', formdata);
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+// {
+//   "reason":"dslvnsjdvnskjd"
+// }
+
+
+// client Approve in status : (pending client approve)
+export const clientApprove = async (id, formdata) => {
+  try {
+    const response = await instanceUpload.post('/sales/Crm/' + id + '/clintApprove', formdata);
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+// {
+//   "contractdata" : null, 
+//   "contractValue": 9634
+// }
+
+// client Reject in status : (pending client approve)
+export const clientReject = async (id, formdata) => {
+  try {
+    const response = await instance.post('/sales/Crm/' + id + '/clintReject', formdata);
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+// {
+//   "reason":"dslvnsjdvnskjd"
+// }
+
+// client Recalculation in status : (pending client approve)
+export const clientRecalculation = async (id, formdata) => {
+  try {
+    const response = await instance.post('/sales/Crm/' + id + '/clintRecalculation', formdata);
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+// {
+//   "reason":"dslvnsjdvnskjd"
+// }
+
+
+// submit drafting in status : (pending quotation drafting)
+export const submitDrafting = async (id, formdata) => {
+  try {
+    const response = await instanceUpload.post('/sales/Crm/' + id + '/submitdrafting', formdata);
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+// {
+//   "file" : null
+// }

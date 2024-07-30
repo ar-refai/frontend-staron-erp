@@ -265,28 +265,6 @@ const QSModal = ({
         >
           Add Application
         </Button>
-        <Box mt={2}>
-          <Button
-            component="label"
-            role={undefined}
-            variant="outlined"
-            color="secondary"
-            tabIndex={-1}
-            sx={{ margin: 'auto', width: '300px' }}
-            startIcon={<CloudUploadIcon />}
-          >
-            Upload QS Data (optional)
-            <VisuallyHiddenInput
-              type="file"
-              onChange={(e) => {
-                setFile(e.target.files[0]);
-                const quotWithFile = { ...quotationObj, qcdata: e.target.files[0] };
-                setQuotationObj(quotWithFile);
-                console.log(quotationObj);
-              }}
-            />
-          </Button>
-        </Box>
       </DialogContent>
       <Divider />
       <DialogActions>

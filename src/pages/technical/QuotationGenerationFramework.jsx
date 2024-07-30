@@ -159,6 +159,8 @@ const QuotationGenerationFramework = () => {
   const submitAcceptQuantitySurvay = async (id, formData)=> {
     try {
       const response = await acceptQS(id, formData);
+      console.log("+".repeat(12))
+      console.log(formData);
       if (response.status === 200 || response.status === 201 || response.status === 204) {
         console.log("Successfully added quantity survay")
         fetchAllRequests();
@@ -173,6 +175,9 @@ const QuotationGenerationFramework = () => {
   const submitQuantitySurvay = async (id, formData) => {
     try {
       const response = await sendQS(id, formData);
+      console.log("+".repeat(12))
+      
+      console.log(formData);
       if (response.status === 200 || response.status === 201 || response.status === 204) {
         console.log("Successfully added quantity survay")
         fetchAllRequests();
@@ -228,6 +233,8 @@ const QuotationGenerationFramework = () => {
   const handleGrossMarginChange = (index, value) => {
     console.log(index, value);
     const updatedApplications = [...applications];
+    if(selectedRow.original.qcstatus === "in review") console.log("in review")
+
     updatedApplications[index].grossmargen = Number(value);
 
     // Recalculate totals whenever the gross margin is updated
@@ -354,12 +361,12 @@ const QuotationGenerationFramework = () => {
 
   // Submit QS button click
   const handleSubmitQSToComplete = () => {           
-    if (user?.Superviorr === "1" && applications.some(app => !app.name || app.items.some(item => !item.stockid || !item.price || !item.quantity || !item.description))) {
+    if (user?.Supervior === "1" && applications.some(app => !app.name || app.items.some(item => !item.stockid || !item.price || !item.quantity || !item.description))) {
       // console.log(app)
       alert('Please fill in all required fields.');
       return;
     }
-    if (user?.Superviorr !== "1" && applications.some(app => !app.name || app.items.some(item => !item.stockid ||  !item.quantity || !item.description))) {
+    if (user?.Supervior !== "1" && applications.some(app => !app.name || app.items.some(item => !item.stockid ||  !item.quantity || !item.description))) {
       // console.log(app)
       alert('Please fill in all required fields.');
       return;
@@ -369,6 +376,7 @@ const QuotationGenerationFramework = () => {
     // console.log(qsFormData);
     // console.log("#".repeat(10));
     if(selectedRow.original.qcstatus === "in review") {
+      console.log(qsFormData);
       submitAcceptQuantitySurvay(selectedRow.original.id,qsFormData);
       setAccceptModalOpen(false);
     }
@@ -417,6 +425,7 @@ const QuotationGenerationFramework = () => {
   const handleApplicationTitleChange = (appIndex, event) => {
     const newApplications = [...applications];
     newApplications[appIndex].name = event.target.value;
+    if(selectedRow.original.qcstatus === "in review") console.log("in review")
     setApplications(newApplications);
   };
 
@@ -443,6 +452,7 @@ const QuotationGenerationFramework = () => {
     newApplications[appIndex].items[itemIndex][field] = event.target.value;
     setApplications(newApplications);
     calculateTotals();
+    if(selectedRow.original.qcstatus === "in review") console.log("in review")
     console.log(applications)
   };
 
