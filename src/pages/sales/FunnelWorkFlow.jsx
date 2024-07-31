@@ -7,6 +7,8 @@ import {
 import {
     Box,
     Button,
+    capitalize,
+    Chip,
     Dialog,
     DialogActions,
     DialogContent,
@@ -48,6 +50,7 @@ import CalculateOutlinedIcon from '@mui/icons-material/CalculateOutlined';
 import ForwardToInboxOutlinedIcon from '@mui/icons-material/ForwardToInboxOutlined';
 import SwitchQS from './components/SwitchQs';
 import { showDeptEmployees } from 'apis/TechnicalApi/QuantitySurvayApi';
+import { Edit } from '@mui/icons-material';
 
 
 const statusList = [
@@ -77,6 +80,8 @@ const FunnelWorkFlow = () => {
     const [deptEmployees, setDeptEmployees] = useState([]);
     const [switchEmployee, setSwitchEmployee] = useState();
     const [switchData, setSwitchData] = useState({});
+    const [titleOfModal , setTitleOfModal] = useState('');
+    const [subTitleOfModal , setSubTitleOfModal] = useState('');
     const [editLeadData, setEditLeadData] = useState({
         clientName: '',
         location: '',
@@ -115,6 +120,7 @@ const FunnelWorkFlow = () => {
     // Use Effects
     useEffect(() => {
         if (selectedRow) {
+            console.log(selectedRow);
             setEditLeadData({
                 clientName: selectedRow.clientName,
                 location: selectedRow.location,
@@ -126,7 +132,9 @@ const FunnelWorkFlow = () => {
 
     // assign property to value 
     const handleEditChange = (e) => {
+        // console.log(e.target.name, e.target.value);
         const { name, value } = e.target;
+        console.log(name, value);
         setEditLeadData({
             ...editLeadData,
             [name]: value,
@@ -155,21 +163,19 @@ const FunnelWorkFlow = () => {
 
     };
     const handleApproveSubmit = (row) =>{
-        // console.log(row);
-        setSelectedRow(row);
-        submitApproveQuotation();
+        // console.log(row.original.id);
+        // setSelectedRow(row);
+        submitApproveQuotation(row.original.id);
     }
-    const submitApproveQuotation = async () => {
+    const submitApproveQuotation = async (id) => {
         try {
             console.log(selectedRow);
-            const response = await quotationApprove(selectedRow?.original.id);
+            const response = await quotationApprove(id);
             // console.log(response);
             if (response.status === 200 || response.status === 201 || response.status === 204) {
                 console.log("success approving");
                 // fetchAllRequests();  fetch all requests 
                 fetchLeads();
-                setIsSwitchModalOpen(false);
-
             }
         } catch (err) {
             console.error("Error approving", err);
@@ -186,31 +192,6 @@ const FunnelWorkFlow = () => {
         setIsSwitchModalOpen(true);
         setSwitchData(row.original);
     }
-
-
-    // // Updating Function
-    // const handleUpdateLead = async (id, values) => {
-    //     console.log("#".repeat(11))
-    //     console.log("----Values: ", values)
-    //     const updatedData = {
-    //         clients_id: values.clientName,
-    //         location: values.location,
-    //         description: values.description,
-    //     };
-    //     console.log("#".repeat(11))
-    //     console.log("----updatedData: ", updatedData);
-    //     try {
-    //         const response = await UpdateLead(id, updatedData);
-    //         console.log("#".repeat(11))
-    //         console.log("----Response: ", response);
-    //         if (response.status === 200 || response.status === 201) {
-    //             fetchLeads(); // Refresh the table data after a successful update
-    //             setIsEditing(false); // Close the editing modal
-    //         }
-    //     } catch (error) {
-    //         console.error('Error updating lead:', error);
-    //     }
-    // };
 
     // Upload funciton
     const handleFileChange = (event) => {
@@ -264,7 +245,27 @@ const FunnelWorkFlow = () => {
                 </Button>
             ),
         },
-        { accessorKey: 'status', header: 'Status' },
+        { accessorKey: 'status', header: 'Status', 
+            Cell: ({ cell }) => {
+                const value = cell.getValue();
+                let chipColor;
+                
+                if (value === "completed") {
+                  chipColor = "success";
+                } else if (value === "rejected") {
+                  chipColor = "error";
+                } else if (value.includes("pending")) {
+                  chipColor = "warning";
+                } else if (value === "Re-calculation" || value === "qutation back") {
+                  chipColor = "info";
+                } else {
+                  chipColor = "default";
+                }    
+            return (
+            <Chip label={cell.getValue()} variant='outlined' color={chipColor} sx={{fontSize:'14px',textTransform:'capitalize' ,width:'200px'}} >
+            </Chip>
+        )},
+    },
 
     ], [validationErrors]);
 
@@ -282,26 +283,21 @@ const FunnelWorkFlow = () => {
 
     // Update Functions 
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
-        // console.log("----Values: " , values);
-        setEditLeadData(
-            {
-                clientName: row.name,
-                location: row.location,
-                description: row.description
-            }
-        );
         const client = clientsList.filter((row) => {
             // console.log("Row name: ",row.name);
             // console.log("values name: ", values["client.name"]);
             return row.name === values["client.name"]
         })
         console.log('-----Client:', client);
+        console.log('-----Values:',values);
 
         const updatedData = {
-            clients_id: client[0]?.id,
-            location: values.location,
-            description: values.description,
+            clients_id: editLeadData.clientName,
+            location: editLeadData.location,
+            description: editLeadData.description,
         };
+        console.log("Values:");
+        console.log(values)
 
         try {
             console.log("UpdatedData: ", updatedData);
@@ -309,7 +305,7 @@ const FunnelWorkFlow = () => {
             console.log("Response: ", response);
             if (response.status === 200 || response.status === 201) {
                 fetchLeads(); // Refresh the table data after a successful update
-                setIsEditing(false); // Close the editing modal
+                exitEditingMode(true); // Close the editing modal
                 setEditLeadData(
                     {
                         clientName: '',
@@ -394,17 +390,23 @@ const FunnelWorkFlow = () => {
     // Reject Functions 
     const handleRejectRow = async (row) => {
         setSelectedRow(row);
+        setTitleOfModal("Lead Rejection");
+        setSubTitleOfModal("State the reason for the rejection:");
         setIsRejectModalOpen(true);
 
     };
     const handleClientReject =  (row) => {
         setSelectedRow(row);
         setIsClientRejectButton(true);
+        setTitleOfModal("Lead Rejection");
+        setSubTitleOfModal("State the reason for the rejection:");
         setIsRejectModalOpen(true)
     }
 
     const handleRecalculate =  (row) => {
         setSelectedRow(row);
+        setTitleOfModal("QS Recalculation");
+        setSubTitleOfModal("State the reason for the recalculation:");
         setIsClientRecalculateButton(true);
         setIsRejectModalOpen(true)
     }
@@ -553,9 +555,20 @@ const FunnelWorkFlow = () => {
         createDisplayMode: 'modal',
         editDisplayMode: 'modal',
         enableEditing: true,
+        muiTableBodyRowProps: ({ row, staticRowIndex, table }) => ({
+            onClick: (event) =>
+            {setEditLeadData(
+                {
+                    clientName: row?.original?.client.id,
+                    location: row?.original?.location,
+                    description: row?.original?.description,
+                })}, //import this helper function from material-react-table
+            // sx: { cursor: 'pointer' },
+        }),
+        
         state: {
-            isLoading: true,
-            showProgressBars: true
+            isLoading: false,
+            showProgressBars: false
         },
         enableFacetedValues: true,
         enableStickyHeader: true,
@@ -622,7 +635,7 @@ const FunnelWorkFlow = () => {
                     bgcolor: colors.grey[800],
                     borderRadius: '5px',
                 }}>
-                <DialogTitle variant="h3">
+                <DialogTitle variant="h6">
                     <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
                         <Lottie style={{ width: '30px', display: 'flex' }} animationData={Document} />
                         Edit Existing Lead
@@ -902,12 +915,7 @@ const FunnelWorkFlow = () => {
                 Add New Lead
             </Button>
         ),
-        state: {
-            isLoading: false,
-            isSaving: false,
-            showAlertBanner: false,
-            showProgressBars: false,
-        },
+        
     });
 
     return (
@@ -918,14 +926,14 @@ const FunnelWorkFlow = () => {
             <Dialog open={isRejectModalOpen} onClose={() => setIsRejectModalOpen(false)} fullWidth maxWidth="md">
                 <DialogTitle>
                     <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
-                        <Lottie style={{ width: '30px', display: 'flex' }} animationData={Document} />
-                        Lead Rejection
+                        <Lottie style={{ width: '30px', display: 'flex' }} animationData={Document} />                        
+                        {titleOfModal}
                     </Box>
                 </DialogTitle>
                 <Divider />
                 <DialogContent>
                     <Typography>
-                        Name the reason for rejection:
+                        {subTitleOfModal}
                     </Typography>
                     <TextField
                         margin="normal"
@@ -1045,9 +1053,7 @@ const FunnelWorkFlow = () => {
                         }
                     >
                         <Box>
-                            <p><strong>Client Name:</strong> {descriptionData?.client?.name}</p>
-                            <p><strong>Location:</strong> {descriptionData?.location}</p>
-                            <p><strong>Description:</strong> {descriptionData?.description}</p>
+                            <p> {descriptionData?.description}</p>
                         </Box>
                     </DialogContent>
                     <Divider />
@@ -1082,7 +1088,8 @@ const FunnelWorkFlow = () => {
                         onChange={(e) => setContractValue(Number(e.target.value))}
                         fullWidth
                         margin="normal"
-                      />
+                        sx={{mb:"30px"}}
+                        />
                         }
                         <input
                             style={{ display: 'none' }}
@@ -1094,12 +1101,21 @@ const FunnelWorkFlow = () => {
                             <Button variant="outlined" color="secondary" component="span">
                                 Upload File
                             </Button>
+                            <Box sx={{display:"inline"}}>
                             <Typography
-                                sx={{ color: colors.primary[100], display: 'inline', marginLeft: '10px' }}
-                            >
-                                Upload The Request Quantity Survey Zipped File
+                                sx={{ color: colors.grey[300], display: 'inline  ',marginLeft:'10px',marginTop: '10px', textAlign: 'start' }}
+                                >
+                                If there is more than one file please upload it as a zipped file.
                             </Typography>
+                            {/* <Typography
+                                sx={{ color: colors.primary[100], display: 'inline', marginLeft: '10px' }}
+                                >
+                                Upload File 
+                            </Typography> */}
+                                
+                                </Box>
                         </label>
+                            
                     </DialogContent>
                     <Divider />
                     <DialogActions>

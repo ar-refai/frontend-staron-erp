@@ -1,4 +1,4 @@
-import { Box, Dialog, DialogContent, DialogTitle, Divider, FormControl, InputLabel, Select , MenuItem, DialogActions, Button} from '@mui/material'
+import { Box, Dialog, DialogContent, DialogTitle, Divider, FormControl, InputLabel, Select , MenuItem, DialogActions, Button, Typography} from '@mui/material'
 import Lottie from 'lottie-react'
 import Document from '../../../assets/lottie/document.json';
 
@@ -10,12 +10,17 @@ const SwitchQS = ({ isOpen, onClose, deptEmployees, switchEmployee, onSwitchChan
             <DialogTitle>
                 <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
                     <Lottie style={{ width: '30px', display: 'flex' }} animationData={Document} />
-                    Assign QS
+                    Assign Lead
                 </Box>
 
             </DialogTitle>
             <Divider />
             <DialogContent sx={{ width: "600px" }}>
+                 <Typography sx={{
+                    color:"#c1c1c1"
+                 }}>
+                    Assign the lead to another employee:
+                </Typography>
                 <FormControl fullWidth margin="normal">
                     <InputLabel>Assign To:</InputLabel>
                     <Select

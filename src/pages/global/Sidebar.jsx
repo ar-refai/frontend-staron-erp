@@ -215,7 +215,7 @@ export default function MiniDrawer() {
         <Divider />
         <List sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
 
-          <Typography
+          {/* <Typography
 
             variant="h6"
             color={colors.grey[300]}
@@ -230,8 +230,8 @@ export default function MiniDrawer() {
             </Box> // Change cursor to pointer when hovered
 
             }
-          </Typography>
-          <Item
+          </Typography> */}
+          {/* <Item
             key={"dashboard"}
             title="Dashboard"
             to="/global/dashboard"
@@ -275,7 +275,7 @@ export default function MiniDrawer() {
             icon={<QueryStatsOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
-          />
+          /> */}
 
           <Typography
             variant="h6"

@@ -56,6 +56,7 @@ export const CreateLead = async (formdata) => {
 };
 
 export const UpdateLead = async (id, formdata) => {
+  console.log(formdata);
   try {
     const response = await instance.post('/sales/Crm/' + id + '/update', formdata);
     return response.data;

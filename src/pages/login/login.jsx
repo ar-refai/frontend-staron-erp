@@ -94,7 +94,7 @@ const Login = () => {
                         onChange={handleChange}
                         error={!!emailError}
                         helperText={emailError}
-                        label="Standard warning"
+                        label="Email"
                         variant="filled"
                         sx={{
                             "& .MuiInputLabel-root.Mui-focused": {

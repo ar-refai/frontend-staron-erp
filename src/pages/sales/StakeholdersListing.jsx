@@ -70,66 +70,66 @@ const StakeholdersListing = () => {
     }, []);
 
     const handleCreateNewRow = async (values) => {
-      try {
-          const response = await CreateClient(values);
-          console.log(response);
-          console.log(response.message);
-  
-          console.log("=".repeat(44));
-          if (response && (response.status === 201 || response.status === 200)) {
-              // Fetch the updated list of clients after successful creation
-              const updatedClientsResponse = await showAllClients();
-              if (updatedClientsResponse && updatedClientsResponse.status === 200) {
-                  setTableData(updatedClientsResponse.data);
-              } else {
-                  throw new Error('Failed to fetch updated clients list');
-              }
-  
-              setModalOpen(false); // Close modal after successful creation
-              setSnackbarSeverity('success');
-              setSnackbarMessage(response.message);
-              setSnackbarOpen(true);
-          } else {
-              throw new Error('Creation failed: Empty response data');
-          }
-      } catch (error) {
-          console.error('Error creating client:', error);
-          setSnackbarSeverity('error');
-          setSnackbarMessage('Failed to create client');
-          setSnackbarOpen(true);
-      }
-  };
-  
-  
+        try {
+            const response = await CreateClient(values);
+            console.log(response);
+            console.log(response.message);
+
+            console.log("=".repeat(44));
+            if (response && (response.status === 201 || response.status === 200)) {
+                // Fetch the updated list of clients after successful creation
+                const updatedClientsResponse = await showAllClients();
+                if (updatedClientsResponse && updatedClientsResponse.status === 200) {
+                    setTableData(updatedClientsResponse.data);
+                } else {
+                    throw new Error('Failed to fetch updated clients list');
+                }
+
+                setModalOpen(false); // Close modal after successful creation
+                setSnackbarSeverity('success');
+                setSnackbarMessage(response.message);
+                setSnackbarOpen(true);
+            } else {
+                throw new Error('Creation failed: Empty response data');
+            }
+        } catch (error) {
+            console.error('Error creating client:', error);
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Failed to create client');
+            setSnackbarOpen(true);
+        }
+    };
+
+
 
     const handleUpdateRow = async (id, values) => {
-      try {
-          const response = await updateClient(id, values);
-          console.log(response);
-          console.log(response.message);
-          
-          console.log("=".repeat(44));
-          if (response && response.status === 201) {
-              setTableData((prevTableData) =>
-                  prevTableData.map((row) =>
-                      row.id === id ? { ...row, ...values } : row
-                  )
-              );
-              setModalOpen(false); // Close modal after successful update
-              setSnackbarSeverity('success');
-              setSnackbarMessage(response.message);
-              setSnackbarOpen(true);
-          } else {
-              throw new Error('Update failed: Empty response data');
-          }
-      } catch (error) {
-          console.error('Error updating client:', error.message);
-          setSnackbarSeverity('error');
-          setSnackbarMessage('Failed to update client');
-          setSnackbarOpen(true);
-      }
-  };
-  
+        try {
+            const response = await updateClient(id, values);
+            console.log(response);
+            console.log(response.message);
+
+            console.log("=".repeat(44));
+            if (response && response.status === 201) {
+                setTableData((prevTableData) =>
+                    prevTableData.map((row) =>
+                        row.id === id ? { ...row, ...values } : row
+                    )
+                );
+                setModalOpen(false); // Close modal after successful update
+                setSnackbarSeverity('success');
+                setSnackbarMessage(response.message);
+                setSnackbarOpen(true);
+            } else {
+                throw new Error('Update failed: Empty response data');
+            }
+        } catch (error) {
+            console.error('Error updating client:', error.message);
+            setSnackbarSeverity('error');
+            setSnackbarMessage('Failed to update client');
+            setSnackbarOpen(true);
+        }
+    };
+
 
     const handleDeleteRow = async (id) => {
         try {
