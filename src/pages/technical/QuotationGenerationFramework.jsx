@@ -15,7 +15,7 @@ import Book from '../../assets/lottie/book.json';
 import { ShowAllRequests, startQS, sendQS, rejectQS, showDeptEmployees, assignEmployee, rejectInReviewQS ,ShowRequest, acceptQS} from 'apis/TechnicalApi/QuantitySurvayApi';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import PlayCircleFilledWhiteOutlinedIcon from '@mui/icons-material/PlayCircleFilledWhiteOutlined';
-import { CheckCircleOutlined, SettingsApplications, ThumbUpAlt, VisibilityOutlined } from '@mui/icons-material';
+import { CheckCircleOutlined, ThumbUpAlt, VisibilityOutlined } from '@mui/icons-material';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import AssignQS from './components/AssignQS';
 import RejectInReviewModal from './components/RejectInReviewModal';
@@ -164,6 +164,9 @@ const QuotationGenerationFramework = () => {
   // add new QS
   const submitQuantitySurvay = async (id, formData) => {
     try {
+
+      console.log("+".repeat(12));
+      console.log(formData);
       const response = await sendQS(id, formData);
       console.log("+".repeat(12))
       
@@ -218,8 +221,8 @@ const handleSupervisorAccept = async (row) => {
       ProjectGrossMargin: newObj.reduce((acc, app) => acc + app.grossmargen, 0),
     }));
 
-    console.log("== The data fetched:");
-    console.log(newObj);
+    // console.log("== The data fetched:");
+    // console.log(newObj);
   } catch (error) {
     console.error('Error Fetching:', error);
   } finally {
@@ -402,12 +405,16 @@ const handleSupervisorAccept = async (row) => {
       return;
     }
     const qsFormData = { ...quotationObj };
-    if(selectedRow.original.qcstatus === "in review") {
-      console.log(qsFormData);
+    // console.log(quotationObj);
+    // console.log(qsFormData);
+
+    if(selectedRow.original.qcstatus === "in review" || selectedRow.original.qcstatus === "Re-calculation") {
+      // console.log(qsFormData);
       submitAcceptQuantitySurvay(selectedRow?.original.id,qsFormData);
       setAccceptModalOpen(false);
     }
     else {
+
       submitQuantitySurvay(selectedRow?.original.id, qsFormData);
       setIsTechnicalRFQModalOpen(false);
     }
@@ -428,6 +435,7 @@ const handleSupervisorAccept = async (row) => {
     }]);
     
     fetchAllRequests();
+
   };
 
   // Add Application Button
@@ -481,7 +489,8 @@ const handleSupervisorAccept = async (row) => {
     calculateTotals();
     console.log(applications);
     if(selectedRow.original.qcstatus === "in review") console.log("in review")
-    console.log(applications)
+    console.log(applications);
+    setQuotationObj({...quotationObj, qc: applications});
   };
 
   // First Reject Button Clicked
@@ -612,8 +621,7 @@ const handleSupervisorAccept = async (row) => {
 
           {row.original.qcstatus === 'in progress'  &&
           row.original?.user.name === user?.name && (
-            <>
-              {/* if the start request fulfilled show this button */}
+       
               <Tooltip
                 TransitionComponent={Zoom}
                 // arrow 
@@ -627,16 +635,58 @@ const handleSupervisorAccept = async (row) => {
                     }
                   }
                 }}
-              >
+                >
+                {/* if the start request fulfilled show this button */}
                 <IconButton color="success" sx={{ m: '4px' }} onClick={() => handleSubmitQS(row)}>
                   <CheckCircleOutlined sx={{ fontSize: '26px' }} />
                 </IconButton>
               </Tooltip>
+            
+          )}
+        {(row.original.qcstatus === 'Qutation Back' && (user?.Supervisor === "1" || user?.Supervisor === null)) && (
+            <>
+              {/* Acception In Review*/}
+              <Tooltip
+                title="Submit"
+                TransitionComponent={Zoom}
+                // arrow 
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      color: '#262625',
+                      backgroundColor: "#E1E1E1",
+                      fontSize: "12px"
+                    }
+                  }
+                }}
+              >
+                <IconButton aria-hidden={true} color="success" sx={{ ml: '4px' }} onClick={() => handleSupervisorAccept(row)}>
+                <CheckCircleOutlined sx={{ fontSize: '26px' }} />
+                </IconButton>
+              </Tooltip>
 
 
+              {/* Rejection In Review*/}
+              <Tooltip
+                title="Reject"
+                TransitionComponent={Zoom}
+                // arrow 
+                componentsProps={{
+                  tooltip: {
+                    sx: {
+                      color: '#262625',
+                      backgroundColor: "#E1E1E1",
+                      fontSize: "12px"
+                    }
+                  }
+                }}
+              >
+                <IconButton color="error" sx={{ ml: '4px' }} onClick={() => handleSeconedReject(row)}>
+                  <ThumbDownIcon sx={{ fontSize: '26px' }} />
+                </IconButton>
+              </Tooltip>
             </>
           )}
-
           {/* third state in review */}
           {(row.original.qcstatus === 'in review' && (user?.Supervisor === "1" || user?.Supervisor === null)) && (
             <>
@@ -707,7 +757,27 @@ const handleSupervisorAccept = async (row) => {
             </>
 
           )}
-
+          {/* {console.log(selectedRow)} */}
+          {row.original.qcstatus === 'Re-calculation' && (user?.Supervior === "1" || user?.Supervior == null) && (
+                          <Tooltip
+                          title="Accept"
+                          TransitionComponent={Zoom}
+                          // arrow 
+                          componentsProps={{
+                            tooltip: {
+                              sx: {
+                                color: '#262625',
+                                backgroundColor: "#E1E1E1",
+                                fontSize: "12px"
+                              }
+                            }
+                          }}
+                        >
+                          <IconButton aria-hidden={true} color="success" sx={{ ml: '4px' }} onClick={() => handleSupervisorAccept(row)}>
+                          <CheckCircleOutlined sx={{ fontSize: '26px' }} />
+                          </IconButton>
+                        </Tooltip>
+          ) }
 
 
           {/* fourth state completed */}
@@ -822,28 +892,28 @@ const handleSupervisorAccept = async (row) => {
           handleSeconedRejectReasonChange={handleSeconedRejectReasonChange}
       />
 
-    <AcceptQSModal 
-    accceptedModalOpen = {accceptedModalOpen}
-    setAccceptModalOpen= {setAccceptModalOpen}
-    user= {user}
-    totalCost ={totalCost}
-    totalProjectSellingPrice = {totalProjectSellingPrice}
-    totalGrossMargin = {totalGrossMargin}
-    applications = {applications}
-    handleApplicationTitleChange ={handleApplicationTitleChange}
-    handleGrossMarginChange = {handleGrossMarginChange}
-    handleAddItem = {handleAddItem}
-    handleItemChange = {handleItemChange} 
-    handleRemoveItem = {handleRemoveItem}
-    handleAddApplication = {handleAddApplication}
-    handleRemoveApplication = {handleRemoveApplication}
-    // setFile ={setFile}
-    quotationObj = {quotationObj}
-    setQuotationObj = {setQuotationObj}
-    handleSubmitQSToComplete={handleSubmitQSToComplete}
-    selectedRow={selectedRow}
-    
-/>
+      <AcceptQSModal 
+      accceptedModalOpen = {accceptedModalOpen}
+      setAccceptModalOpen= {setAccceptModalOpen}
+      user= {user}
+      totalCost ={totalCost}
+      totalProjectSellingPrice = {totalProjectSellingPrice}
+      totalGrossMargin = {totalGrossMargin}
+      applications = {applications}
+      handleApplicationTitleChange ={handleApplicationTitleChange}
+      handleGrossMarginChange = {handleGrossMarginChange}
+      handleAddItem = {handleAddItem}
+      handleItemChange = {handleItemChange} 
+      handleRemoveItem = {handleRemoveItem}
+      handleAddApplication = {handleAddApplication}
+      handleRemoveApplication = {handleRemoveApplication}
+      // setFile ={setFile}
+      quotationObj = {quotationObj}
+      setQuotationObj = {setQuotationObj}
+      handleSubmitQSToComplete={handleSubmitQSToComplete}
+      selectedRow={selectedRow}
+      
+  />
       {/* Preview QS Data (completed) */}
       <Dialog maxWidth="lg" open={isQSModalOpen} onClose={() => setIsQSModalOpen(false)}>
         <DialogTitle>
@@ -1013,7 +1083,7 @@ const handleSupervisorAccept = async (row) => {
                         />
 
                         {
-                          (user.Supervisor === "1" && user.Supervior == null) &&
+                          (user?.Supervisor === "1" || user?.Supervior == null) &&
                           <TextField
                             label="Price"
                             variant="filled"

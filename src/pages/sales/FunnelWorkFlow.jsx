@@ -50,15 +50,7 @@ import CalculateOutlinedIcon from '@mui/icons-material/CalculateOutlined';
 import ForwardToInboxOutlinedIcon from '@mui/icons-material/ForwardToInboxOutlined';
 import SwitchQS from './components/SwitchQs';
 import { showDeptEmployees } from 'apis/TechnicalApi/QuantitySurvayApi';
-import { Edit } from '@mui/icons-material';
 
-
-const statusList = [
-    'pending client data', 'pending qs', 'qs in progress', 'out of scope', 'missing info',
-    'pending drafting', 'drafting in progress', 'drafting recalculation',
-    'pending admin approve', 'admin approved', 'pending client data', 'client recalculation',
-    'pending contract', 'pending variation'
-];
 
 const FunnelWorkFlow = () => {
     // Status Variables
@@ -74,7 +66,6 @@ const FunnelWorkFlow = () => {
     const [isRejectModalOpen, setIsRejectModalOpen] = useState(false);
     const [rejectReason, setRejectReason] = useState('');
     const [selectedFile, setSelectedFile] = useState(null);
-    const [isEditing, setIsEditing] = useState(false);
     // Switch Modal States
     const [isSwitchModalOpen, setIsSwitchModalOpen] = useState(false);
     const [deptEmployees, setDeptEmployees] = useState([]);
@@ -251,15 +242,15 @@ const FunnelWorkFlow = () => {
                 let chipColor;
                 
                 if (value === "completed") {
-                  chipColor = "success";
+                    chipColor = "success";
                 } else if (value === "rejected") {
-                  chipColor = "error";
+                    chipColor = "error";
                 } else if (value.includes("pending")) {
-                  chipColor = "warning";
+                    chipColor = "warning";
                 } else if (value === "Re-calculation" || value === "qutation back") {
-                  chipColor = "info";
+                    chipColor = "info";
                 } else {
-                  chipColor = "default";
+                    chipColor = "default";
                 }    
             return (
             <Chip label={cell.getValue()} variant='outlined' color={chipColor} sx={{fontSize:'14px',textTransform:'capitalize' ,width:'200px'}} >
