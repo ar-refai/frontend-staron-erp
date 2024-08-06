@@ -15,13 +15,11 @@ import Book from '../../assets/lottie/book.json';
 import { ShowAllRequests, startQS, sendQS, rejectQS, showDeptEmployees, assignEmployee, rejectInReviewQS ,ShowRequest, acceptQS} from 'apis/TechnicalApi/QuantitySurvayApi';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import PlayCircleFilledWhiteOutlinedIcon from '@mui/icons-material/PlayCircleFilledWhiteOutlined';
-import { CheckCircleOutlined, ThumbUpAlt, VisibilityOutlined } from '@mui/icons-material';
+import { CheckCircleOutlined, SettingsApplications, ThumbUpAlt, VisibilityOutlined } from '@mui/icons-material';
 import AssignmentIndOutlinedIcon from '@mui/icons-material/AssignmentIndOutlined';
 import AssignQS from './components/AssignQS';
 import RejectInReviewModal from './components/RejectInReviewModal';
 import AcceptQSModal from './components/AcceptQSModal';
-// import RejectInReviewModal from './components/RejectInReviewModal';
-// import AcceptModal from './components/AcceptModal';
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === 'dark' ? '#363636' : '#fff',
@@ -61,6 +59,8 @@ const QuotationGenerationFramework = () => {
   const [totalProjectSellingPrice, setTotalProjectSellingPrice] = useState(0);
   const [totalCost, setTotalCost] = useState(0);
   const [file, setFile] = useState(null);
+  const [loadingAcceptModal, setLoadingAcceptModal] = useState(false);
+
   const [applications, setApplications] = useState([
     {
       name: '',
@@ -97,7 +97,6 @@ const QuotationGenerationFramework = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const user = JSON.parse(localStorage.getItem('staron_user'));
-
 
   // Use Effects
   useEffect(() => {
@@ -146,16 +145,7 @@ const QuotationGenerationFramework = () => {
       console.error('Error fetching data:', error);
     }
   }
-  const fetchRequest = async (id)=> {
-    try {
-      const response = await ShowRequest(id);
-      if (response.status === 200 || response.status === 201 || response.status === 204) {
-        setQsData(response.data);
-      }
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-  }
+  
   const submitAcceptQuantitySurvay = async (id, formData)=> {
     try {
       const response = await acceptQS(id, formData);
@@ -187,7 +177,56 @@ const QuotationGenerationFramework = () => {
 
     }
   }
+  
 
+  // Supervisor Accept Applications
+  // Supervisor Accept Applications
+const handleSupervisorAccept = async (row) => {
+  try {
+    setLoadingAcceptModal(true); // Start loading
+    setSelectedRow(row);
+    console.log("+".repeat(21));
+    console.log(row)
+    console.log(selectedRow);
+
+    // Fetch the request data using the provided API function
+    const response = await ShowRequest(row?.original?.id);
+
+    // Map the fetched data to match the structure expected for applications
+    const newObj = response.data.qc.map((qcApplication) => ({
+      name: qcApplication.name,
+      grossmargen: parseFloat(qcApplication.grossmargen),
+      totalcost: parseFloat(qcApplication.totalcost),
+      salingprice: parseFloat(qcApplication.salingprice),
+      items: qcApplication.qc_applecation_item.map((item) => ({
+        stockid: item.stockid,
+        price: parseFloat(item.price),
+        description: item.description,
+        quantity: parseFloat(item.quantity),
+      })),
+    }));
+
+    // Update the applications state with the new data
+    setApplications(newObj);
+
+    // Optionally, update the quotationObj state if needed
+    setQuotationObj((prev) => ({
+      ...prev,
+      qc: newObj,
+      totalcost: newObj.reduce((acc, app) => acc + app.totalcost, 0),
+      TotalProjectSellingPrice: newObj.reduce((acc, app) => acc + app.salingprice, 0),
+      ProjectGrossMargin: newObj.reduce((acc, app) => acc + app.grossmargen, 0),
+    }));
+
+    console.log("== The data fetched:");
+    console.log(newObj);
+  } catch (error) {
+    console.error('Error Fetching:', error);
+  } finally {
+    setLoadingAcceptModal(false); // End loading
+    setAccceptModalOpen(true); // Open the modal
+  }
+};
 
   // QS Submit Modal
   const calculateTotals = () => {
@@ -248,13 +287,8 @@ const QuotationGenerationFramework = () => {
     setAssignData(row.original);
   }
 
-  // const handleSuccessModal = (row) => {
-  //   isAccceptModalOpen(true);
-  // }
 
   const handleSubmitAssignedEmployee = async (assignedEmployeeID) => {
-    // console.log(assignedEmployeeID);
-    // console.log(assignData);
     try {
       const formData = {
         "asign_for_user": assignedEmployeeID,
@@ -276,7 +310,7 @@ const QuotationGenerationFramework = () => {
   const handleSeconedRejectSubmit = async () => {
     // console.log(assignedEmployeeID);
     // console.log(assignData);
-    const id  = selectedRow.original.id;
+    const id  = selectedRow?.original.id;
     
     try {
       const formData = {
@@ -298,6 +332,8 @@ const QuotationGenerationFramework = () => {
 
   // Start QS Button
   const handleStartQS = async (row) => {
+    console.log(row.original.asign_for_user);
+    console.log(user?.id)
     try {
       const response = await startQS(row?.original?.id);
       console.log(response);
@@ -312,12 +348,6 @@ const QuotationGenerationFramework = () => {
     }
   }
 
-  // // Preview Data Button
-  // const handlePreviewQSData = (row) => {
-  //   setQsData(row.original.qcdata); // assuming each row has a qsData property
-  //   // console.log(row);
-  //   setIsQSModalOpen(true);
-  // };
 
   const handleRejectRow = async () => {
     try {
@@ -361,27 +391,24 @@ const QuotationGenerationFramework = () => {
 
   // Submit QS button click
   const handleSubmitQSToComplete = () => {           
-    if (user?.Supervior === "1" && applications.some(app => !app.name || app.items.some(item => !item.stockid || !item.price || !item.quantity || !item.description))) {
+    if ((user?.Supervior === "1" || user?.Supervisor == null) && applications.some(app => !app.name || app.items.some(item => !item.stockid || !item.price || !item.quantity || !item.description))) {
       // console.log(app)
       alert('Please fill in all required fields.');
       return;
     }
-    if (user?.Supervior !== "1" && applications.some(app => !app.name || app.items.some(item => !item.stockid ||  !item.quantity || !item.description))) {
+    if ((user?.Supervior !== "1"|| user?.Supervior != null) && applications.some(app => !app.name || app.items.some(item => !item.stockid ||  !item.quantity || !item.description))) {
       // console.log(app)
       alert('Please fill in all required fields.');
       return;
     }
     const qsFormData = { ...quotationObj };
-    // console.log("#".repeat(10));
-    // console.log(qsFormData);
-    // console.log("#".repeat(10));
     if(selectedRow.original.qcstatus === "in review") {
       console.log(qsFormData);
-      submitAcceptQuantitySurvay(selectedRow.original.id,qsFormData);
+      submitAcceptQuantitySurvay(selectedRow?.original.id,qsFormData);
       setAccceptModalOpen(false);
     }
     else {
-      submitQuantitySurvay(selectedRow.original.id, qsFormData);
+      submitQuantitySurvay(selectedRow?.original.id, qsFormData);
       setIsTechnicalRFQModalOpen(false);
     }
     
@@ -452,6 +479,7 @@ const QuotationGenerationFramework = () => {
     newApplications[appIndex].items[itemIndex][field] = event.target.value;
     setApplications(newApplications);
     calculateTotals();
+    console.log(applications);
     if(selectedRow.original.qcstatus === "in review") console.log("in review")
     console.log(applications)
   };
@@ -464,14 +492,13 @@ const QuotationGenerationFramework = () => {
 
   const handleSeconedReject = (row) => {
     setSelectedRow(row);
-    // console.log(row);
     setIsInReviewModalOpen(true);
   }
 
   const columns = useMemo(() => [
     { accessorKey: 'id', header: '#' },
     { accessorKey: 'sales_crm.client.name', header: 'Client Name' },
-    // { accessorKey: `user.name`, header: 'Assigned To', Cell: ({ cell }) => (<Typography>{cell.getValue() || "N/A"}</Typography>) },
+    { accessorKey: `user.name`, header: 'Assigned To', Cell: ({ cell }) => (<Typography>{cell.getValue() || "N/A"}</Typography>) },
     { accessorKey: 'sales_crm.location', header: 'Location' },
     { accessorKey: 'sales_crm.description', header: 'Description' },
     {
@@ -503,9 +530,9 @@ const QuotationGenerationFramework = () => {
             }}
           >
             <Link
-              to={`http://api.staronegypt.com.eg/public/${row.original.sales_crm.tasbuilt}`}
+              to={`https://erpsystem.darakoutlet.com/public/${row.original.sales_crm.tasbuilt}`}
               target="_blank"
-              onClick={() => { console.log(`http://api.staronegypt.com.eg/api/v1${row.original.sales_crm.tasbuilt}`) }}>
+              onClick={() => { console.log(`https://erpsystem.darakoutlet.com/api/v1${row.original.sales_crm.tasbuilt}`) }}>
               <IconButton color="info" sx={{ m: '4px' }}>
                 <DocumentScanner sx={{ fontSize: '26px' }}>
                 </DocumentScanner>
@@ -556,10 +583,11 @@ const QuotationGenerationFramework = () => {
               </Tooltip>
             </>
           )}
-
+          {/* {console.log(row)} */}
           {/* seconed state pending */}
-          {row.original.qcstatus === 'pending' && (
+          {row.original.qcstatus === 'pending' && row.original.asign_for_user == user?.id && (
             <>
+            
               {/* when clicked change the status that hides the submit QS button and shows the start button */}
               <Tooltip
                 TransitionComponent={Zoom}
@@ -582,9 +610,8 @@ const QuotationGenerationFramework = () => {
             </>
           )}
 
-          {/* third state in progress */}
-          {row.original.qcstatus === 'in progress' &&
-          row.original.user.name === user.name && (
+          {row.original.qcstatus === 'in progress'  &&
+          row.original?.user.name === user?.name && (
             <>
               {/* if the start request fulfilled show this button */}
               <Tooltip
@@ -611,7 +638,7 @@ const QuotationGenerationFramework = () => {
           )}
 
           {/* third state in review */}
-          {(row.original.qcstatus === 'in review' && user?.Supervisor === "1") && (
+          {(row.original.qcstatus === 'in review' && (user?.Supervisor === "1" || user?.Supervisor === null)) && (
             <>
               {/* Acception In Review*/}
               <Tooltip
@@ -628,12 +655,7 @@ const QuotationGenerationFramework = () => {
                   }
                 }}
               >
-                <IconButton aria-hidden={true} color="success" sx={{ ml: '4px' }} onClick={() => {
-                  setAccceptModalOpen(true); //
-                  setSelectedRow(row);
-                  // console.log(row);
-                  // handleSubmitQS(row)
-                  }}>
+                <IconButton aria-hidden={true} color="success" sx={{ ml: '4px' }} onClick={() => handleSupervisorAccept(row)}>
                   <ThumbUpAlt sx={{ fontSize: '26px' }} />
                 </IconButton>
               </Tooltip>
@@ -660,7 +682,8 @@ const QuotationGenerationFramework = () => {
               </Tooltip>
             </>
           )}
-          {(row.original.qcstatus === 'reject back' && user?.Supervisor !== "1") && (
+          {/* {console.log(row.original.qcstatus === 'reject back' && user?.Supervisor !== "1" && user?.Supervior != null)} */}
+          {row.original.qcstatus === 'reject back' && row.original.asign_for_user == user?.id  && (
             <>
               {/* when clicked change the status that hides the submit QS button and shows the start button */}
               <Tooltip
@@ -704,7 +727,7 @@ const QuotationGenerationFramework = () => {
               }}
             >
               <Link
-                to={`http://api.staronegypt.com.eg/public/${row.original.qcdata}`}
+                to={`https://erpsystem.darakoutlet.com/public/${row.original.qcdata}`}
                 target="_blank"
               >
                 <IconButton sx={{ m: '4px' }}>
@@ -801,7 +824,7 @@ const QuotationGenerationFramework = () => {
 
     <AcceptQSModal 
     accceptedModalOpen = {accceptedModalOpen}
-    setAccceptedModalOpen= {setAccceptModalOpen}
+    setAccceptModalOpen= {setAccceptModalOpen}
     user= {user}
     totalCost ={totalCost}
     totalProjectSellingPrice = {totalProjectSellingPrice}
@@ -814,10 +837,12 @@ const QuotationGenerationFramework = () => {
     handleRemoveItem = {handleRemoveItem}
     handleAddApplication = {handleAddApplication}
     handleRemoveApplication = {handleRemoveApplication}
-    setFile ={setFile}
+    // setFile ={setFile}
     quotationObj = {quotationObj}
     setQuotationObj = {setQuotationObj}
     handleSubmitQSToComplete={handleSubmitQSToComplete}
+    selectedRow={selectedRow}
+    
 />
       {/* Preview QS Data (completed) */}
       <Dialog maxWidth="lg" open={isQSModalOpen} onClose={() => setIsQSModalOpen(false)}>
@@ -883,14 +908,14 @@ const QuotationGenerationFramework = () => {
 
           <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
             <Lottie style={{ width: '40px', display: 'flex' }} animationData={Basket} />
-            Quantity Survay Submit :
+            Quantity Survey Submit :
           </Box>
         </DialogTitle>
         <Divider />
         <DialogContent sx={{ minWidth: '700px' }}>
 
           {/* The total cost */}
-          {user?.Supervisor === "1" &&
+          {(user?.Supervisor === "1" || user?.Supervior == null) &&
             <>
               <Stack spacing={2}>
                 <Item sx={{ display: "flex", justifyContent: "space-between" }}>
@@ -924,7 +949,7 @@ const QuotationGenerationFramework = () => {
                   fullWidth
                   margin="normal"
                 />
-                {user?.Supervisor === "1" &&
+                {(user?.Supervisor === "1" || user?.Supervisor == null) &&
 
                   <TextField
                     variant='filled'
@@ -951,13 +976,32 @@ const QuotationGenerationFramework = () => {
                 <TransitionGroup>
                   {app.items.map((item, itemIndex) => (
                     <Collapse key={itemIndex}>
-                      <Box display="flex" flexDirection="column" mt={2} sx={{ background: colors.grey[800], padding: '10px', borderRadius: '10px', boxShadow: "2px 3px 6px rgba(0,0,0,0.6)" }}>
-                        <Typography variant='h5' mt={2} sx={{ textTransform: "uppercase" }}>
-                          <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
+                      <Box 
+                      display="flex" 
+                      flexDirection="column" 
+                      mt={2} 
+                      sx={{ 
+                        background: colors.grey[800], 
+                        padding: '10px', 
+                        borderRadius: '10px', 
+                        boxShadow: "2px 3px 6px rgba(0,0,0,0.6)" }}>
+                          {/* Item Title */}
+                        <Typography 
+                        variant='h5'
+                        mt={2} 
+                        sx={{ textTransform: "uppercase" }}>
+                          <Box 
+                          sx={{ 
+                            display: "flex", 
+                            flexDirection: "row", 
+                            alignItems: "center", 
+                            gap: "10px", 
+                            textTransform: "uppercase" }}>
 
                             <Lottie style={{ width: '30px', display: 'flex' }} animationData={Book} />
                             Item {itemIndex + 1}:
                           </Box>
+
                         </Typography>
                         <TextField
                           label="Stock Code"
@@ -969,7 +1013,7 @@ const QuotationGenerationFramework = () => {
                         />
 
                         {
-                          user?.Supervisor === "1" &&
+                          (user.Supervisor === "1" && user.Supervior == null) &&
                           <TextField
                             label="Price"
                             variant="filled"
@@ -1050,7 +1094,7 @@ const QuotationGenerationFramework = () => {
               sx={{ margin: 'auto', width: "300px" }}
               startIcon={<CloudUploadIcon />}
             >
-              Upload QS Data (optional)
+              Upload Additional Data (optional)
               <VisuallyHiddenInput type="file" onChange={(e) => {
                 setFile(e.target.files[0]);
                 const quotWithFile = { ...quotationObj, qcdata: e.target.files[0] }

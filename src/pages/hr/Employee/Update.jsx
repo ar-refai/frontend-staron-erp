@@ -94,7 +94,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
             Trancportation: Yup.number().required("Transportation is required"),
             kpi: Yup.number().required("KPI is required"),
             tax: Yup.number().required("Tax is required"),
-            Supervisor: Yup.string().required("Supervisor is required"),
+            Supervisor: Yup.string(),
             EmploymentDate: Yup.date().required("Employment date is required"),
         }),
         Yup.object().shape({
@@ -193,7 +193,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
 
                 <Grid container justifyContent="center" alignItems="center" sx={{ mb: 3 }}>
                     {initialValues.profileimage && (
-                        <Avatar alt="Profile Image" src={`http://api.staronegypt.com.eg/${initialValues.profileimage}`} sx={{ width: 100, height: 100, mb: 2 }} />
+                        <Avatar alt="Profile Image" src={`https://erpsystem.darakoutlet.com/${initialValues.profileimage}`} sx={{ width: 100, height: 100, mb: 2 }} />
                     )}
                 </Grid>
                 <Formik
@@ -240,11 +240,11 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
                                                 >
                                                     <DesktopDatePicker
                                                     name="date"
-                                                    label="Date"
+                                                    label="Date Of Birth"
                                                     views={["year", "month", "day"]}
                                                     format="YYYY-MM-DD"
 
-                                                    defaultValue={dayjs(formikProps.values.date)} 
+                                                    value={dayjs(formikProps.values.date)} 
                                                     onChange={(value) => formikProps.setFieldValue("date", value)}
                                                     renderInput={(params) => <TextField {...params} fullWidth />}
 
@@ -267,7 +267,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
                                         {activeStep === 1 && (
                                             <Grid container spacing={2}>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="department" as={TextField} defaultValue={formikProps.values.department} label="Department" fullWidth select helperText={<ErrorMessage name="department" />}>
+                                                    <Field name="department" as={TextField} DefaultValue={formikProps.values.department} label="Department" fullWidth select helperText={<ErrorMessage name="department" />}>
                                                     {/* {console.log(initialValues.department)} */}
                                                     <MenuItem key="Administration" value="Administration">Administration</MenuItem>
                                                     <MenuItem key="Executive" value="Executive">Executive</MenuItem>
@@ -303,10 +303,27 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
                                                     <Field name="tax" as={TextField} label="Tax" fullWidth helperText={<ErrorMessage name="tax" />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="Supervisor" as={TextField} label="Supervisor" fullWidth helperText={<ErrorMessage name="Supervisor" />}  />
+                                                    <Field name="Supervisor" select as={TextField} label="Supervisor" fullWidth helperText={<ErrorMessage name="Supervisor" />}  >
+                                                    <MenuItem value="" >No Supervisor</MenuItem>
+                                                    {supervisors.map((supervisor) => (
+                                                            <MenuItem key={supervisor?.id} value={supervisor?.id}>
+                                                                {supervisor?.name}
+                                                            </MenuItem>
+                                                        ))}
+                                                    </Field>
                                                 </Grid>
                                                 <Grid item xs={12} >
-                                                    {/* <Field name="EmploymentDate" as={TextField} label="Employment Date" type="date" fullWidth InputLabelProps={{ shrink: true }} helperText={<ErrorMessage name="EmploymentDate" />} /> */}
+                                                    {/*
+                                                    
+                                                     name="date"
+                                                    label="Date Of Birth"
+                                                    views={["year", "month", "day"]}
+                                                    format="YYYY-MM-DD"
+
+                                                    value={dayjs(formikProps.values.date)} 
+                                                    onChange={(value) => formikProps.setFieldValue("date", value)}
+                                                    renderInput={(params) => <TextField {...params} fullWidth />}
+                                                    */}
 
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                 <DemoContainer
@@ -319,7 +336,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
                                                     label="Employment Date"
                                                     views={["year", "month", "day"]}
                                                     format="YYYY-MM-DD"
-                                                    defaultValue={dayjs(formikProps.values.EmploymentDate)} 
+                                                    value={dayjs(formikProps.values.EmploymentDate)} 
                                                     onChange={(value) => formikProps.setFieldValue("EmploymentDate", value)}
                                                     renderInput={(params) => <TextField {...params} fullWidth />}
                                                     />
@@ -341,7 +358,16 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
                                                     <Field name="TimeStamp" as={TextField} label="Time Stamp" fullWidth helperText={<ErrorMessage name="TimeStamp" />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="grade" as={TextField} label="Grade" fullWidth helperText={<ErrorMessage name="grade" />} />
+                                                    <Field name="grade" as={TextField} label="Grade" select fullWidth helperText={<ErrorMessage name="grade" />} >
+                                                    <MenuItem value="Executive">Executive</MenuItem>
+                                                    <MenuItem value="Manager">Manager</MenuItem>
+                                                    <MenuItem value="First Staff">First Staff</MenuItem>
+                                                    <MenuItem value="Seconed Staff">Seconed Staff</MenuItem>
+                                                    <MenuItem value="Third Staff">Third Staff</MenuItem>
+                                                    <MenuItem value="Fourth Staff">Fourth Staff</MenuItem>
+                                                    <MenuItem value="Craftsman">Craftsman</MenuItem>
+                                                    <MenuItem value="Steward">Steward</MenuItem>     
+                                                    </Field>
                                                 </Grid>
                                                 <Grid item xs={12}>
                                                     <Field name="segment" as={TextField} label="Segment" fullWidth helperText={<ErrorMessage name="segment" />} />
@@ -374,14 +400,14 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
                                                         <TimePicker
                                                             label="Clock In"
                                                             name="clockin"
-                                                            viewRenderers={{
-                                                                hours: renderTimeViewClock,
-                                                                minutes: renderTimeViewClock,
-                                                                seconds: renderTimeViewClock,
-                                                              }}
-                                                              slotProps={{ textField: { fullWidth: true } }}
+                                                            // viewRenderers={{
+                                                            //     hours: renderTimeViewClock,
+                                                            //     minutes: renderTimeViewClock,
+                                                            //     seconds: renderTimeViewClock,
+                                                            //   }}
+                                                            slotProps={{ textField: { fullWidth: true } }}
 
-                                                            defaultValue={dayjs(formikProps.values.clockin)}
+                                                            value={dayjs(formikProps.values.clockin)}
                                                             onChange={(value) => formikProps.setFieldValue("clockin", value)}
                                                             renderInput={(params) => <TextField {...params} fullWidth />}
                                                         />
@@ -400,7 +426,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
                                                                 seconds: renderTimeViewClock,
                                                               }}
                                                             slotProps={{ textField: { fullWidth: true } }}
-                                                            defaultValue={dayjs(formikProps.values.clockout)}
+                                                            value={dayjs(formikProps.values.clockout)}
                                                             onChange={(value) => formikProps.setFieldValue("clockout", value)}
                                                             renderInput={(params) => <TextField {...params} fullWidth />}
                                                         />

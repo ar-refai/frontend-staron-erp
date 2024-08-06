@@ -92,7 +92,7 @@ const Profile = (rowData) => {
                     <Grid item xs={12} sm={4}>
                         {/* {console.log(profileimage)} */}
                         <Avatar
-                            src={`http://api.staronegypt.com.eg/${profileimage}`}
+                            src={`https://erpsystem.darakoutlet.com/${profileimage}`}
                             alt={name}
                             sx={{ width: 128, height: 128, mb: 2, mx: "auto" }}
                         />
@@ -240,7 +240,7 @@ const Profile = (rowData) => {
                             pdf File
                         </Typography>
                         <IconButton variant='text' color="info" sx={{borderRadius:"50%" , width:'30px' , height:'30px'}}>
-                        <a href={`http://api.staronegypt.com.eg${pdf}`} target="_blank" download color="inherit" >
+                        <a href={`https://erpsystem.darakoutlet.com${pdf}`} target="_blank" download color="inherit" >
                         <FileDownloadOutlinedIcon/>
                         </a>
                         </IconButton>

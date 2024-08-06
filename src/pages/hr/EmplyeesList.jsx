@@ -49,20 +49,20 @@ const EmployeeList = () => {
     const [snackbarMessage, setSnackbarMessage] = useState('');
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const fetchData = async () => {
+        try {
+            const usersFromApi = await ShowAllEmployee();
+            setTableData(usersFromApi.data);
+        } catch (error) {
+            console.error('Error fetching user data:', error);
+            // Handle error if necessary
+        } finally {
+            setLoading(false);
+        }
+    };
+
 
     useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const usersFromApi = await ShowAllEmployee();
-                setTableData(usersFromApi.data);
-            } catch (error) {
-                console.error('Error fetching user data:', error);
-                // Handle error if necessary
-            } finally {
-                setLoading(false);
-            }
-        };
-
         fetchData();
     }, []);
 
@@ -72,13 +72,13 @@ const EmployeeList = () => {
             const response = await CreateEmployee(values);
             // console.log(response);
             console.log(response.data);
-            if (response && response?.data) {
-                const newData = await ShowAllEmployee();
-                setTableData(newData.data);
-                setModalOpen(false); // Close modal after successful creation
+            if (response?.status === 200 || response?.status === 201 || response?.status === 204) {
+                fetchData();
+                setSnackbarOpen(true);
                 setSnackbarSeverity('success');
                 setSnackbarMessage('Employee created successfully');
-                setSnackbarOpen(true);
+                setModalOpen(false); 
+                // Close modal after successful creation
             }
         } catch (error) {
             console.error('Error creating employee:', error);
@@ -97,6 +97,7 @@ const EmployeeList = () => {
         setSnackbarSeverity('success');
         setSnackbarMessage('Employee updated successfully refresh the page.');
         setSnackbarOpen(true);
+        fetchData();
     };
 
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
@@ -130,7 +131,7 @@ const EmployeeList = () => {
                 header: "Image",
                 Cell: ({ cell }) => (
                     <img
-                        src={`http://api.staronegypt.com.eg/${cell.getValue()}`}
+                        src={`https://erpsystem.darakoutlet.com/${cell.getValue()}`}
                         alt="Employee"
                         style={{ width: "40px", height: "40px", borderRadius: "50%" }}
                     />

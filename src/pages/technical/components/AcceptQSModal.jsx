@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Dialog,
   DialogTitle,
@@ -13,11 +13,10 @@ import {
   List,
   IconButton,
   Collapse,
-  styled
 } from '@mui/material';
+import {ShowRequest} from 'apis/TechnicalApi/QuantitySurvayApi';
 import { TransitionGroup } from 'react-transition-group';
 import DeleteIcon from '@mui/icons-material/Delete';
-import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import Lottie from 'lottie-react';
 // Assuming you have Lottie animation JSON files
 import Document from '../../../assets/lottie/document.json';
@@ -28,22 +27,9 @@ import { useTheme } from '@emotion/react';
 
 
 
-
-
-const VisuallyHiddenInput = styled('input')({
-  clip: 'rect(0 0 0 0)',
-  clipPath: 'inset(50%)',
-  overflow: 'hidden',
-  position: 'absolute',
-  bottom: 0,
-  left: 0,
-  whiteSpace: 'nowrap',
-  width: 1,
-});
-
 const QSModal = ({
   accceptedModalOpen,
-  setAccceptedModalOpen,
+  setAccceptModalOpen,
   user,
   totalCost,
   totalProjectSellingPrice,
@@ -56,20 +42,29 @@ const QSModal = ({
   handleRemoveItem,
   handleAddApplication,
   handleRemoveApplication,
-  setFile,
   quotationObj,
   setQuotationObj,
-  handleSubmitQSToComplete
+  handleSubmitQSToComplete,
+  selectedRow,
 }) => {
-
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  useEffect(() => {
+    console.log("**********");
+    console.log(quotationObj);
+    console.log("**********");
+    // setApplicationsData(quotationObj.qc)
+  }, [])
+  
+  // console.log(applications);
+  // calculate numbers
 
   return (
     <Dialog
       maxWidth="lg"
       open={accceptedModalOpen}
-      onClose={() => setAccceptedModalOpen(false)}
+      onClose={() => setAccceptModalOpen(false)}
     >
       <DialogTitle>
         <Box
@@ -88,7 +83,7 @@ const QSModal = ({
       <Divider />
       <DialogContent sx={{ minWidth: '700px' }}>
         {/* The total cost */}
-        {user?.Supervisor === '1' && (
+        {(user?.Supervisor === '1'||user?.Supervior == null)  && (
           <Stack spacing={2}>
             <Box
               sx={{
@@ -97,11 +92,11 @@ const QSModal = ({
                 padding: '10px'
               }}
             >
-              <Typography variant="h6">Total Cost: ${totalCost}</Typography>
+              <Typography variant="h6">Total Cost: EGP {totalCost}</Typography>
               <Divider orientation="vertical" flexItem />
-              <Typography variant="h6">Total Selling Price: ${totalProjectSellingPrice}</Typography>
+              <Typography variant="h6">Total Selling Price: EGP {totalProjectSellingPrice}</Typography>
               <Divider orientation="vertical" flexItem />
-              <Typography variant="h6">Total Gross Margin: %{totalGrossMargin}</Typography>
+              <Typography variant="h6">Total Gross Margin: % {totalGrossMargin}</Typography>
             </Box>
           </Stack>
         )}
@@ -138,16 +133,16 @@ const QSModal = ({
               <TextField
                 variant="filled"
                 label="Application Title"
-                value={app.name}
+                defaultValue={app.name}
                 onChange={(e) => handleApplicationTitleChange(appIndex, e)}
                 fullWidth
                 margin="normal"
               />
-              {user?.Supervisor === '1' && (
+              {(user?.Supervisor === '1'||user?.Supervior == null)  && (
                 <TextField
                   variant="filled"
                   label="Gross Margin (%)"
-                  value={app.grossmargen}
+                  defaultValue={app.grossmargen}
                   fullWidth
                   type="number"
                   onChange={(e) => handleGrossMarginChange(appIndex, e.target.value)}
@@ -191,18 +186,18 @@ const QSModal = ({
                       <TextField
                         label="Stock Code"
                         variant="filled"
-                        value={item.stockid}
+                        defaultValue={item.stockid}
                         onChange={(e) => handleItemChange(appIndex, itemIndex, 'stockid', e)}
                         fullWidth
                         margin="normal"
                       />
 
-                      {user?.Supervisor === '1' && (
+                      {(user?.Supervisor === '1'||user?.Supervior == null) && (
                         <TextField
                           label="Price"
                           variant="filled"
                           type="number"
-                          value={item.price}
+                          defaultValue={item.price}
                           onChange={(e) => handleItemChange(appIndex, itemIndex, 'price', e)}
                           fullWidth
                           margin="normal"
@@ -213,7 +208,7 @@ const QSModal = ({
                         label="Quantity"
                         variant="filled"
                         type="number"
-                        value={item.quantity}
+                        defaultValue={item.quantity}
                         onChange={(e) => handleItemChange(appIndex, itemIndex, 'quantity', e)}
                         fullWidth
                         margin="normal"
@@ -221,7 +216,7 @@ const QSModal = ({
                       <TextField
                         label="Description"
                         variant="filled"
-                        value={item.description}
+                        defaultValue={item.description}
                         onChange={(e) => handleItemChange(appIndex, itemIndex, 'description', e)}
                         fullWidth
                         margin="normal"
@@ -268,7 +263,7 @@ const QSModal = ({
       </DialogContent>
       <Divider />
       <DialogActions>
-        <Button onClick={() => setAccceptedModalOpen(false)} color="error" variant="outlined">
+        <Button onClick={() => setAccceptModalOpen(false)} color="error" variant="outlined">
           Close
         </Button>
         <Button onClick={handleSubmitQSToComplete} color="secondary" variant="outlined">

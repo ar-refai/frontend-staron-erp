@@ -12,7 +12,7 @@ const CardComponent = ({ item }) => (
             component="img"
             alt="profile image"
             height="140"
-            image={`http://api.staronegypt.com.eg${item.user.profileimage}`}
+            image={`https://erpsystem.darakoutlet.com${item.user.profileimage}`}
         />
         <CardContent>
             <Typography gutterBottom variant="h5" component="div">

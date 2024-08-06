@@ -2,7 +2,7 @@ import axios from 'axios';
 
 const token = localStorage.getItem('staron_token');
 const instanceUpload = axios.create({
-  baseURL: 'http://api.staronegypt.com.eg/api/v1',
+  baseURL: 'https://erpsystem.darakoutlet.com/api/v1',
   headers: {
     'Content-Type': 'multipart/form-data',
     'Authorization': `Bearer ${token}`,
@@ -11,7 +11,7 @@ const instanceUpload = axios.create({
 });
 
 const instance = axios.create({
-  baseURL: 'http://api.staronegypt.com.eg/api/v1',
+  baseURL: 'https://erpsystem.darakoutlet.com/api/v1',
   headers: {
     'Content-Type': 'application/json',
     'Authorization': `Bearer ${token}`,

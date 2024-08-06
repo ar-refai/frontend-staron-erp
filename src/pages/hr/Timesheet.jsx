@@ -31,16 +31,17 @@ const TimeSheet = () => {
 
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
+    const fetchData = async () => {
+      try {
+        const response = await ShowAllAttendance();
+        data = Array.isArray(response?.data) ? response.data : [];
+        setFilteredData(data);
+      } catch (err) {
+        console.error('Error Fetching Data', err);
+      }
+    }
+
     useEffect(() => {
-        const fetchData = async () => {
-          try {
-            const response = await ShowAllAttendance();
-            data = Array.isArray(response?.data) ? response.data : [];
-            setFilteredData(data);
-          } catch (err) {
-            console.error('Error Fetching Data', err);
-          }
-        }
         fetchData();
       }, []);
 
@@ -53,21 +54,9 @@ const TimeSheet = () => {
         setModalData(rowData);
         setShowModal(true);
     };
-
-    const handleEditClose = () => {
-        setShowModal(false);
-        setEditValue("");
-    };
-
     const handleEditSave = async () => {
         let formData = {}; // Initialize formData here
-        // console.log("*".repeat(20));
-        // console.log("*".repeat(20));
-        // console.log("Modal Data: ", modalData);
-        // console.log("Form Data: ", formData); // Ensure formData is initialized before logging
-        // console.log("*".repeat(20));
-        // console.log("*".repeat(20));
-    
+
         try {
             if (value === 0) {
                 // console.log("Adding Days");
@@ -102,7 +91,7 @@ const TimeSheet = () => {
                     // console.log(cell.getValue())
 
                     return (<img
-                        src={`http://api.staronegypt.com.eg/${cell.getValue()}`}
+                        src={`https://erpsystem.darakoutlet.com/${cell.getValue()}`}
                         alt="profile"
                         style={{ width: "50px", height: "50px", borderRadius: "50%" }}
                     />
@@ -237,7 +226,7 @@ const TimeSheet = () => {
             });
             setFilteredData(filtered);
         }
-    }, [filterOption, startDate, endDate, specificDate, data]);
+    }, [filterOption, startDate, endDate, specificDate,data]);
     
 
     

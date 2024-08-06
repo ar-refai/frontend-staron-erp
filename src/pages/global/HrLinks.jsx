@@ -30,11 +30,11 @@ const HRLinks = [
         title: "Payroll",
         to: "/hr/payroll",
         icon: <LocalAtmOutlinedIcon /> },
-    {
-        title: "Incentive Remuneration",
-        to: "/hr/incentive-remuneration",
-        icon: <PriceChangeOutlinedIcon />,
-    },
+    // {
+    //     title: "Incentive Remuneration",
+    //     to: "/hr/incentive-remuneration",
+    //     icon: <PriceChangeOutlinedIcon />,
+    // },
     {
         title: "Leave Balance",
         to: "/hr/leave-balance",

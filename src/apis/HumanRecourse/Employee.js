@@ -1,7 +1,17 @@
 import axios from 'axios';
 const token=  localStorage.getItem('staron_token');
 const instance = axios.create({
-  baseURL: 'http://api.staronegypt.com.eg/api/v1', 
+  baseURL: 'https://erpsystem.darakoutlet.com/api/v1', 
+  headers: {
+    'Content-Type': 'application/json',
+    "Authorization": `Bearer ${token}`,
+  
+  }, withCredentials: true,
+  // Replace with your Laravel backend URL
+});
+
+const instanceWithFile = axios.create({
+  baseURL: 'https://erpsystem.darakoutlet.com/api/v1', 
   headers: {
     'Content-Type': 'multipart/form-data',
     "Authorization": `Bearer ${token}`,
@@ -9,6 +19,7 @@ const instance = axios.create({
   }, withCredentials: true,
   // Replace with your Laravel backend URL
 });
+
 export const ShowAllEmployee = async () => {
     try {
       const response = await instance.get('/humanresource/employee');
@@ -25,6 +36,18 @@ export const ShowAllEmployee = async () => {
       throw new Error('data failed');
     }
   };
+
+  export const geDepartmentSupervisors = async (formData) => {
+    try {
+      console.log(formData);
+      const response = await instance.post('/humanresource/employee/superVisor',formData);
+      return response.data;
+    }
+    catch(error) {
+      console.log(error, 'error loading data');
+    }
+  }
+
   export const showEmployee = async (id) => {
     try {
       const response = await instance.get('/humanresource/employee/'+id);
@@ -75,7 +98,7 @@ export const ShowAllEmployee = async () => {
   };
   export const CreateEmployee = async (formdata) => {
     try {
-      const response = await instance.post('/users/create',formdata);
+      const response = await instanceWithFile.post('/users/create',formdata);
       return response.data;
     } catch (error) {
       throw new Error('data failed');
@@ -83,7 +106,7 @@ export const ShowAllEmployee = async () => {
   };
   export const UpdateEmployees = async (formdata , id) => {
     try {
-      const response = await instance.post('/users/'+id+'/update',formdata);
+      const response = await instanceWithFile.post('/users/'+id+'/update',formdata);
       return response.data;
     } catch (error) {
       throw new Error('data failed');

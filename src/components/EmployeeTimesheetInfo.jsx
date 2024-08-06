@@ -94,7 +94,7 @@ const EmployeeTimesheetInfo = ({ selectedRow, descriptionOpen, handleDescription
                                     width: "50px", height: "50px"
                                 }}
                                 aria-label="recipe"
-                                src={`http://api.staronegypt.com.eg/${selectedRow.user.profileimage}`}
+                                src={`https://erpsystem.darakoutlet.com/${selectedRow.user.profileimage}`}
                             >
                                 {selectedRow.user.name.slice(0, 1)}
                             </Avatar>

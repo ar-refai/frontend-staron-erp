@@ -1,17 +1,17 @@
 import axios from 'axios';
 const token=  localStorage.getItem('staron_token');
 const instance = axios.create({
-  baseURL: 'http://127.0.0.1:8000//api/v1', 
+  baseURL: 'https://erpsystem.darakoutlet.com/api/v1', 
   headers: {
-    'Content-Type': 'multipart/form-data',
+    'Content-Type': 'application/json',
     "Authorization": `Bearer ${token}`,
    
   }, withCredentials: true,
   // Replace with your Laravel backend URL
 });
-export const ShowAllPayroll = async () => {
+export const ShowAllPayroll = async (formData) => {
     try {
-      const response = await instance.get('/payroll');
+      const response = await instance.post('/humanresource/payroll',formData);
       return response.data;
     } catch (error) {
       throw new Error('data failed');

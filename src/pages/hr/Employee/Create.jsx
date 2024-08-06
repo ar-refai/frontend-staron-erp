@@ -13,26 +13,56 @@ import {
     Typography,
     Container,
     Paper,
+    Select,
+    FormControl,
 } from "@mui/material";
 import { CreateEmployee, ShowAllEmployee } from "../../../apis/Employee";
 import { CloudUploadOutlined } from "@mui/icons-material";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
-import { DesktopDatePicker, LocalizationProvider, renderTimeViewClock, TimePicker } from "@mui/x-date-pickers";
+import { DesktopDatePicker, LocalizationProvider, TimePicker } from "@mui/x-date-pickers";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
-import moment from "moment";
+// import moment from "moment";
+import { geDepartmentSupervisors } from "apis/HumanRecourse/Employee";
 
 const Create = ({ onSubmit, onClose }) => {
     const [activeStep, setActiveStep] = useState(0);
     const [supervisors, setSupervisors] = useState([]);
+    const [supervisorStatus, setSupervisorStatus] = useState(200);
+    const [deptSelect, setDeptSelect] = React.useState('');
+
+    const handleDeptSelect = (event,) => {
+        setDeptSelect(event.target.value);
+        fetchDeptSupervisors(event.target.value);
+
+    };
 
     const steps = ["Personal Info", "Job Details", "Other Details", "Files"];
 
     useEffect(() => {
-        ShowAllEmployee().then((response) => {
-            setSupervisors(response.data);
-        });
+        ShowAllEmployee();
     }, []);
+
+
+    const fetchDeptSupervisors = async (dept) => {
+        console.log(dept);
+
+        const formData = {
+            "department": dept,
+        }
+        try {
+            const response = await geDepartmentSupervisors(JSON.stringify(formData, null, 2));
+            setSupervisors(response?.data);
+            setSupervisorStatus(response?.status);
+            console.log(response.data);
+
+
+        } catch (error) {
+            console.log(error, "Error fetching....");
+        }
+    }
+
+
 
     const initialValues = {
         name: "",
@@ -68,18 +98,19 @@ const Create = ({ onSubmit, onClose }) => {
         const day = String(date.getUTCDate()).padStart(2, '0');
         const formattedDate = `${year}-${month}-${day}`;
         return formattedDate;
-        
+
     }
-    const TimeCorrector =(timeString)=> {
-const date = new Date(timeString);
+    const TimeCorrector = (timeString) => {
+        const date = new Date(timeString);
 
-const hours = String(date.getUTCHours()).padStart(2, '0');
-const minutes = String(date.getUTCMinutes()).padStart(2, '0');
-const seconds = String(date.getUTCSeconds()).padStart(2, '0');
+        const hours = String(date.getUTCHours()).padStart(2, '0');
+        const minutes = String(date.getUTCMinutes()).padStart(2, '0');
+        const seconds = String(date.getUTCSeconds()).padStart(2, '0');
 
-const formattedTime = `${hours}:${minutes}:${seconds}`;
+        const formattedTime = `${hours}:${minutes}:${seconds}`;
 
-return formattedTime;    }
+        return formattedTime;
+    }
     const validationSchema = [
         Yup.object().shape({
             name: Yup.string().required("Name is required"),
@@ -92,14 +123,14 @@ return formattedTime;    }
             phone: Yup.string().required("Phone number is required"),
         }),
         Yup.object().shape({
-            department: Yup.string().required("Department is required"),
+            department: Yup.string(),
             job_role: Yup.string().required("Job role is required"),
             job_tybe: Yup.string().required("Job type is required"),
             salary: Yup.number().required("Salary is required"),
             Trancportation: Yup.number().required("Transportation is required"),
             kpi: Yup.number().required("KPI is required"),
             tax: Yup.number().required("Tax is required"),
-            Supervisor: Yup.string().required("Supervisor is required"),
+            Supervisor: Yup.string(),
             EmploymentDate: Yup.date().required("Employment date is required"),
         }),
         Yup.object().shape({
@@ -127,7 +158,7 @@ return formattedTime;    }
             ...values,
             EmploymentDate: dateCorrector(values.EmploymentDate),
             date: dateCorrector(values.date), // Corrected field name
-            clockin:TimeCorrector(values.clockin), // Corrected field name
+            clockin: TimeCorrector(values.clockin), // Corrected field name
             clockout: TimeCorrector(values.clockout), // Corrected field name
         };
         console.log(newValues);
@@ -135,7 +166,10 @@ return formattedTime;    }
 
         const formData = new FormData();
         Object.keys(newValues).forEach((key) => {
-            formData.append(key, newValues[key]);
+            if(key === "department") 
+                formData.append(key,deptSelect)
+            else
+                formData.append(key, newValues[key]);
         });
 
         CreateEmployee(formData)
@@ -246,20 +280,30 @@ return formattedTime;    }
                                         {activeStep === 1 && (
                                             <Grid container spacing={2}>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="department" as={TextField} label="Department" fullWidth select helperText={<ErrorMessage name="department" />}>
-                                                        <MenuItem key="Administration" value="Administration">Administration</MenuItem>
-                                                        <MenuItem key="Executive" value="Executive">Executive</MenuItem>
-                                                        <MenuItem key="Human Resources" value="Human Resources">Human Resources</MenuItem>
-                                                        <MenuItem key="Technical Office" value="Technical Office">Technical Office</MenuItem>
-                                                        <MenuItem key="Sales Office" value="Sales Office">Sales Office</MenuItem>
-                                                        <MenuItem key="Operation Office" value="Operation Office">Operation Office</MenuItem>
-                                                        <MenuItem key="Control Office" value="Control Office">Control Office</MenuItem>
-                                                        <MenuItem key="Supply Chain" value="Supply Chain">Supply Chain</MenuItem>
-                                                        <MenuItem key="Marketing" value="Marketing">Marketing</MenuItem>
-                                                        <MenuItem key="Research & Development" value="Research & Development">Research & Development</MenuItem>
-                                                        <MenuItem key="Finance" value="Finance">Finance</MenuItem>
+                                                    <Field
+                                                    native
+                                                            name="department"
+                                                            label="Department"
+                                                            as={TextField}
+                                                            select
+                                                            value={deptSelect}
+                                                            fullWidth
+                                                            onChange={(e)=> handleDeptSelect(e)}
+                                                                >                                                    
+                                                        <MenuItem  value="Administration">Administration</MenuItem>
+                                                        <MenuItem  value="Executive">Executive</MenuItem>
+                                                        <MenuItem value="Human Resources">Human Resources</MenuItem>
+                                                        <MenuItem  value="Technical Office">Technical Office</MenuItem>
+                                                        <MenuItem  value="Sales Office">Sales Office</MenuItem>
+                                                        <MenuItem  value="Operation Office">Operation Office</MenuItem>
+                                                        <MenuItem  value="Control Office">Control Office</MenuItem>
+                                                        <MenuItem  value="Supply Chain">Supply Chain</MenuItem>
+                                                        <MenuItem  value="Marketing">Marketing</MenuItem>
+                                                        <MenuItem  value="Research & Development">Research & Development</MenuItem>
+                                                        <MenuItem  value="Finance">Finance</MenuItem>
 
-                                                    </Field>
+                                                        </Field>
+                                                    {/* </Field> */}
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="job_role" as={TextField} label="Job Role" fullWidth helperText={<ErrorMessage name="job_role" />}>
@@ -288,7 +332,8 @@ return formattedTime;    }
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="Supervisor" as={TextField} label="Supervisor" fullWidth select helperText={<ErrorMessage name="Supervisor" />}>
-                                                        {supervisors.map((supervisor) => (
+                                                        <MenuItem value="" >No Supervisor</MenuItem>
+                                                        {supervisorStatus === 200 && supervisors?.map((supervisor) => (
                                                             <MenuItem key={supervisor?.id} value={supervisor?.id}>
                                                                 {supervisor?.name}
                                                             </MenuItem>
@@ -335,7 +380,16 @@ return formattedTime;    }
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="grade" as={TextField} label="Grade" fullWidth helperText={<ErrorMessage name="grade" />} />
+                                                    <Field name="grade" as={TextField} select label="Grade" fullWidth helperText={<ErrorMessage name="grade" />} >
+                                                    <MenuItem value="Executive">Executive</MenuItem>
+                                                    <MenuItem value="Manager">Manager</MenuItem>
+                                                    <MenuItem value="First Staff">First Staff</MenuItem>
+                                                    <MenuItem value="Seconed Staff">Seconed Staff</MenuItem>
+                                                    <MenuItem value="Third Staff">Third Staff</MenuItem>
+                                                    <MenuItem value="Fourth Staff">Fourth Staff</MenuItem>
+                                                    <MenuItem value="Craftsman">Craftsman</MenuItem>
+                                                    <MenuItem value="Steward">Steward</MenuItem>     
+                                                    </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="segment" as={TextField} label="Segment" fullWidth select helperText={<ErrorMessage name="segment" />}>
@@ -463,9 +517,9 @@ return formattedTime;    }
                             </Box>
                         </Form>
                     )}
-                </Formik>
-            </Paper>
-        </Container>
+            </Formik>
+        </Paper>
+        </Container >
     );
 };
 

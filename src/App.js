@@ -218,7 +218,7 @@ npm
             </main>
           </div>
           
-          {
+          {/* {
             !isLoginPage &&
             <input
             id="zoomRange"
@@ -237,7 +237,7 @@ npm
             aria-valuetext="10%"
             defaultValue="0"
             onInput={adjustZoom}
-          />}
+          />} */}
         </ThemeProvider>
       </ColorModeContext.Provider>
     </>

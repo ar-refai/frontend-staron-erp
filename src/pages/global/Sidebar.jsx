@@ -41,7 +41,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   const colors = tokens(theme.palette.mode);
   const user = JSON.parse(localStorage.getItem('staron_user'));
   // console.log("#".repeat(44));
-  // console.log(`http://api.staronegypt.com.eg/${user.profileimage}`);
+  // console.log(`https://erpsystem.darakoutlet.com/${user.profileimage}`);
   // console.log("#".repeat(44));
 
   return (
@@ -419,14 +419,14 @@ export default function MiniDrawer() {
             >
               <Avatar
                 alt="users name"
-                src={`http://api.staronegypt.com.eg${user?.profileimage}`}
+                src={`https://erpsystem.darakoutlet.com${user?.profileimage}`}
                 sx={{
                   width: open ? '50px' : '40px',
                   height: open ? '50px' : '40px',
                   transition: 'all ease .4s'
                 }}
               />
-              {/* {true && console.log(`http://api.staronegypt.com.eg${user.profileimage}`)} */}
+              {/* {true && console.log(`https://erpsystem.darakoutlet.com${user.profileimage}`)} */}
             </StyledBadge>
             {open && (
               <>
