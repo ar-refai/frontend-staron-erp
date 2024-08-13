@@ -53,12 +53,11 @@ import OperationWeeklyFramework from 'pages/operation/WeeklyFramework';
 import OperationPackageDevelopment from 'pages/operation/PackageDevelopment';
 import OperationWarehouseRequests from 'pages/operation/WarehouseRequests';
 // Finance
-import FinanceProcurementRequests from 'pages/finance/ProcurementRequests';
-import FinanceStockListing from "pages/finance/StockListing";
-import FinanceStockLog from 'pages/finance/StockLog';
-import FinanceConversionValidation from "pages/finance/ConversionValidation.jsx";
-import FinanceWarehouseRequests from "pages/finance/WarehouseRequests";
-import FinanceFinancialReports from "pages/finance/FinancialReports"; 
+import AccountingHub from "pages/finance/AccountingHub"; 
+import TrialBalancePage from 'pages/finance/components/pages/TrialBalancePage';
+import GeneralLedgerPage from 'pages/finance/components/pages/GeneralLedgerPage';
+import MainJournalPage from 'pages/finance/components/pages/MainJournalPage';
+import ChartOfAccountsPage from 'pages/finance/components/pages/ChartOfAccountsPage';
 
 // Main Function
 function App() {
@@ -178,10 +177,15 @@ function App() {
                   {/* Finance Links */}
                   <Route path="/finance" element={<Finance />} >
                     {/* Add Finance-related routes here */}
-                    <Route path="finance-procurement-requests" element={<FinanceProcurementRequests />} />
-                    <Route path="finance-financial-reports" element={<FinanceFinancialReports />} />
-                    <Route path="finance-conversion-validation" element={<FinanceConversionValidation/>}/>
-npm 
+                    <Route path="finance-accounting-hub" element={<AccountingHub />} />
+                    <Route path = "finance-trial-balance" element={<TrialBalancePage/>}/>
+                    <Route path = "finance-general-ledger" element={<GeneralLedgerPage/>}/>
+                    <Route path = "finance-main-journal" element={<MainJournalPage/>}/>
+                    <Route path = "finance-chart-of-accounts" element={<ChartOfAccountsPage/>}/>
+
+                    
+
+
                   </Route>
 
                   {/* Operation Links */}

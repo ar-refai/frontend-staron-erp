@@ -149,10 +149,10 @@ const QuotationGenerationFramework = () => {
   const submitAcceptQuantitySurvay = async (id, formData)=> {
     try {
       const response = await acceptQS(id, formData);
-      console.log("+".repeat(12))
-      console.log(formData);
+      // console.log("+".repeat(12))
+      // console.log(formData);
       if (response.status === 200 || response.status === 201 || response.status === 204) {
-        console.log("Successfully added quantity survay")
+        // console.log("Successfully added quantity survay")
         fetchAllRequests();
       }
     } catch (error) {
@@ -165,14 +165,14 @@ const QuotationGenerationFramework = () => {
   const submitQuantitySurvay = async (id, formData) => {
     try {
 
-      console.log("+".repeat(12));
-      console.log(formData);
+      // console.log("+".repeat(12));
+      // console.log(formData);
       const response = await sendQS(id, formData);
-      console.log("+".repeat(12))
+      // console.log("+".repeat(12))
       
-      console.log(formData);
+      // console.log(formData);
       if (response.status === 200 || response.status === 201 || response.status === 204) {
-        console.log("Successfully added quantity survay")
+        // console.log("Successfully added quantity survay")
         fetchAllRequests();
       }
     } catch (error) {
@@ -188,9 +188,9 @@ const handleSupervisorAccept = async (row) => {
   try {
     setLoadingAcceptModal(true); // Start loading
     setSelectedRow(row);
-    console.log("+".repeat(21));
-    console.log(row)
-    console.log(selectedRow);
+    // console.log("+".repeat(21));
+    // console.log(row)
+    // console.log(selectedRow);
 
     // Fetch the request data using the provided API function
     const response = await ShowRequest(row?.original?.id);
@@ -273,9 +273,9 @@ const handleSupervisorAccept = async (row) => {
 
 
   const handleGrossMarginChange = (index, value) => {
-    console.log(index, value);
+    // console.log(index, value);
     const updatedApplications = [...applications];
-    if(selectedRow.original.qcstatus === "in review") console.log("in review")
+    // if(selectedRow.original.qcstatus === "in review") console.log("in review")
 
     updatedApplications[index].grossmargen = Number(value);
 
@@ -297,9 +297,9 @@ const handleSupervisorAccept = async (row) => {
         "asign_for_user": assignedEmployeeID,
       }
       const response = await assignEmployee(assignData?.id, JSON.stringify(formData, null, 2));
-      console.log(response);
+      // console.log(response);
       if (response.status === 200 || response.status === 201 || response.status === 204) {
-        console.log("success assigning employee");
+        // console.log("success assigning employee");
         fetchAllRequests();
         setIsAssignModalOpen(false);
 
@@ -320,9 +320,9 @@ const handleSupervisorAccept = async (row) => {
         "reason": seconedRejectReason,
       }
       const response = await rejectInReviewQS(id, JSON.stringify(formData, null, 2));
-      console.log(response);
+      // console.log(response);
       if (response.status === 200 || response.status === 201 || response.status === 204) {
-        console.log("success rejecting employee");
+        // console.log("success rejecting employee");
         fetchAllRequests();
         setIsInReviewModalOpen(false);
 
@@ -335,13 +335,13 @@ const handleSupervisorAccept = async (row) => {
 
   // Start QS Button
   const handleStartQS = async (row) => {
-    console.log(row.original.asign_for_user);
-    console.log(user?.id)
+    // console.log(row.original.asign_for_user);
+    // console.log(user?.id)
     try {
       const response = await startQS(row?.original?.id);
-      console.log(response);
+      // console.log(response);
       if (response.status === 200 || response.status === 201 || response.status === 204) {
-        console.log("success start task");
+        // console.log("success start task");
         fetchAllRequests();
         setIsAssignModalOpen(false);
 
@@ -359,9 +359,9 @@ const handleSupervisorAccept = async (row) => {
         "qcstatus": rejectReason,//out of scope,request for information
         "reason": rejectDescription
       }
-      console.log(selectedRow);
+      // console.log(selectedRow);
       const response = await rejectQS(selectedRow.original.id, JSON.stringify(formData, null, 4));
-      console.log(response);
+      // console.log(response);
       setIsRejectModalOpen(false);
       fetchAllRequests();
 
@@ -1169,7 +1169,7 @@ const handleSupervisorAccept = async (row) => {
                 setFile(e.target.files[0]);
                 const quotWithFile = { ...quotationObj, qcdata: e.target.files[0] }
                 setQuotationObj(quotWithFile);
-                console.log(quotationObj);
+                // console.log(quotationObj);
               }} />
             </Button>
           </Box>

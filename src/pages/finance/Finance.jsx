@@ -15,13 +15,12 @@ export default function Finance() {
     // if (!(user.financeaccess === 1 || user.department === 'admin'))
     //     return navigate('/');
     const titles = {
-        '/finance/finance-monthly-framework': 'Monthly Framework',
-        '/finance/finance-financial-reports': 'Financial Reports',
-        '/finance/finance-stock-listing': 'Stock Listing',
-        '/finance/finance-stock-log': 'Stock Log',
-        '/finance/finance-warehouse-requests': 'Warehouse Requests',
-        '/finance/finance-conversion-validation': 'Conversion Validation',
-        '/finance/finance-procurement-requests': 'Procurement Requests',
+        '/finance/finance-accounting-hub': 'Accounting Hub',
+        '/finance/finance-trial-balance': 'Trial Balance',
+        '/finance/finance-chart-of-accounts': 'Chart Of Accounts',
+        '/finance/finance-main-journal': 'Main Journal',
+        '/finance/finance-general-ledger': 'General Ledger',
+
 
     };
 

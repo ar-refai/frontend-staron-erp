@@ -30,6 +30,7 @@ import { ExpandLess, ExpandMore } from '@mui/icons-material';
 import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import SupplyChainLinks from './SupplyChainLinks';
 import OperationLinks from './OperationLinks';
+import FinanceLinks from './FinanceLinks';
 
 const filteredItems = ControlLinks.filter(
   (item) => item.to === "/control/productivity-tracking" || item.to === "/control/procurement-requests"
@@ -157,7 +158,6 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     flexShrink: 0,
     whiteSpace: 'nowrap',
     boxSizing: 'border-box',
-
     ...(open && {
       ...openedMixin(theme),
       '& .MuiDrawer-paper': openedMixin(theme),
@@ -214,7 +214,7 @@ export default function MiniDrawer() {
         </DrawerHeader>
         <Divider />
         <List sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-
+          {/* Don't Delete this */}
           {/* <Typography
 
             variant="h6"
@@ -326,7 +326,6 @@ export default function MiniDrawer() {
             />
           ))}
 
-
           {/* Weekly Control Items */}
           {user?.controlaccess === "1"&& (
 
@@ -399,7 +398,17 @@ export default function MiniDrawer() {
               setSelected={setSelected}
             />)
           })}
-
+          {user?.financeaccess === "1" && FinanceLinks.map((item, index) => {
+            return (<Item
+              key={item.title}
+              title={item.title}
+              to={item.to}
+              icon={item.icon}
+              selected={selected}
+              setSelected={setSelected}
+              />
+            )
+          })}
 
           {/* The User Signed in */}
           <ListItem
