@@ -19,8 +19,6 @@ const GeneralLedger = () => {
           sx={{
             display: "inline-block",
             p: 1,
-            // border: 2,
-            // borderColor: "primary.main",
             textAlign: "center",
             width: "100%",
             bgcolor: colors.primary[600],

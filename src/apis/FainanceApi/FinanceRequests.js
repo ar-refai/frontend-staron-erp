@@ -9,6 +9,7 @@ const instance = axios.create({
   // Replace with your Laravel backend URL
 });
 
+
 const instanceUpdate = axios.create({
   baseURL: 'https://erpsystem.darakoutlet.com/api/v1', 
   headers: {
@@ -18,9 +19,28 @@ const instanceUpdate = axios.create({
   // Replace with your Laravel backend URL
 });
 
+// Chart of Accounts Functions
 export const ShowAllAccounts = async () => {
   try {
     const response = await instance.get('/finance/chartAccount');
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+export const AllAccountsFlatted = async () => {
+  try {
+    const response = await instance.get('/finance/chartAccount/all');
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+export const ShowAllChildrenAccounts = async () => {
+  try {
+    const response = await instanceUpdate.get('/finance/chartAccount/child');
     return response.data;
   } catch (error) {
     throw new Error('data failed');
@@ -68,4 +88,66 @@ export const UpdateAccount = async (id , formData) => {
   }
 };
 
+// Main Journal Functions 
+export const MainJournalAccounts = async () => {
+  try {
+    const response = await instance.get('/finance/mainjournal');
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
 
+export const AddMainJournalRecord = async (formData) => {
+  try {
+    console.log(formData);
+    const response = await instance.post('/finance/mainjournal', formData);
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+export const UpdateMainJournalRecord = async (id, formData) => {
+  try {
+    console.log(formData);
+    const response = await instanceUpdate.put(`/finance/mainjournal/${id}`,formData);
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+export const getSingleMainJournalRecord = async (id) => {
+  try {
+    const response = await instance.get(`/finance/mainjournal/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+// General Ledger Functions 
+
+export const ShowGLRecords = async (id) => {
+  try {
+    const response = await instance.get(`/finance/mainjournal/lager/${id}`);
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
+
+
+// Trial Balance Functions
+
+export const ShowTBRecords = async (formData) => {
+  try {
+    // console.log(formData);
+    const response = await instance.get(`/finance/mainjournal/trail}`,formData);
+    console.log(response)
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
