@@ -6,8 +6,9 @@ import TagIcon from '@mui/icons-material/Tag';
 import { MaterialReactTable } from 'material-react-table';
 import styled from '@emotion/styled';
 import { Link } from 'react-router-dom';
-
-
+// This is the Trial Balance Api Fiunction Request To get the data for the table 
+import {ShowTBRecords} from "../../../../apis/FainanceApi/FinanceRequests"
+// More Comments are always very helpful for the programmer 
 const data = [
   {
   account: "Cash and Cash Equivalents - 10001000",
@@ -68,8 +69,6 @@ const TrialBalance = () => {
             display: "inline-block",
             p: 1,
             overflow:"hidden",
-            // border: 2,
-            // borderColor: "primary.main",
             textAlign: "center",
             width: "100%",
             bgcolor: colors.primary[600],

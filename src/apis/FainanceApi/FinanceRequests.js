@@ -50,6 +50,7 @@ export const ShowAllChildrenAccounts = async () => {
 
 export const AddAccount = async (formData) => {
   try {
+    console.log(formData);
     const response = await instance.post('/finance/chartAccount', formData);
     return response.data;
   } catch (error) {

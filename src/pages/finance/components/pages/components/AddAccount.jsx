@@ -87,24 +87,31 @@ const AddAccountModal = ({ isOpen, onClose }) => {
     const handleAddNewChild = async () => {
         setLoading(true);
         try {
-            const updatedNestedData = [...nestedData];
             const lastLevel = nestedData.length - 1;
-            const newChildData = { id: `new-${Date.now()}`, name: newChild, children_recursive: [] };
-            updatedNestedData[lastLevel] = [
-                ...updatedNestedData[lastLevel],
-                newChildData
-            ];
-            setNestedData(updatedNestedData);
-
-            await AddAccount({ parentId: formData[`level_${lastLevel}`], name: newChild });
-
+            const parentId = formData[`level_${lastLevel}`];  // Get the parent ID from the last level
+            
+            // Send the API request to add the new child
+            const response = await AddAccount({ parent_id: parentId, name: newChild });
+            
+            // Fetch the updated data for the parent to get the new child with correct ID
+            const updatedParentResponse = await showAccount(parentId);
+            
+            // Update the nestedData with the latest child information
+            const updatedNestedData = [...nestedData];
+            updatedNestedData[lastLevel] = updatedParentResponse.data.children_recursive || [];
+            
+            // Clear the new child input field
             setNewChild('');
+            
+            // Update the nested data state
+            setNestedData(updatedNestedData);
         } catch (error) {
             console.error('Error adding new child:', error);
         } finally {
             setLoading(false);
         }
     };
+    
 
     const renderAccountOptions = (accounts) => {
         return accounts.map((account) => (
