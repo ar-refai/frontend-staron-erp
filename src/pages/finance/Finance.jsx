@@ -20,8 +20,16 @@ export default function Finance() {
         '/finance/finance-chart-of-accounts': 'Chart Of Accounts',
         '/finance/finance-main-journal': 'Main Journal',
         '/finance/finance-general-ledger': 'General Ledger',
-
-
+        '/finance/finance-treasury': 'Treasury',
+        '/finance/finance-treasury-ap': 'AP',
+        '/finance/finance-treasury-ar': 'AR',
+        '/finance/finance-treasury-cashflow': 'Cashflow',
+        '/finance/finance-treasury-cashflow-mapping': 'Cashflow Mapping',
+        '/finance/finance-treasury-cashflow-history': 'Cashflow History',
+        '/finance/finance-treasury-banks-checks': 'Bank Checks',
+        '/finance/finance-treasury-collection': 'Collection',
+        '/finance/finance-ar-requests': 'AR Requests',
+        '/finance/finance-treasury-tab': 'Treasury',
     };
 
     const currentTitle = titles[url.pathname];

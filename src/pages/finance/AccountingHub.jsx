@@ -5,8 +5,6 @@ import Paper from '@mui/material/Paper';
 import Masonry from '@mui/lab/Masonry';
 import { tokens } from 'theme';
 import { useTheme } from '@mui/material/styles';
-import { IconButton } from '@mui/material';
-import AddShoppingCartIcon from '@mui/icons-material/AddShoppingCart';
 import ChartOfAccounts from './components/accounting hub/ChartOfAccounts';
 import TrialBalance from './components/accounting hub/TrialBalance';
 import MainJournal from './components/accounting hub/MainJournal';

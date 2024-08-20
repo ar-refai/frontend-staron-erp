@@ -118,7 +118,16 @@ export const UpdateMainJournalRecord = async (id, formData) => {
     throw new Error('data failed');
   }
 };
-
+export const ShowTBRecords = async (formData) => {
+  try {
+    console.log(formData);
+    const response = await instanceUpdate.post('/finance/mainjournal/trail',formData);
+    console.log(response)
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};
 export const getSingleMainJournalRecord = async (id) => {
   try {
     const response = await instance.get(`/finance/mainjournal/${id}`);
@@ -130,25 +139,19 @@ export const getSingleMainJournalRecord = async (id) => {
 
 // General Ledger Functions 
 
-export const ShowGLRecords = async (id) => {
+export const ShowGLRecords = async (formData) => {
   try {
-    const response = await instance.get(`/finance/mainjournal/lager/${id}`);
-    return response.data;
-  } catch (error) {
-    throw new Error('data failed');
-  }
-};
-
-
-// Trial Balance Functions
-
-export const ShowTBRecords = async (formData) => {
-  try {
+    // console.log("########")
     // console.log(formData);
-    const response = await instance.get(`/finance/mainjournal/trail}`,formData);
-    console.log(response)
+    // console.log("########")
+    const response = await instanceUpdate.post(`/finance/mainjournal/lager`,formData);
     return response.data;
   } catch (error) {
     throw new Error('data failed');
   }
 };
+
+
+// 
+
+

@@ -25,7 +25,7 @@ import dayjs from "dayjs";
 // import moment from "moment";
 import { geDepartmentSupervisors } from "apis/HumanRecourse/Employee";
 
-const Create = ({ onSubmit, onClose }) => {
+const Create = ({ onSubmit, onClose ,fetchData}) => {
     const [activeStep, setActiveStep] = useState(0);
     const [supervisors, setSupervisors] = useState([]);
     const [supervisorStatus, setSupervisorStatus] = useState(200);
@@ -176,6 +176,7 @@ const Create = ({ onSubmit, onClose }) => {
             .then((response) => {
                 console.log("Employee created successfully:", response);
                 onSubmit(formData);
+                fetchData();
                 onClose();
             })
             .catch((error) => {

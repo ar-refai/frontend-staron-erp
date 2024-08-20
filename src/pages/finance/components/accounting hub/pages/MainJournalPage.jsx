@@ -23,7 +23,7 @@ import {
 } from 'apis/FainanceApi/FinanceRequests'; // Import your API functions
 import { MaterialReactTable } from 'material-react-table';
 import Lottie from 'lottie-react';
-import Document from '../../../../assets/lottie/document.json';
+import Document from '../../../../../assets/lottie/document.json';
 import { tokens } from 'theme';
 
 const MainJournal = () => {

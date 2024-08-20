@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { TextField, Checkbox, Autocomplete, Paper, useTheme } from '@mui/material';
+import { TextField, Checkbox, Autocomplete, useTheme } from '@mui/material';
 import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
 import CheckBoxIcon from '@mui/icons-material/CheckBox';
 import { MaterialReactTable } from 'material-react-table';
-import { ShowTBRecords, AllAccountsFlatted } from '../../../../apis/FainanceApi/FinanceRequests'; // Adjust the import path
+import { ShowTBRecords, AllAccountsFlatted } from '../../../../../apis/FainanceApi/FinanceRequests'; // Adjust the import path
 import { tokens } from 'theme';
 
 const TrialBalance = () => {

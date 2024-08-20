@@ -3,8 +3,8 @@ import { Box, Button, Grid, IconButton, useTheme } from '@mui/material';
 import { type MRT_ColumnDef, MaterialReactTable } from 'material-react-table';
 import { tokens } from 'theme';
 import { ShowAllAccounts, AccountsList } from 'apis/FainanceApi/FinanceRequests';
-import AddAccountModal from './components/AddAccount'; // Ensure the correct import path
-import UpdateAccountModal from './components/UpdateAccount';
+import AddAccountModal from '../../accounting hub/components/AddAccount'; // Ensure the correct import path
+import UpdateAccountModal from '../../accounting hub/components/UpdateAccount';
 import EditIcon from '@mui/icons-material/Edit';
 const ChartOfAccounts = () => {
   const theme = useTheme();

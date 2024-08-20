@@ -94,14 +94,15 @@ const EmployeeList = () => {
                 row.id === updatedEmployee.id ? updatedEmployee : row
             )
         );
+        fetchData();
         setSnackbarSeverity('success');
         setSnackbarMessage('Employee updated successfully refresh the page.');
         setSnackbarOpen(true);
-        fetchData();
     };
 
     const handleSaveRowEdits = async ({ exitEditingMode, row, values }) => {
         try {
+            fetchData();
             if (!Object.keys(validationErrors).length) {
                 exitEditingMode();
             }
@@ -313,8 +314,8 @@ const EmployeeList = () => {
                                 <CloseIcon />
                             </IconButton>
                         </Box>
-                        {modalMode === 'create' && <Create onSubmit={handleCreateNewRow} onClose={handleCloseModal} />}
-                        {modalMode === 'edit' && <Update  onClose={handleCloseModal} selectedRow={selectedRow} onUpdateSuccess={handleUpdateSuccess} />}
+                        {modalMode === 'create' && <Create onSubmit={handleCreateNewRow} onClose={handleCloseModal} fetchData={fetchData}/>}
+                        {modalMode === 'edit' && <Update  onClose={handleCloseModal} selectedRow={selectedRow} onUpdateSuccess={handleUpdateSuccess} fetchData={fetchData} />}
                         {modalMode === 'view' && <Profile employee={selectedRow} />}
                     </Box>
                 </Modal>

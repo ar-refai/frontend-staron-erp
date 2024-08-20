@@ -45,7 +45,6 @@ import SupplyProcurementRequests from 'pages/supply_chain/ProcurementRequests';
 import SupplyWarehouseRequests from 'pages/supply_chain/WarehouseRequests';
 import SupplyersListing from 'pages/supply_chain/SupplyersListing';
 import StockLog from 'pages/supply_chain/StockLog';
-import TreasuryRequests from 'pages/supply_chain/TreasuryRequests';
 // Operation
 import OperationProcurementRequests from 'pages/operation/ProcurementRequests';
 import OperationMonthlyFramework from 'pages/operation/MonthlyFramework';
@@ -54,10 +53,21 @@ import OperationPackageDevelopment from 'pages/operation/PackageDevelopment';
 import OperationWarehouseRequests from 'pages/operation/WarehouseRequests';
 // Finance
 import AccountingHub from "pages/finance/AccountingHub"; 
-import TrialBalancePage from 'pages/finance/components/pages/TrialBalancePage';
-import GeneralLedgerPage from 'pages/finance/components/pages/GeneralLedgerPage';
-import MainJournalPage from 'pages/finance/components/pages/MainJournalPage';
-import ChartOfAccountsPage from 'pages/finance/components/pages/ChartOfAccountsPage';
+import TrialBalancePage from 'pages/finance/components/accounting hub/pages/TrialBalancePage';
+import GeneralLedgerPage from 'pages/finance/components/accounting hub/pages/GeneralLedgerPage';
+import MainJournalPage from 'pages/finance/components/accounting hub/pages/MainJournalPage';
+import ChartOfAccountsPage from 'pages/finance/components/accounting hub/pages/ChartOfAccountsPage';
+import Treasury from 'pages/finance/Treasury';
+import ApPage from 'pages/finance/components/treasury/pages/ApPage';
+import ArPage from 'pages/finance/components/treasury/pages/ArPage';
+import CashFlowPage from 'pages/finance/components/treasury/pages/CashFlowPage';
+import MappingPage from 'pages/finance/components/treasury/pages/MappingPage';
+import HistoryPage from 'pages/finance/components/treasury/pages/HistoryPage';
+import BankChecksPage from 'pages/finance/components/treasury/pages/BankChecksPage';
+import CollectionPage from 'pages/finance/components/treasury/pages/CollectionPage';
+import TreasuryTabPage from 'pages/finance/components/treasury/pages/TreasuryTabPage';
+import TreasuryRequests from 'pages/supply_chain/TreasuryRequests';
+import ArRequestsPage from 'pages/finance/components/treasury/pages/ARRequestsPage';
 
 // Main Function
 function App() {
@@ -176,13 +186,25 @@ function App() {
                   
                   {/* Finance Links */}
                   <Route path="/finance" element={<Finance />} >
-                    {/* Add Finance-related routes here */}
+                    {/* Accounting Hub Goes Here */}
                     <Route path="finance-accounting-hub" element={<AccountingHub />} />
                     <Route path = "finance-trial-balance" element={<TrialBalancePage/>}/>
                     <Route path = "finance-general-ledger" element={<GeneralLedgerPage/>}/>
                     <Route path = "finance-main-journal" element={<MainJournalPage/>}/>
                     <Route path = "finance-chart-of-accounts" element={<ChartOfAccountsPage/>}/>
+                    <Route path = "finance-treasury" element={<Treasury/>}/>
+                    {/* Treasury Routes Goes Here */}
+                    <Route path = "finance-treasury-ap" element={<ApPage/>}/>
+                    <Route path = "finance-treasury-ar" element={<ArPage/>}/>
+                    <Route path = "finance-treasury-cashflow" element={<CashFlowPage/>}/>
+                    <Route path = "finance-treasury-cashflow-mapping" element={<MappingPage/>}/>
+                    <Route path = "finance-treasury-cashflow-history" element={<HistoryPage/>}/>
+                    <Route path = "finance-treasury-banks-checks" element={<BankChecksPage/>}/>
+                    <Route path = "finance-treasury-collection" element={<CollectionPage/>}/>
+                    <Route path = "finance-ar-requests" element={<ArRequestsPage/>}/>
+                    <Route path = "finance-treasury-tab" element={<TreasuryTabPage/>}/>
 
+                    
                     
 
 

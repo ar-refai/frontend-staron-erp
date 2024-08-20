@@ -17,8 +17,6 @@ import {
     CircularProgress,
     Avatar,
 } from "@mui/material";
-import { renderTimeViewClock } from '@mui/x-date-pickers/timeViewRenderers';
-
 import { UpdateEmployees, showEmployee } from "../../../apis/Employee";
 import { CloudUploadOutlined } from "@mui/icons-material";
 import { DemoContainer } from '@mui/x-date-pickers/internals/demo';
@@ -26,8 +24,9 @@ import { DesktopDatePicker, LocalizationProvider, TimePicker } from "@mui/x-date
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import moment from "moment";
-
-const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
+let clockinObj = {};
+let clockoutObj = {};
+const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
     const [activeStep, setActiveStep] = useState(0);
     const [supervisors, setSupervisors] = useState([]);
     const [initialValues, setInitialValues] = useState();
@@ -41,20 +40,22 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
         const getEmployeeData = async () => {
             const response = await showEmployee(selectedRow.id);
             try {
-                console.log("#".repeat(44));
-                console.log(response.data);
-                console.log("#".repeat(44));
-
-                if ([200, 201, 202].includes(response.status)) {
-                    console.log("Hellllllllllooooooo")
-                    console.log(response.data);
+                if ([200, 201, 202].includes(response.status)) {      
+                    const clockin = response.data.clockin;
+                    clockinObj = dayjs(`1970-01-01T${clockin}`);
+                    console.log(clockinObj);
+                    const clockout = response.data.clockout;
+                    clockoutObj = dayjs(`1970-01-01T${clockout}`);
+                    console.log(clockoutObj)
                     setInitialValues({
                         ...response.data,
+                        password:'',
+                        confirmPassword:'',
                         department:response.data.department ? response.data.department: null,
                         date: response.data.date ? new Date(response.data.date) : null,
                         EmploymentDate: response.data.EmploymentDate ? new Date(response.data.EmploymentDate) : null,
-                        clockin: response.data.clockin ? new Date(`1970-01-01T${response.data.clockin}:00`) : null,
-                        clockout: response.data.clockout ? new Date(`1970-01-01T${response.data.clockout}:00`) : null,
+                        clockin: clockinObj,
+                        clockout: clockoutObj,
                         profileimage: response.data.profileimage ? response.data.profileimage : null,
                         pdf: response.data.pdf ? response.data.pdf : null,
                         tax: response.data.tax ? response.data.tax : null,
@@ -63,7 +64,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
                         salary: response.data.salary ? response.data.salary: null,
                         // put the rest of the data here
                     });
-                    console.log("This is the initial values",initialValues); // here prints empty object values
+                    // console.log("This is the initial values",initialValues); // here prints empty object values
                     setLoading(false);
                 }
             } catch (error) {
@@ -79,8 +80,8 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
         Yup.object().shape({
             name: Yup.string().required("Name is required"),
             email: Yup.string().email("Invalid email").required("Email is required"),
-            password: Yup.string().min(8, "Password must be at least 8 characters"),
-            password_confirm: Yup.string().oneOf([Yup.ref("password"), null], "Passwords must match"),
+            password: Yup.string().min(8, "Password must be at least 8 characters").required(),
+            password_confirm: Yup.string().oneOf([Yup.ref("password"), null], "Passwords must match").required(),
             date: Yup.date().required("Date is required"),
             hr_code: Yup.string().required("HR code is required"),
             address: Yup.string().required("Address is required"),
@@ -94,7 +95,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
             Trancportation: Yup.number().required("Transportation is required"),
             kpi: Yup.number().required("KPI is required"),
             tax: Yup.number().required("Tax is required"),
-            Supervisor: Yup.string(),
+            Supervisor: Yup.string().nullable(),
             EmploymentDate: Yup.date().required("Employment date is required"),
         }),
         Yup.object().shape({
@@ -123,7 +124,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
             clockout:moment(values.clockout).format("HH:mm:ss"),
         }
         
-        console.log(".........." , newValues);
+        // console.log(".........." , newValues);
         
         const formData = new FormData();
         Object.keys(newValues).forEach((key) => {
@@ -134,8 +135,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
         
         UpdateEmployees(formData, selectedRow.id)
             .then((response) => {
-                // console.log("Employee updated successfully:", response);
-                // onSubmit(selectedRow.id,formData); // Call parent component's onSubmit function
+                fetchData();
                 onClose(); // Close the modal
             })
             .catch((error) => {
@@ -229,7 +229,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
                                                     <Field name="password" as={TextField} label="Password" type="password" fullWidth helperText={<ErrorMessage name="password" />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="password_confirm" as={TextField} label="Confirm Password" type="" fullWidth helperText={<ErrorMessage name="password_confirm" />} />
+                                                    <Field name="password_confirm" as={TextField} label="Confirm Password" type="password" fullWidth helperText={<ErrorMessage name="password_confirm" />} />
                                                 </Grid>
                                                 <Grid item xs={12} >
                                                 <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -313,18 +313,6 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} >
-                                                    {/*
-                                                    
-                                                     name="date"
-                                                    label="Date Of Birth"
-                                                    views={["year", "month", "day"]}
-                                                    format="YYYY-MM-DD"
-
-                                                    value={dayjs(formikProps.values.date)} 
-                                                    onChange={(value) => formikProps.setFieldValue("date", value)}
-                                                    renderInput={(params) => <TextField {...params} fullWidth />}
-                                                    */}
-
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                 <DemoContainer
                                                     components={[
@@ -395,42 +383,31 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess}) => {
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={12}>
-                                                    {/* <Field name="clockin" as={TextField} label="Clock In" fullWidth helperText={<ErrorMessage name="clockin" />} /> */}
+                                                
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <TimePicker
                                                             label="Clock In"
                                                             name="clockin"
-                                                            // viewRenderers={{
-                                                            //     hours: renderTimeViewClock,
-                                                            //     minutes: renderTimeViewClock,
-                                                            //     seconds: renderTimeViewClock,
-                                                            //   }}
                                                             slotProps={{ textField: { fullWidth: true } }}
-
-                                                            value={dayjs(formikProps.values.clockin)}
+                                                            value={formikProps.values.clockin ? dayjs(formikProps.values.clockin) : null}
                                                             onChange={(value) => formikProps.setFieldValue("clockin", value)}
                                                             renderInput={(params) => <TextField {...params} fullWidth />}
                                                         />
                                                     </LocalizationProvider>
-
+                                                {/* {console.log(formikProps.values.clockin)} */}
                                                 </Grid>
                                                 <Grid item xs={12} sm={12}>
-                                                    {/* <Field name="clockout" as={TextField} label="Clock Out" fullWidth helperText={<ErrorMessage name="clockout" />} /> */}
                                                     <LocalizationProvider dateAdapter={AdapterDayjs}>
                                                         <TimePicker
                                                             label="Clock Out"
                                                             name="clockout" 
-                                                            viewRenderers={{
-                                                                hours: renderTimeViewClock,
-                                                                minutes: renderTimeViewClock,
-                                                                seconds: renderTimeViewClock,
-                                                              }}
                                                             slotProps={{ textField: { fullWidth: true } }}
-                                                            value={dayjs(formikProps.values.clockout)}
+                                                            value={formikProps.values.clockout ? dayjs(formikProps.values.clockout) : null}
                                                             onChange={(value) => formikProps.setFieldValue("clockout", value)}
                                                             renderInput={(params) => <TextField {...params} fullWidth />}
                                                         />
                                                     </LocalizationProvider>
+                                                    {/* {console.log(formikProps.values.clockout)} */}
 
                                                 </Grid>
                                             </Grid>
