@@ -29,9 +29,9 @@ body,
   width:10px;
 }
 /* Track */
-::-webkit-scrollbar-track {
+/* ::-webkit-scrollbar-track {
   background-color: #e0e0e0;
-}
+} */
 /* Handle */
 
 ::-webkit-scrollbar-thumb {
@@ -77,6 +77,6 @@ input[type='range']::-webkit-slider-thumb {
 #filled-basic-two {
   color:#8e8d8e
 }
- label {
+label {
   color: #8e8d8e !important;
 }

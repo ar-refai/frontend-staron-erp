@@ -4,14 +4,16 @@ import { Box, Button, Grid, useTheme, Chip } from "@mui/material";
 import { MaterialReactTable, type MRT_ColumnDef } from "material-react-table";
 import { tokens } from "theme";
 import { ShowAllCollection } from "apis/FainanceApi/TreasuryRequests";
+import { ShowAllChildrenAccounts } from 'apis/FainanceApi/FinanceRequests';
 
-const ArRequestsPage = () => {
+const LiquidityRequestsPage = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [arData, setArData] = useState([]);
-
   // Fetch the AR collection data from the API
   useEffect(() => {
+    
+
     const fetchArData = async () => {
       try {
         const response = await ShowAllCollection();
@@ -22,7 +24,6 @@ const ArRequestsPage = () => {
         console.error("Failed to fetch AR collection data:", error);
       }
     };
-
     fetchArData();
   }, []);
 
@@ -144,4 +145,4 @@ const ArRequestsPage = () => {
   );
 };
 
-export default ArRequestsPage;
+export default LiquidityRequestsPage;

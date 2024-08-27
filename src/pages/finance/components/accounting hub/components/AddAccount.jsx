@@ -147,11 +147,11 @@ const AddAccountModal = ({ isOpen, onClose }) => {
                         onChange={handleAccountChange}
                         disabled={loading}
                     >
-                        <MenuItem value="30">Assets</MenuItem>
-                        <MenuItem value="31">Expenses</MenuItem>
-                        <MenuItem value="32">Liabilities</MenuItem>
-                        <MenuItem value="33">Equity</MenuItem>
-                        <MenuItem value="34">Revenue</MenuItem>
+                        <MenuItem value="62">Assets</MenuItem>
+                        <MenuItem value="63">Liabilities</MenuItem>
+                        <MenuItem value="64">Equity</MenuItem>
+                        <MenuItem value="65">Revenue</MenuItem>
+                        <MenuItem value="66">Expenses</MenuItem>
                     </Select>
                 </FormControl>
 

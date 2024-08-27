@@ -20,19 +20,21 @@ export default function Finance() {
         '/finance/finance-chart-of-accounts': 'Chart Of Accounts',
         '/finance/finance-main-journal': 'Main Journal',
         '/finance/finance-general-ledger': 'General Ledger',
-        '/finance/finance-treasury': 'Treasury',
-        '/finance/finance-treasury-ap': 'AP',
-        '/finance/finance-treasury-ar': 'AR',
+        '/finance/finance-treasury': 'Liquidity Pivot',
+        '/finance/finance-treasury-ap': 'Account Payable',
+        '/finance/finance-treasury-ar': 'Account Recivable',
         '/finance/finance-treasury-cashflow': 'Cashflow',
         '/finance/finance-treasury-cashflow-mapping': 'Cashflow Mapping',
         '/finance/finance-treasury-cashflow-history': 'Cashflow History',
-        '/finance/finance-treasury-banks-checks': 'Bank Checks',
+        '/finance/finance-treasury-banks-checks': 'Bank Accounts',
         '/finance/finance-treasury-collection': 'Collection',
-        '/finance/finance-ar-requests': 'AR Requests',
-        '/finance/finance-treasury-tab': 'Treasury',
+        '/finance/finance-ar-requests': 'Liuidity Requests',
+        '/finance/finance-treasury-tab': 'Treasury Log',
     };
 
     const currentTitle = titles[url.pathname];
+    console.log(url.pathname.includes("collection-detail"));
+    console.log(url.pathname.includes("finance/banks/profile"));
 
     return (
         <>
@@ -51,8 +53,19 @@ export default function Finance() {
                             padding: '10px 12px'
                         }}>
                             {currentTitle}
+                            {/* {console.log(url.pathname.includes("collection-detail"))} */}
                         </Typography>
-                    )}
+                            )}
+                            {url.pathname.includes("finance/banks/profile") && 
+                            (
+                                <Typography variant='h3' sx={{
+                                    color: colors.primary[200],
+                                    marginLeft: '10px',
+                                    padding: '10px 12px'
+                                }}>
+                                Bank Profile
+                                </Typography>
+                            )}
                 </Typography>
             </Box>
             <Outlet />

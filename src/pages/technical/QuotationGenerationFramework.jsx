@@ -1083,7 +1083,7 @@ const handleSupervisorAccept = async (row) => {
                         />
 
                         {
-                          (user?.Supervisor === "1" || user?.Supervior == null) &&
+                          (user?.Supervisor === "1" || user?.Supervior === null) &&
                           <TextField
                             label="Price"
                             variant="filled"

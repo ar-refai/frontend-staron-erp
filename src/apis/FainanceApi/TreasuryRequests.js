@@ -110,3 +110,126 @@ export const ShowTreasuryRequests = async () => {
         throw new Error('data failed');
     }
 };
+
+// from Pending to In Progress 
+export const ToInProgress = async (id,formData) => {
+    try {
+        const response = await instance.post(`/finance/TresuryAccount/${id}/transfareprogress`,formData);
+        return response.data;
+    } catch (error) {
+        throw new Error('data failed');
+    }
+};
+
+export const BankApprove = async (id) => {
+    try {
+        const response = await instance.post(`/finance/TresuryAccount/${id}/bankapprove`);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const AccountsRepresentativeApprove = async (id) => {
+    try {
+        const response = await instance.post(`/finance/TresuryAccount/${id}/AccountsrepresentativeApprove`);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const CancelTransfere = async (id) => {
+    try {
+        const response = await instance.post(`/finance/TresuryAccount/${id}/cancelled`);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const AccountApprove = async (id) => {
+    try {
+        const response = await instance.post(`/finance/TresuryAccount/${id}/AccountApprove`);
+        return response.data;
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+export const TreasuryApprove = async (id) => {
+    try {
+        const response = await instance.post(`/finance/TresuryAccount/${id}/tresuryApprove`);
+        return response.data;
+    } catch (error) {
+        console.log("There was an error: ",error);
+    }
+}
+//  check collection 
+
+export const ChecksCollection = async (id) => {
+    try {
+        const response = await instance.post(`/finance/TresuryAccount/${id}/check/collect`);
+        return response.data;
+    }
+    catch (error) {
+        console.log('There was an error: ' ,error);
+    }
+}
+
+export const RejectChecksCollection = async (id) => {
+    try {
+        const response = await instance.post(`/finance/TresuryAccount/${id}/check/reject`);
+        return response.data;
+    }
+    catch (error) {
+        console.log('There was an error: ' ,error);
+    }
+}
+
+// Bank Accounts Requests
+
+// Show All Bank Accounts
+export const ShowAllBanks = async () => {
+    try {
+        const response = await instance.get(`/finance/banks`);
+        return response.data;
+    }
+    catch (error) {
+        console.log('There was an error: ' ,error);
+    }
+}
+
+// Add Banks
+export const AddBankAccount = async (formData) => {
+    try {
+        const response = await instance.post(`/finance/banks`, formData);
+        return response.data;
+    }
+    catch (error) {
+        console.log('There was an error: ' ,error);
+    }
+}
+
+
+// Update Bank Account
+export const UpdateBankAccount = async (id,formData) => {
+    try {
+        const response = await instanceApp.put(`/finance/banks/${id}`, formData);
+        return response.data;
+    }
+    catch (error) {
+        console.log('There was an error: ' ,error);
+    }
+}
+
+// Show the bank account
+export const ShowBankProfile = async (id) => {
+    try {
+        const response = await instance.get(`/finance/banks/${id}`);
+        return response.data;
+    }
+    catch (error) {
+        console.log('There was an error: ' ,error);
+    }
+}

@@ -63,11 +63,13 @@ import ArPage from 'pages/finance/components/treasury/pages/ArPage';
 import CashFlowPage from 'pages/finance/components/treasury/pages/CashFlowPage';
 import MappingPage from 'pages/finance/components/treasury/pages/MappingPage';
 import HistoryPage from 'pages/finance/components/treasury/pages/HistoryPage';
-import BankChecksPage from 'pages/finance/components/treasury/pages/BankChecksPage';
 import CollectionPage from 'pages/finance/components/treasury/pages/CollectionPage';
 import TreasuryTabPage from 'pages/finance/components/treasury/pages/TreasuryTabPage';
 import TreasuryRequests from 'pages/supply_chain/TreasuryRequests';
-import ArRequestsPage from 'pages/finance/components/treasury/pages/ARRequestsPage';
+import ArRequestsPage from 'pages/finance/components/treasury/pages/LiquidityRequestsPage';
+import CollectionDetailPage from 'pages/finance/components/treasury/pages/CollectionDetailPage';
+import BankAccountsPage from 'pages/finance/components/treasury/pages/BankAccountsPage';
+import BankProfile from 'pages/finance/components/treasury/pages/BankProfile';
 
 // Main Function
 function App() {
@@ -199,16 +201,32 @@ function App() {
                     <Route path = "finance-treasury-cashflow" element={<CashFlowPage/>}/>
                     <Route path = "finance-treasury-cashflow-mapping" element={<MappingPage/>}/>
                     <Route path = "finance-treasury-cashflow-history" element={<HistoryPage/>}/>
-                    <Route path = "finance-treasury-banks-checks" element={<BankChecksPage/>}/>
+                    <Route path = "finance-treasury-banks-checks" element={<BankAccountsPage/>}/>
                     <Route path = "finance-treasury-collection" element={<CollectionPage/>}/>
                     <Route path = "finance-ar-requests" element={<ArRequestsPage/>}/>
                     <Route path = "finance-treasury-tab" element={<TreasuryTabPage/>}/>
+                    <Route path= "collection-detail/:id" element={<CollectionDetailPage/>}/>}
+                    <Route path= "banks/profile/:id" element={<BankProfile/>}/>}
 
-                    
                     
 
 
                   </Route>
+                  {/* Organizational Panel Links */}
+                  {/* Administration Organizational Panel */}
+                  
+
+
+
+
+
+
+
+
+
+
+
+                  
 
                   {/* Operation Links */}
                   <Route path="/operation" element={<Operation />} >

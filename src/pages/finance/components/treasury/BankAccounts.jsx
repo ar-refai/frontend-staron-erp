@@ -5,7 +5,7 @@ import TagIcon from '@mui/icons-material/Tag';
 import { Link } from 'react-router-dom';
 import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined';
 
-const ArRequests = () => {
+const BankAccounts = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
@@ -18,11 +18,11 @@ const ArRequests = () => {
           <Box sx={{ display: "flex", justifyContent: 'center', alignItems: "center" }}>
             <TagIcon sx={{ color: colors.redAccent[500], fontSize: '35px' }} />
             <Typography variant='h5' sx={{ textTransform: "uppercase", color: colors.grey[100] }}>
-              AR Requests
+              Bank Accounts
             </Typography>
           </Box>
           <Link
-            to='/finance/finance-ar-requests'
+            to='/finance/finance-treasury-banks-checks'
           >
             <IconButton
               color="secondary"
@@ -38,4 +38,4 @@ const ArRequests = () => {
   )
 }
 
-export default ArRequests
+export default BankAccounts

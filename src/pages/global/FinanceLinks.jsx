@@ -8,7 +8,7 @@ const FinanceLinks = [
         icon: <ArticleOutlinedIcon />,
     },
     {
-        title: "Treasury",
+        title: "Liquidity Pivot",
         to: "/finance/finance-treasury",
         icon: <CasesOutlinedIcon />,
     },

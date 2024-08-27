@@ -7,9 +7,9 @@ import { useTheme } from '@mui/material/styles';
 import AP from './components/treasury/AP';
 import AR from './components/treasury/AR';
 import Collection from './components/treasury/Collection';
-import TreasuryRequests from './components/treasury/ArRequests';
+import TreasuryRequests from './components/treasury/LiquidityRequests';
 import CashFlow from './components/treasury/CashFlow';
-import BanksChecks from './components/treasury/BanksChecks';
+import BanksChecks from './components/treasury/BankAccounts';
 import TreasuryTab from './components/treasury/TreasuryTab';
 
 const Treasury = () => {
@@ -44,11 +44,11 @@ const Treasury = () => {
                 <AR/>
             </Item>
             {/* Collection */}
-            <Item sx={{ gridColumn: 'span 1', gridRow: 'span 2' }}>
+            <Item sx={{ gridColumn: 'span 1', gridRow: 'span 3' }}>
                 <Collection/>
             </Item>
             {/* Requests */}
-            <Item sx={{ gridColumn: 'span 1', gridRow: 'span 2' }}>
+            <Item sx={{ gridColumn: 'span 1', gridRow: 'span 3' }}>
                 <TreasuryRequests />
             </Item>
             {/* CashFlow */}
@@ -60,7 +60,7 @@ const Treasury = () => {
                 <BanksChecks/>
             </Item>
             {/* Treasury (Second one, spans two columns) */}
-            <Item sx={{ gridColumn: 'span 4', gridRow: 'span 1' }}>
+            <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
                 <TreasuryTab/>
             </Item>
         </Box>
