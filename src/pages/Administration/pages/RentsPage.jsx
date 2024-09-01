@@ -133,14 +133,26 @@ const RentsPage = () => {
           >
           Edit
         </Button>
-        <Button
-        sx={{mt:1, width: '100px'}}
-        variant="outlined"
-        color="error"
-        onClick={() => Deactive(row.original.id)}
-        >
-        Deactivate
-      </Button>
+        {
+            row.original.status == '1' ?
+              <Button
+                sx={{ mt: 1, width: '100px' }}
+                variant="outlined"
+                color="error"
+                onClick={() => Deactive(row.original.id)}
+              >
+                Deactivate
+              </Button>
+              :
+              <Button
+                sx={{ mt: 1, width: '100px' }}
+                variant="outlined"
+                color="secondary"
+                onClick={() => Deactive(row.original.id)}
+              >
+                Activate
+              </Button>
+          }
           </>
       ),
     },
@@ -177,7 +189,6 @@ const RentsPage = () => {
             <Box
             sx={{display:"flex",alignItems:"center",justifyContent:"start"}}
             >
-
           <Button
             variant="outlined"
             color="secondary"
@@ -318,16 +329,16 @@ const RentsPage = () => {
       setFormData = {setFormData}
       handleAdd = {handleAdd}
       />
-      
+        
+      {/* Update Record Dialog */}
+      <UpdateRentDialog 
+      openUpdateDialog={openUpdateDialog}
+      setOpenUpdateDialog = {setOpenUpdateDialog}
+      formDataUpdate = {formDataUpdate}
+      setFormDataUpdate = {setFormDataUpdate}
+      handleUpdate = {handleUpdate}
+      />
 
-    {/* Update Record Dialog */}
-    <UpdateRentDialog 
-    openUpdateDialog={openUpdateDialog}
-    setOpenUpdateDialog = {setOpenUpdateDialog}
-    formDataUpdate = {formDataUpdate}
-    setFormDataUpdate = {setFormDataUpdate}
-    handleUpdate = {handleUpdate}
-    />
     </Box>
   );
 };

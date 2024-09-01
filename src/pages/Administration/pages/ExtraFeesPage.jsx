@@ -134,14 +134,26 @@ const ExtraFeesPage = () => {
           >
           Edit
         </Button>
-        <Button
-        sx={{mt:1, width: '100px'}}
-        variant="outlined"
-        color="error"
-        onClick={() => Deactive(row.original.id)}
-        >
-        Deactivate
-      </Button>
+        {
+            row.original.status == '1' ?
+              <Button
+                sx={{ mt: 1, width: '100px' }}
+                variant="outlined"
+                color="error"
+                onClick={() => Deactive(row.original.id)}
+              >
+                Deactivate
+              </Button>
+              :
+              <Button
+                sx={{ mt: 1, width: '100px' }}
+                variant="outlined"
+                color="secondary"
+                onClick={() => Deactive(row.original.id)}
+              >
+                Activate
+              </Button>
+          }
         </>
       ),
     },
