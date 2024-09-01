@@ -7,7 +7,8 @@ import LocalAtmOutlinedIcon from '@mui/icons-material/LocalAtmOutlined';
 import PriceChangeOutlinedIcon from '@mui/icons-material/PriceChangeOutlined';
 import FollowTheSignsOutlinedIcon from '@mui/icons-material/FollowTheSignsOutlined';
 import SmsFailedOutlinedIcon from '@mui/icons-material/SmsFailedOutlined';
-
+import FilterListIcon from '@mui/icons-material/FilterList';
+import Brightness7OutlinedIcon from '@mui/icons-material/Brightness7Outlined';
 
 const HRLinks = [
     {
@@ -15,7 +16,9 @@ const HRLinks = [
         to: "/hr/employees-list",
         icon: <PeopleOutlinedIcon />,
     },
-    { title: "Timesheet", to: "/hr/timesheet", icon: <ListAltOutlinedIcon /> },
+    {   title: "Timesheet", to: "/hr/timesheet",
+        icon: <ListAltOutlinedIcon /> 
+    },
     // {
     //     title: "Requests Approval",
     //     to: "/hr/requests-approval",
@@ -29,7 +32,8 @@ const HRLinks = [
     { 
         title: "Payroll",
         to: "/hr/payroll",
-        icon: <LocalAtmOutlinedIcon /> },
+        icon: <LocalAtmOutlinedIcon /> 
+    },
     // {
     //     title: "Incentive Remuneration",
     //     to: "/hr/incentive-remuneration",
@@ -43,7 +47,13 @@ const HRLinks = [
     {   
         title: "Warning Log",
         to: "/hr/warning-log", 
-        icon: <SmsFailedOutlinedIcon /> },
+        icon: <SmsFailedOutlinedIcon /> 
+    },
+    {   
+        title: "Organizational Panel",
+        to: "/hr/organizational-panel", 
+        icon: <Brightness7OutlinedIcon /> 
+    },
 ];
 
 export default HRLinks;

@@ -60,7 +60,10 @@ const Payroll = () => {
         header: 'Department',
         size: 200,
       },
-      { accessorKey: 'user.salary', header: 'Salary' },
+      {
+        accessorKey: 'user.salary',
+        header: 'Salary' 
+      },
       {
         accessorKey: 'workdays',
         header: 'Possible Working Days',
@@ -424,7 +427,7 @@ const Payroll = () => {
             </Typography>
           </Item>
           <Item>
-
+{/* some random comment 22222 */}
             <Typography variant="h6" sx={{ marginBottom: 2 }}>
               Total Medical Insurance for {selectedDepartment}: EGP {calculateTotalMedicalInsurance()}
             </Typography>

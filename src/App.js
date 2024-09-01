@@ -70,6 +70,15 @@ import ArRequestsPage from 'pages/finance/components/treasury/pages/LiquidityReq
 import CollectionDetailPage from 'pages/finance/components/treasury/pages/CollectionDetailPage';
 import BankAccountsPage from 'pages/finance/components/treasury/pages/BankAccountsPage';
 import BankProfile from 'pages/finance/components/treasury/pages/BankProfile';
+import OrganizationalPanel from 'pages/Administration/Organizational Panel/OrganizationalPanel';
+import Administration from 'pages/Administration/Administration';
+import UnplannedPage from 'pages/Administration/pages/UnplannedPage';
+import RentsPage from 'pages/Administration/pages/RentsPage';
+import ExtraFeesPage from 'pages/Administration/pages/ExtraFeesPage';
+import HrOrganizationalPanel from 'pages/hr/HrOrganizationalPanel';
+import PayrollPanelPage from 'pages/hr/oraganizational panel pages/PayrollPanelPage';
+import InsurancePanel from 'pages/hr/oraganizational panel pages/InsurancePanel';
+import InsurancePanelPage from 'pages/hr/oraganizational panel pages/InsurancePanelPage';
 
 // Main Function
 function App() {
@@ -158,6 +167,12 @@ function App() {
                     <Route path="incentive-remuneration" element={<IncentiveRemuneration />} />
                     <Route path="leave-balance" element={<LeaveBalance />} />
                     <Route path="warning-log" element={<WarningLog />} />
+                    <Route path="organizational-panel" element={<HrOrganizationalPanel />} />
+                    <Route path="payroll-panel-page" element={<PayrollPanelPage />} />
+                    <Route path="insurance-panel-page" element={<InsurancePanelPage />} />
+
+
+                    
                   </Route>
 
                   {/* Sales Links */}
@@ -214,7 +229,12 @@ function App() {
                   </Route>
                   {/* Organizational Panel Links */}
                   {/* Administration Organizational Panel */}
-                  
+                  <Route path="/administration" element={<Administration />}>
+                      <Route path="organizational-panel" element={<OrganizationalPanel />} />
+                      <Route path="rents" element={<RentsPage />} />
+                      <Route path="extra-fees" element={<ExtraFeesPage />} />
+                      <Route path="unplanned" element={<UnplannedPage />} />
+                  </Route>
 
 
 
@@ -226,7 +246,8 @@ function App() {
 
 
 
-                  
+
+
 
                   {/* Operation Links */}
                   <Route path="/operation" element={<Operation />} >

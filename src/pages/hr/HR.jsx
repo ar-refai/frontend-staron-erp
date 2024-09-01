@@ -11,7 +11,9 @@ export default function HR() {
   const url = useLocation();
   const user = JSON.parse(localStorage.getItem('staron_user'));
   const navigate = useNavigate();
-  // console.log(user);
+  const InsurancePanel = 'hr/insurance-panel-page';
+  const PayrollPanel = 'hr/insurance-panel-page';
+
   // If the user is not authenticated or authorized, redirect to the login page
   if (!(user.hraccess === "1" || user.department === 'admin')) 
       return navigate('/');
@@ -24,6 +26,7 @@ export default function HR() {
     '/hr/incentive-remuneration': 'Incentive Remuneration',
     '/hr/leave-balance': 'Leave Balance',
     '/hr/warning-log': 'Monthly Warning Log',
+    '/hr/organizational-panel': 'Organizational Panel',
   };
 
   const currentTitle = titles[url.pathname];
@@ -45,6 +48,24 @@ export default function HR() {
               padding: '10px 12px'
             }}>
               {currentTitle}
+            </Typography>
+          )}
+          {url.pathname.includes('payroll-panel') && (
+            <Typography variant='h3' sx={{
+              color: colors.primary[200],
+              marginLeft: '10px',
+              padding: '10px 12px'
+            }}>
+              Payroll Panel
+            </Typography>
+          )}
+          {url.pathname.includes('insurance-panel') && (
+            <Typography variant='h3' sx={{
+              color: colors.primary[200],
+              marginLeft: '10px',
+              padding: '10px 12px'
+            }}>
+              Insurance Panel
             </Typography>
           )}
         </Typography>

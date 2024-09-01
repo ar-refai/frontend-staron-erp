@@ -24,7 +24,7 @@ import { tokens } from "theme";
 import Profile from './Employee/Profile';
 
 const departments = [
-    "Adminstration",
+    "administration",
     "Executive",
     "Human Resources",
     "Technical Office",

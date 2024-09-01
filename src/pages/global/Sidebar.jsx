@@ -31,6 +31,7 @@ import ArchiveOutlinedIcon from '@mui/icons-material/ArchiveOutlined';
 import SupplyChainLinks from './SupplyChainLinks';
 import OperationLinks from './OperationLinks';
 import FinanceLinks from './FinanceLinks';
+import AdministrationLinks from './AdministrationLinks';
 
 const filteredItems = ControlLinks.filter(
   (item) => item.to === "/control/productivity-tracking" || item.to === "/control/procurement-requests"
@@ -400,6 +401,19 @@ export default function MiniDrawer() {
             />)
           })}
           {user?.financeaccess === "1" && FinanceLinks.map((item, index) => {
+            return (<Item
+              key={item.title}
+              title={item.title}
+              to={item.to}
+              icon={item.icon}
+              selected={selected}
+              setSelected={setSelected}
+              />
+            )
+          })}
+
+          {user?.adminstrationaccess === "1" && AdministrationLinks.map((item, index) => {
+            // there is a mis spelling in the adminstrationaccess note:::
             return (<Item
               key={item.title}
               title={item.title}
