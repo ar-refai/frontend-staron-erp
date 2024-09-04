@@ -18,7 +18,7 @@ const Utilities = () => {
                     <Box sx={{ display: "flex", justifyContent: 'center', alignItems: "center" }}>
                         <TagIcon sx={{ color: colors.redAccent[500], fontSize: '35px' }} />
                         <Typography variant='h5' sx={{ textTransform: "uppercase", color: colors.grey[100] }}>
-                            Rents
+                            Utilities
                         </Typography>
                     </Box>
                     <Link

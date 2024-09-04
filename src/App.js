@@ -89,6 +89,7 @@ import SubscriptionPage from 'pages/finance/components/organizational panel/depa
 import MiscellaneousPage from 'pages/finance/components/organizational panel/departments/Administration/Pages/MiscellaneousPage';
 import UtilitiesPage from 'pages/finance/components/organizational panel/departments/Administration/Pages/UtilitiesPage';
 import SuppliesPage from 'pages/finance/components/organizational panel/departments/Administration/Pages/SuppliesPage';
+import MaintainancePage from 'pages/finance/components/organizational panel/departments/Administration/Pages/MaintainancePage';
 
 // Main Function
 function App() {
@@ -239,6 +240,7 @@ function App() {
                     <Route path='administration-utilities' element={<UtilitiesPage/>}/>
                     <Route path='administration-miscellaneous' element={<MiscellaneousPage/>}/>
                     <Route path='administration-subscriptions' element={<SubscriptionPage/>}/>
+                    <Route path='administration-maintainance-repairs' element={<MaintainancePage/>}/>
 
 
                     <Route path= "human-resource" element={<FinanceHrPage/>}/>

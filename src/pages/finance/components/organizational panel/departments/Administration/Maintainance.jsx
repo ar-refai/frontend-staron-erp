@@ -5,7 +5,7 @@ import TagIcon from '@mui/icons-material/Tag';
 import { Link } from 'react-router-dom';
 import ArrowCircleRightOutlinedIcon from '@mui/icons-material/ArrowCircleRightOutlined';
 
-const Supplies = () => {
+const Maintainance = () => {
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
 
@@ -18,11 +18,11 @@ const Supplies = () => {
                     <Box sx={{ display: "flex", justifyContent: 'center', alignItems: "center" }}>
                         <TagIcon sx={{ color: colors.redAccent[500], fontSize: '35px' }} />
                         <Typography variant='h5' sx={{ textTransform: "uppercase", color: colors.grey[100] }}>
-                            Supplies
+                            Maintainance & Repairs
                         </Typography>
                     </Box>
                     <Link
-                        to='/finance/administration-supplies'
+                        to='/finance/administration-maintainance-repairs'
                     >
                         <IconButton
                             color="secondary"
@@ -37,4 +37,4 @@ const Supplies = () => {
     )
 }
 
-export default Supplies
+export default Maintainance

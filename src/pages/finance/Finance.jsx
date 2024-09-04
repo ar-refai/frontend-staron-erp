@@ -37,8 +37,12 @@ export default function Finance() {
         '/finance/operation': "Operation Panel",
         '/finance/marketing':'Marketing Panel',
         '/finance/sales':'Sales Panel',
-        
-
+        '/finance/administration-rents' : 'Rents Panel',
+        '/finance/administration-supplies' : 'Supplies Panel',
+        '/finance/administration-utilities' : 'Utilities Panel',
+        '/finance/administration-subscriptions' : 'Subscriptions Panel',
+        '/finance/administration-miscellaneous' : ' Miscellaneous Panel',
+        '/finance/administration-maintainance-repairs' : ' Maintainance & Repairs',
     };
 
     const currentTitle = titles[url.pathname];

@@ -128,6 +128,10 @@ const EmployeeList = () => {
     const columns = useMemo(
         () => [
             {
+                accessorKey: "hr_code",
+                header: "HR Code",
+            },
+            {
                 accessorKey: "profileimage",
                 header: "Image",
                 Cell: ({ cell }) => (
@@ -240,7 +244,7 @@ const EmployeeList = () => {
                 enableStickyFooter
                 muiPaginationProps={{
                     color: 'secondary',
-                    rowsPerPageOptions: [10, 20, 30],
+                    rowsPerPageOptions: [10, 20, 30, 40 , 50 , 60],
                     shape: 'rounded',
                     variant: 'outlined',
                 }}

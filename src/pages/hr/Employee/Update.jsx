@@ -24,6 +24,7 @@ import { DesktopDatePicker, LocalizationProvider, TimePicker } from "@mui/x-date
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import dayjs from "dayjs";
 import moment from "moment";
+import { geDepartmentSupervisors } from "apis/HumanRecourse/Employee";
 let clockinObj = {};
 let clockoutObj = {};
 const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
@@ -32,6 +33,8 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
     const [initialValues, setInitialValues] = useState();
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [supervisorStatus, setSupervisorStatus] = useState(200);
+    const [deptSelect, setDeptSelect] = React.useState('');
 
     const steps = ["Personal Info", "Job Details", "Other Details", "Files"];
 
@@ -114,6 +117,27 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
             pdf: Yup.mixed(),
         }),
     ];
+    const handleDeptSelect = (event,) => {
+        setDeptSelect(event.target.value);
+        fetchDeptSupervisors(event.target.value);
+    };
+
+    const fetchDeptSupervisors = async (dept) => {
+        console.log(dept);
+
+        const formData = {
+            "department": dept,
+        }
+        try {
+            const response = await geDepartmentSupervisors(JSON.stringify(formData, null, 2));
+            setSupervisors(response?.data);
+            console.log(supervisors);
+            setSupervisorStatus(response?.status);
+            console.log(response.data);
+        } catch (error) {
+            console.log(error, "Error fetching....");
+        }
+    }
 
     const handleSubmit = (values, { setSubmitting }) => {
         const newValues = {
@@ -267,7 +291,16 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
                                         {activeStep === 1 && (
                                             <Grid container spacing={2}>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="department" as={TextField} DefaultValue={formikProps.values.department} label="Department" fullWidth select helperText={<ErrorMessage name="department" />}>
+                                                    <Field 
+                                                    name="department" 
+                                                    as={TextField} 
+                                                    DefaultValue={formikProps.values.department} 
+                                                    label="Department" 
+                                                    onClick={(e)=> handleDeptSelect(e)}
+                                                    fullWidth 
+                                                    select 
+                                                    helperText={<ErrorMessage name="department" />}
+                                                    >
                                                     {/* {console.log(initialValues.department)} */}
                                                     <MenuItem key="Administration" value="Administration">Administration</MenuItem>
                                                     <MenuItem key="Executive" value="Executive">Executive</MenuItem>
@@ -303,9 +336,9 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
                                                     <Field name="tax" as={TextField} label="Tax" fullWidth helperText={<ErrorMessage name="tax" />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="Supervisor" select as={TextField} label="Supervisor" fullWidth helperText={<ErrorMessage name="Supervisor" />}  >
-                                                    <MenuItem value="" >No Supervisor</MenuItem>
-                                                    {supervisors.map((supervisor) => (
+                                                    <Field name="Supervisor" as={TextField} label="Supervisor" fullWidth select helperText={<ErrorMessage name="Supervisor" />}>
+                                                        <MenuItem value="" >No Supervisor</MenuItem>
+                                                        {supervisorStatus === 200 && supervisors?.map((supervisor) => (
                                                             <MenuItem key={supervisor?.id} value={supervisor?.id}>
                                                                 {supervisor?.name}
                                                             </MenuItem>

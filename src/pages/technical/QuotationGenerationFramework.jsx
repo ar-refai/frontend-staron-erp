@@ -197,7 +197,7 @@ const handleSupervisorAccept = async (row) => {
 
     // Map the fetched data to match the structure expected for applications
     const newObj = response.data.qc.map((qcApplication) => ({
-      name: qcApplication.name,
+      name: qcApplication?.name,
       grossmargen: parseFloat(qcApplication.grossmargen),
       totalcost: parseFloat(qcApplication.totalcost),
       salingprice: parseFloat(qcApplication.salingprice),
@@ -620,7 +620,7 @@ const handleSupervisorAccept = async (row) => {
           )}
 
           {row.original.qcstatus === 'in progress'  &&
-          row.original?.user.name === user?.name && (
+          row.original?.user?.name === user?.name && (
        
               <Tooltip
                 TransitionComponent={Zoom}
@@ -1014,7 +1014,7 @@ const handleSupervisorAccept = async (row) => {
                 <TextField
                   variant="filled"
                   label="Application Title"
-                  value={app.name}
+                  value={app?.name}
                   onChange={(e) => handleApplicationTitleChange(appIndex, e)}
                   fullWidth
                   margin="normal"

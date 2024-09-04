@@ -182,7 +182,6 @@ const RentsPage = () => {
                         </Typography>
                     </Box>
                 </Box>
-
                 
             </Box>
             <Box
@@ -196,14 +195,6 @@ const RentsPage = () => {
             >
             Add Rent
           </Button>
-          <Button
-          variant="outlined"
-          color="secondary"
-          sx={{ mb: 2, ml: 1, mt: 1 }}
-          onClick={() => setOpenViewDialog(true)}  // Open View All dialog
-        >
-          View All Rents
-        </Button>
 
             </Box>
           <MaterialReactTable
@@ -348,12 +339,6 @@ const RentsPage = () => {
       />
 
 
-<ViewAllRentsDialog
-        openViewDialog={openViewDialog}  // Include the new dialog
-        setOpenViewDialog={setOpenViewDialog}
-        arData={arData}
-        handleEditClick={handleEditClick}
-      />
     </Box>
   );
 };

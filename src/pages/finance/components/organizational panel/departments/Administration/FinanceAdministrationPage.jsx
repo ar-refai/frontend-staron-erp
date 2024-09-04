@@ -7,6 +7,7 @@ import Supplies from './Supplies';
 import Utilities from './Utilities';
 import Miscellaneous from './Miscellaneous';
 import Subscriptions from './Subscriptions';
+import Maintainance from './Maintainance';
 // import RentsPage from './Rents/Rents';
 // import ExtraFees from '../ExtraFees';
 // import UnPlanned from '../UnPlanned';
@@ -34,24 +35,28 @@ const FinanceAdministrationPage = () => {
         }}
     >
         {/* Rents */}
-        <Item sx={{ gridColumn: 'span 4', gridRow: 'span 1' }}>
+        <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
             <Rents />
         </Item>
         {/* Supplies */}
-        <Item sx={{ gridColumn: 'span 4', gridRow: 'span 1' }}>
+        <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
             <Supplies />
         </Item>
         {/* Utilities */}
-        <Item sx={{ gridColumn: 'span 4', gridRow: 'span 1' }}>
+        <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
             <Utilities />
         </Item>
         {/* Miscellaneous */}
-        <Item sx={{ gridColumn: 'span 4', gridRow: 'span 1' }}>
+        <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
           <Miscellaneous />
         </Item>
-        {/* Miscellaneous */}
-        <Item sx={{ gridColumn: 'span 4', gridRow: 'span 1' }}>
+        {/* Subscriptions */}
+        <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
             <Subscriptions />
+        </Item>
+        {/* Maintainance & Repairs */}
+        <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
+            <Maintainance />
         </Item>
     </Box>
     )

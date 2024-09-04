@@ -38,7 +38,12 @@ const Payroll = () => {
   const colors = tokens(theme.palette.mode);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
-
+  const [totalLiquidPayment , setTotalLiquidPayment] = useState(0);
+  const [totalGrossPayment , setTotalGrossPayment] = useState(0);
+  const [totalTaxPayment , setTotalTaxPayment] = useState(0);
+  const [totalMedicalInsurancePayment , setTotalMedicalInsurancePayment] = useState(0);
+  const [totalSocialInsurancePayment , setTotalSocialInsurancePayment] = useState(0);
+  
   // Customized Item
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? colors.primary[500] : colors.primary[200],
@@ -53,7 +58,7 @@ const Payroll = () => {
       { accessorKey: 'user.name', header: 'Name' },
       {
         accessorKey: 'user.hr_code',
-        header: 'Employee ID',
+        header: 'HR Code',
         size: 120,
       },
       {
@@ -127,9 +132,7 @@ const Payroll = () => {
 
   useEffect(() => {
     const today = dayjs();
-    console.log(today)
-    const response = showAllPayrollRecords(today);
-    console.log(response);
+    showAllPayrollRecords(today);
     setSearchQuery(today);
   }, []);
 
@@ -142,6 +145,7 @@ const Payroll = () => {
         // Check if response.data is an array
         const payrollData = Array.isArray(response.data) ? response.data : [];
         setData(payrollData);
+        
       }
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -150,7 +154,7 @@ const Payroll = () => {
 
   const handleExportData = () => {
     // Prepare data with additional Name column for Excel export
-
+    // console.log(data);
     const exportData = data.map((row) => ({
       Name: row.user.name,
       'Employee ID': row.user.hr_code,
@@ -237,6 +241,31 @@ const Payroll = () => {
   const handleMonthChange = (newValue) => {
     setSearchQuery(newValue);
     showAllPayrollRecords(newValue);
+    const totalLiquidPay = data.reduce((total, payroll) => {
+      return total + parseFloat(payroll.TotalLiquidPay);
+    }, 0);
+    setTotalLiquidPayment(totalLiquidPay);
+    
+    const totalGrossPay = data.reduce((total, payroll) => {
+      return total + parseFloat(payroll.TotalPay);
+    }, 0);
+    setTotalGrossPayment(totalGrossPay);
+
+    const totalTax = data.reduce((total, payroll) => {
+      return total + parseFloat(payroll.tax);
+    }, 0);
+    setTotalTaxPayment(totalTax);
+
+    const totalSocialInsurance = data.reduce((total, payroll) => {
+      return total + parseFloat(payroll.SocialInsurance);
+    }, 0);
+    setTotalSocialInsurancePayment(totalSocialInsurance);
+
+    const totalMedicalInsurance = data.reduce((total, payroll) => {
+      return total + parseFloat(payroll.MedicalInsurance);
+    }, 0);
+    setTotalMedicalInsurancePayment(totalMedicalInsurance);
+  
   };
 
   const handleDepartmentChange = (event) => {
@@ -317,7 +346,7 @@ const Payroll = () => {
     }),
     muiPaginationProps: {
       color: 'secondary',
-      rowsPerPageOptions: [10, 20, 30],
+      rowsPerPageOptions: [10, 20, 30, 40 , 50 , 60],
       shape: 'rounded',
       variant: 'outlined',
     },
@@ -428,35 +457,73 @@ const Payroll = () => {
         </Box>
 
         <Stack direction={"row"} justifyContent={"space-between"}  spacing={2} mt={2} mb={2}>
-          <Item>
-            <Typography variant="h6">
-              Total Liquid Pay for {selectedDepartment}: EGP {calculateTotalLiquidPay()}
-            </Typography>
-          </Item>
+          {
+            !selectedDepartment && 
+            <>
+            <Item>
+              <Typography variant="h6">
+                Total Liquid Pay : EGP {totalLiquidPayment}
+              </Typography>
+            </Item>
 
-          <Item>
-            <Typography variant="h6">
-              Total Gross Pay for {selectedDepartment}:  EGP {calculateTotalGrossPay()}
-            </Typography>
-          </Item>
+            <Item>
+              <Typography variant="h6">
+                Total Gross Pay :  EGP {totalGrossPayment}
+              </Typography>
+            </Item>
 
-          <Item>
-            <Typography variant="h6">
-              Total Tax for {selectedDepartment}: EGP {calculateTotalTax()}
-            </Typography>
-          </Item>
-          <Item>
+            <Item>
+              <Typography variant="h6">
+                Total Tax : EGP {totalTaxPayment}
+              </Typography>
+            </Item>
+            <Item>
 
-            <Typography variant="h6">
-              Total Social Insurance for {selectedDepartment}: EGP {calculateTotalSocialInsurance()}
-            </Typography>
-          </Item>
-          <Item>
-{/* some random comment 22222 */}
-            <Typography variant="h6" sx={{ marginBottom: 2 }}>
-              Total Medical Insurance for {selectedDepartment}: EGP {calculateTotalMedicalInsurance()}
-            </Typography>
-          </Item>
+              <Typography variant="h6">
+                Total Social Insurance : EGP {totalSocialInsurancePayment}
+              </Typography>
+            </Item>
+            <Item>
+
+              <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                Total Medical Insurance : EGP {totalMedicalInsurancePayment}
+              </Typography>
+            </Item>
+            </>
+          }
+          {selectedDepartment &&
+          <>
+            <Item>
+              <Typography variant="h6">
+                Total Liquid Pay for {selectedDepartment}: EGP {calculateTotalLiquidPay()}
+              </Typography>
+            </Item>
+
+            <Item>
+              <Typography variant="h6">
+                Total Gross Pay for {selectedDepartment}:  EGP {calculateTotalGrossPay()}
+              </Typography>
+            </Item>
+
+            <Item>
+              <Typography variant="h6">
+                Total Tax for {selectedDepartment}: EGP {calculateTotalTax()}
+              </Typography>
+            </Item>
+            <Item>
+
+              <Typography variant="h6">
+                Total Social Insurance for {selectedDepartment}: EGP {calculateTotalSocialInsurance()}
+              </Typography>
+            </Item>
+            <Item>
+
+              <Typography variant="h6" sx={{ marginBottom: 2 }}>
+                Total Medical Insurance for {selectedDepartment}: EGP {calculateTotalMedicalInsurance()}
+              </Typography>
+            </Item>
+          </>
+          }
         </Stack>
 
         <MaterialReactTable table={table} />

@@ -125,7 +125,7 @@ const TimeSheet = () => {
                 enableEditing: false,
             },
             {
-                accessorKey: "user_id",   // this needs to be changed
+                accessorKey: "user.hr_code",   // this needs to be changed
                 header: "HR Code",
                 size: 120,
                 enableEditing: false,
@@ -289,7 +289,7 @@ const TimeSheet = () => {
             setSnackbarOpen(true);
             setSnackbarMessage('Upload has failed , not a correct file , please upload xlsx file!');
             setLoadingUpload(false);
-            
+
             console.error("Error uploading file", error);
         }
     };
