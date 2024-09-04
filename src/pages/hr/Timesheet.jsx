@@ -1,6 +1,6 @@
 import React, { useMemo, useState, useEffect } from "react";
 import { MaterialReactTable } from "material-react-table";
-import { Box, Button, Typography, Modal, TextField, Radio, RadioGroup, FormControlLabel, FormControl, Divider,  Tabs, Tab, InputAdornment, FilledInput, } from "@mui/material";
+import { Box, Button, Typography, Modal, TextField, Radio, RadioGroup, FormControlLabel, FormControl, Divider, Tabs, Tab, InputAdornment, FilledInput, Alert, } from "@mui/material";
 import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
@@ -11,8 +11,12 @@ import Lottie from 'lottie-react';
 import Document from "../../assets/lottie/document.json"
 import { ShowAllAttendance } from "../../apis/HumanRecourse/Attendance"
 import EmployeeTimesheetInfo from "../../components/EmployeeTimesheetInfo";
-import {addetionEmployee, deductionEmployee,CreateAttendanceExel} from "../../apis/HumanRecourse/Attendance";
-// Dummy data for demonstration
+import { addetionEmployee, deductionEmployee, CreateAttendanceExel } from "../../apis/HumanRecourse/Attendance";
+import Snackbar from '@mui/material/Snackbar';
+import { LoadingButton } from "@mui/lab";
+
+
+
 
 let data = [];
 const TimeSheet = () => {
@@ -21,6 +25,7 @@ const TimeSheet = () => {
     const [startDate, setStartDate] = useState(dayjs().subtract(1, "month"));
     const [endDate, setEndDate] = useState(dayjs());
     const [specificDate, setSpecificDate] = useState(dayjs());
+    const [initData, setInitData] = useState([]);
     const [filteredData, setFilteredData] = useState([]);
     const [descriptionOpen, setDescriptionOpen] = useState(false);
     const [selectedRow, setSelectedRow] = useState("");
@@ -28,22 +33,35 @@ const TimeSheet = () => {
     const [filterOption, setFilterOption] = useState("specificDate");
     const [editValue, setEditValue] = useState("");
     const [selectedFile, setSelectedFile] = useState(null);
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [loadingUpload,setLoadingUpload] = useState(false);
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
+
 
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const fetchData = async () => {
-      try {
-        const response = await ShowAllAttendance();
-        data = Array.isArray(response?.data) ? response.data : [];
-        setFilteredData(data);
-      } catch (err) {
-        console.error('Error Fetching Data', err);
-      }
+        try {
+            const response = await ShowAllAttendance();
+            data = Array.isArray(response?.data) ? response.data : [];
+            setInitData(data);
+            // setFilteredData(data);         
+            // console.log(filteredData);
+        } catch (err) {
+            console.error('Error Fetching Data', err);
+        }
     }
 
     useEffect(() => {
         fetchData();
-      }, []);
+    }, []);
 
     const handleChange = (event, newValue) => {
         setValue(newValue);
@@ -69,15 +87,15 @@ const TimeSheet = () => {
             }
             setShowModal(false);
             setEditValue("");
-    
+
             // Fetch and update the data again after saving
             const updatedData = await ShowAllAttendance();
             setFilteredData(updatedData?.data);
+            // console.log(filteredData);
         } catch (error) {
             console.error('Error saving data', error);
         }
     };
-    
 
 
     const columns = useMemo(
@@ -87,7 +105,7 @@ const TimeSheet = () => {
                 header: "Profile Image",
                 Cell: ({ cell }) => {
                     // console.log("#".repeat(55))
-                    // console.log(cell.row.original.user.profileimage)
+                    // console.log(cell.row.original.user)
                     // console.log(cell.getValue())
 
                     return (<img
@@ -107,8 +125,8 @@ const TimeSheet = () => {
                 enableEditing: false,
             },
             {
-                accessorKey: "user.id",
-                header: "Employee ID",
+                accessorKey: "user_id",   // this needs to be changed
+                header: "HR Code",
                 size: 120,
                 enableEditing: false,
             },
@@ -166,22 +184,22 @@ const TimeSheet = () => {
                 Cell: ({ cell }) => cell.getValue(),
                 size: 120,
             },
-            {
-                accessorKey: "edit",
-                header: "Edit Addition & Deduction",
-                enableEditing: false,
+            // {
+            //     accessorKey: "edit",
+            //     header: "Edit Addition & Deduction",
+            //     enableEditing: false,
 
-                size: 220,
-                Cell: ({ row }) => (
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={() => handleEditOpen(row.original)}
-                    >
-                        Edit Add & Deduct
-                    </Button>
-                ),
-            },
+            //     size: 220,
+            //     Cell: ({ row }) => (
+            //         <Button
+            //             variant="outlined"
+            //             color="secondary"
+            //             onClick={() => handleEditOpen(row.original)}
+            //         >
+            //             Edit Add & Deduct
+            //         </Button>
+            //     ),
+            // },
             {
                 accessorKey: "description",
                 header: "Description",
@@ -203,6 +221,7 @@ const TimeSheet = () => {
     );
 
     const handleDescriptionOpen = (row) => {
+        // setModalData(row)
         setSelectedRow(row);
         setDescriptionOpen(true);
     };
@@ -215,6 +234,7 @@ const TimeSheet = () => {
             setFilteredData(data?.filter((entry) => {
                 return dayjs(entry.Date).format("YYYY-MM-DD") === selectedDate;
             }));
+            console.log(filteredData);
         } else {
             const filtered = data?.filter((entry) => {
                 const entryDate = dayjs(entry.Date);
@@ -226,10 +246,10 @@ const TimeSheet = () => {
             });
             setFilteredData(filtered);
         }
-    }, [filterOption, startDate, endDate, specificDate,data]);
-    
+    }, [filterOption, startDate, endDate, specificDate, data]);
 
-    
+
+
     const handleFileChange = (event) => {
         const file = event.target.files && event.target.files[0];
         if (file) {
@@ -238,8 +258,13 @@ const TimeSheet = () => {
     };
 
     const handleUpload = async () => {
+        setLoadingUpload(true)
         if (!selectedFile) {
             console.error("No file selected");
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+            setSnackbarMessage('Upload has failed , no file selected!');
+            setLoadingUpload(false);
             return;
         }
 
@@ -248,6 +273,11 @@ const TimeSheet = () => {
 
         try {
             await CreateAttendanceExel(formData);
+            setSnackbarSeverity('success');
+            setSnackbarOpen(true)
+            setSnackbarMessage('File has been Uploaded Successfully!');
+            setLoadingUpload(false);
+
             console.log("File uploaded successfully");
             setSelectedFile(null);
 
@@ -255,6 +285,11 @@ const TimeSheet = () => {
             const updatedData = await ShowAllAttendance();
             setFilteredData(updatedData.data);
         } catch (error) {
+            setSnackbarSeverity('error');
+            setSnackbarOpen(true);
+            setSnackbarMessage('Upload has failed , not a correct file , please upload xlsx file!');
+            setLoadingUpload(false);
+            
             console.error("Error uploading file", error);
         }
     };
@@ -262,8 +297,6 @@ const TimeSheet = () => {
 
     return (
         <Box>
-
-
             <FormControl component="fieldset" sx={{ mb: 3 }}>
                 <RadioGroup
                     name="filter-option"
@@ -299,7 +332,12 @@ const TimeSheet = () => {
                     />
                 </RadioGroup>
             </FormControl>
-
+            <CustomizedSnackbars
+                open={snackbarOpen}
+                handleClose={handleSnackbarClose}
+                severity={snackbarSeverity}
+                message={snackbarMessage}
+            />
             {filterOption === "dateRange" && (
                 <Box sx={{ display: "flex", gap: 2, mb: 3 }}>
                     <LocalizationProvider dateAdapter={AdapterDayjs}>
@@ -311,7 +349,7 @@ const TimeSheet = () => {
                             slots={{
                                 textField: (params) => {
                                     // console.log("Start Date: ", params  )
-                                    return  <TextField variant="filled" {...params} />
+                                    return <TextField variant="filled" {...params} />
                                 }
                                 ,
                             }}
@@ -383,7 +421,8 @@ const TimeSheet = () => {
                             value={specificDate}
                             onChange={(newValue) => {
                                 // console.log("Select:" ,specificDate);
-                                return setSpecificDate(newValue)}}
+                                return setSpecificDate(newValue)
+                            }}
                             slots={{
                                 textField: (params) => (
                                     <TextField variant="filled" {...params} />
@@ -441,77 +480,88 @@ const TimeSheet = () => {
                     size: 'small',
                     variant: 'outlined',
                 }}
-
+                muiTableHeadCellProps={{
+                    sx: {
+                        fontWeight: 'normal',
+                        fontSize: '20px', // Increased font size
+                    },
+                }}
+                muiTableFooterCellProps={{
+                    sx: {
+                        fontWeight: 'normal',
+                        fontSize: '20px', // Increased font size
+                    },
+                }}
+                muiTableBodyCellProps={{
+                    sx: {
+                        fontSize: '18px', // Adjusted font size for table body cells
+                    },
+                }}
                 globalFilterModeOptions={['fuzzy', 'startsWith']}
-                renderTopToolbar={({ table }) => {
-                    return (
-                        <>
+                renderTopToolbar={({ table }) => (
+                    <>
                         <Box
                             sx={{
-                                display: "flex",
-                                justifyContent: "start",
-                                alignItems: "center",
+                                display: 'flex',
+                                justifyContent: 'start',
+                                alignItems: 'center',
                                 m: 3,
                             }}
                         >
                             <Typography variant="h4"></Typography>
-                            <Button
-                variant="outlined"
-                component="label"
-                color="secondary"
-            >
-                Upload Attendance
-                <input
-                    type="file"
-                    accept=".xlsx, .xls"
-                    hidden
-                    onChange={handleFileChange}
-                />
-            </Button>
+                            <Button variant="outlined" component="label" color="secondary">
+                                Upload Attendance
+                                <input
+                                    type="file"
+                                    accept=".xlsx, .xls"
+                                    hidden
+                                    onChange={handleFileChange}
+                                />
+                            </Button>
                         </Box>
+                        <Divider sx={{ marginBottom: 2 }} />
                         {selectedFile && (
-                <Box sx={{ mb:3 , ml:3 }}>
-                    <Typography variant="body2" color={colors.primary[200]}>
-                        {selectedFile.name}
-                    </Typography>
-                    <Button
-                        variant="outlined"
-                        color="secondary"
-                        onClick={handleUpload}
-                        
-                    >
-                        Upload
-                    </Button>
-                </Box>
-            )}
-
-                                </>
-                    )
-                }}
-                // enableEditing
+                            <>
+                                <Box sx={{ mb: 3, ml: 3, display: 'flex', justifyContent: 'start', alignItems: 'center', gap: 2 }}>
+                                    <LoadingButton loading={loadingUpload} variant="outlined" color="secondary" onClick={handleUpload}>
+                                        Submit Uploaded File
+                                    </LoadingButton>
+                                    <Typography variant="body2" color={colors.primary[200]}>
+                                        {selectedFile.name}
+                                    </Typography>
+                                </Box>
+                            </>
+                        )}
+                    </>
+                )}
                 paginationDisplayMode="pages"
                 muiPaginationProps={{
-                    color: "secondary",
-                    rowsPerPageOptions: [10, 20, 30],
-                    shape: "rounded",
-                    variant: "outlined",
+                    color: 'secondary',
+                    rowsPerPageOptions: [10, 20, 30, 40, 50, 60],
+                    shape: 'rounded',
+                    variant: 'outlined',
                 }}
                 muiTablePaperProps={{
                     elevation: 2,
                     sx: {
-                        borderRadius: "20px",
+                        borderRadius: '20px',
                     },
                 }}
                 muiTableContainerProps={{
-                    sx: { maxHeight: "600px", backgroundColor: colors.primary[400] },
+                    sx: { maxHeight: '600px', backgroundColor: colors.primary[400] },
                 }}
-                muiTableHeadCellProps={{ sx: { backgroundColor: colors.primary[400] } }}
-                muiTableBodyCellProps={{ sx: { backgroundColor: colors.primary[400] } }}
+                muiTableHeadCellProps={{
+                    sx: { backgroundColor: colors.primary[400], fontSize: '20px' }, // Increased font size
+                }}
+                muiTableBodyCellProps={{
+                    sx: { backgroundColor: colors.primary[400], fontSize: '18px' }, // Increased font size
+                }}
                 muiTableBodyProps={{ sx: { backgroundColor: colors.primary[400] } }}
                 muiBottomToolbarProps={({ table }) => ({
                     sx: { backgroundColor: colors.primary[400] },
                 })}
             />
+
 
             <Modal
                 open={showModal}
@@ -542,76 +592,76 @@ const TimeSheet = () => {
 
                     {/* Two tabs for addition and deduction */}
                     <Box
-    sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        flexDirection: "column",
-    }}
->
-    <Tabs
-        value={value}
-        onChange={handleChange}
-        aria-label="edit type tabs"
-        indicatorColor="secondary"
-        textColor="secondary"
-        variant="fullWidth"
-        sx={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-        }}
-    >
-        <Tab label="Addition" />
-        <Tab label="Deduction" />
-    </Tabs>
-    {value === 0 && (
-        <Box>
-            {/* Addition input field */}
-            <FormControl sx={{ m: 1 }} variant="filled" fullWidth>
-                <FilledInput
-                    id="filled-adornment-weight"
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    endAdornment={
-                        <InputAdornment position="end">Days</InputAdornment>
-                    }
-                    aria-describedby="filled-weight-helper-text"
-                    inputProps={{
-                        "aria-label": "Addition",
-                    }}
-                />
-            </FormControl>
-        </Box>
-    )}
-    {value === 1 && (
-        <Box>
-            {/* Deduction input field */}
-            <FormControl sx={{ m: 1 }} variant="filled" fullWidth>
-                <FilledInput
-                    id="filled-adornment-weight"
-                    value={editValue}
-                    onChange={(e) => setEditValue(e.target.value)}
-                    endAdornment={
-                        <InputAdornment position="end">Days</InputAdornment>
-                    }
-                    aria-describedby="filled-weight-helper-text"
-                    inputProps={{
-                        "aria-label": "Deduction",
-                    }}
-                />
-            </FormControl>
-        </Box>
-    )}
-    <Button
-        variant="outlined"
-        color="secondary"
-        sx={{mb:2}}
-        onClick={handleEditSave}
-    >
-        Save
-    </Button>
-</Box>
+                        sx={{
+                            display: "flex",
+                            justifyContent: "center",
+                            alignItems: "center",
+                            flexDirection: "column",
+                        }}
+                    >
+                        <Tabs
+                            value={value}
+                            onChange={handleChange}
+                            aria-label="edit type tabs"
+                            indicatorColor="secondary"
+                            textColor="secondary"
+                            variant="fullWidth"
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                            }}
+                        >
+                            <Tab label="Addition" />
+                            <Tab label="Deduction" />
+                        </Tabs>
+                        {value === 0 && (
+                            <Box>
+                                {/* Addition input field */}
+                                <FormControl sx={{ m: 1 }} variant="filled" fullWidth>
+                                    <FilledInput
+                                        id="filled-adornment-weight"
+                                        value={editValue}
+                                        onChange={(e) => setEditValue(e.target.value)}
+                                        endAdornment={
+                                            <InputAdornment position="end">Days</InputAdornment>
+                                        }
+                                        aria-describedby="filled-weight-helper-text"
+                                        inputProps={{
+                                            "aria-label": "Addition",
+                                        }}
+                                    />
+                                </FormControl>
+                            </Box>
+                        )}
+                        {value === 1 && (
+                            <Box>
+                                {/* Deduction input field */}
+                                <FormControl sx={{ m: 1 }} variant="filled" fullWidth>
+                                    <FilledInput
+                                        id="filled-adornment-weight"
+                                        value={editValue}
+                                        onChange={(e) => setEditValue(e.target.value)}
+                                        endAdornment={
+                                            <InputAdornment position="end">Days</InputAdornment>
+                                        }
+                                        aria-describedby="filled-weight-helper-text"
+                                        inputProps={{
+                                            "aria-label": "Deduction",
+                                        }}
+                                    />
+                                </FormControl>
+                            </Box>
+                        )}
+                        <Button
+                            variant="outlined"
+                            color="secondary"
+                            sx={{ mb: 2 }}
+                            onClick={handleEditSave}
+                        >
+                            Save
+                        </Button>
+                    </Box>
                     <Divider />
                     <Box
                         sx={{
@@ -627,9 +677,9 @@ const TimeSheet = () => {
                             onClick={() => setShowModal(false)}
                             color="error"
                         >
-                        Close
+                            Close
                         </Button>
-                        
+
                     </Box>
                 </Box>
             </Modal>
@@ -642,5 +692,18 @@ const TimeSheet = () => {
         </Box>
     );
 };
-
+const CustomizedSnackbars = ({ open, handleClose, severity, message }) => {
+    return (
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert
+                onClose={handleClose}
+                severity={severity}
+                variant="filled"
+                sx={{ width: '100%' }}
+            >
+                {message}
+            </Alert>
+        </Snackbar>
+    );
+};
 export default TimeSheet;

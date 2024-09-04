@@ -77,8 +77,18 @@ import RentsPage from 'pages/Administration/pages/RentsPage';
 import ExtraFeesPage from 'pages/Administration/pages/ExtraFeesPage';
 import HrOrganizationalPanel from 'pages/hr/HrOrganizationalPanel';
 import PayrollPanelPage from 'pages/hr/oraganizational panel pages/PayrollPanelPage';
-import InsurancePanel from 'pages/hr/oraganizational panel pages/InsurancePanel';
 import InsurancePanelPage from 'pages/hr/oraganizational panel pages/InsurancePanelPage';
+import FinanceOrganizationalPanel from 'pages/finance/components/organizational panel/FinanceOrganizationalPanel';
+import FinanceAdministrationPage from 'pages/finance/components/organizational panel/departments/Administration/FinanceAdministrationPage';
+import FinanceHrPage from 'pages/finance/components/organizational panel/departments/hr/FinanceHrPage';
+import FinanceSupplyChainPage from 'pages/finance/components/organizational panel/departments/supply chain/FinanceSupplyChainPage';
+import FinanceOperationPage from 'pages/finance/components/organizational panel/departments/Operation/FinanceOperationPage';
+import FinanceSalesPage from 'pages/finance/components/organizational panel/departments/Sales/FinanceSalesPage';
+import FinanceMarketingPage from 'pages/finance/components/organizational panel/departments/Marketing/FinanceMarketingPage';
+import SubscriptionPage from 'pages/finance/components/organizational panel/departments/Administration/Pages/SubscriptionPage';
+import MiscellaneousPage from 'pages/finance/components/organizational panel/departments/Administration/Pages/MiscellaneousPage';
+import UtilitiesPage from 'pages/finance/components/organizational panel/departments/Administration/Pages/UtilitiesPage';
+import SuppliesPage from 'pages/finance/components/organizational panel/departments/Administration/Pages/SuppliesPage';
 
 // Main Function
 function App() {
@@ -171,7 +181,6 @@ function App() {
                     <Route path="payroll-panel-page" element={<PayrollPanelPage />} />
                     <Route path="insurance-panel-page" element={<InsurancePanelPage />} />
 
-
                     
                   </Route>
 
@@ -222,7 +231,21 @@ function App() {
                     <Route path = "finance-treasury-tab" element={<TreasuryTabPage/>}/>
                     <Route path= "collection-detail/:id" element={<CollectionDetailPage/>}/>}
                     <Route path= "banks/profile/:id" element={<BankProfile/>}/>}
+                    <Route path= "organizational-panel" element={<FinanceOrganizationalPanel/>}/>
+                    <Route path= "administration" element={<FinanceAdministrationPage/>}/>
 
+                    <Route path='administration-rents' element={<RentsPage/>}/>
+                    <Route path='administration-supplies' element={<SuppliesPage/>}/>
+                    <Route path='administration-utilities' element={<UtilitiesPage/>}/>
+                    <Route path='administration-miscellaneous' element={<MiscellaneousPage/>}/>
+                    <Route path='administration-subscriptions' element={<SubscriptionPage/>}/>
+
+
+                    <Route path= "human-resource" element={<FinanceHrPage/>}/>
+                    <Route path= "supply-chain" element={<FinanceSupplyChainPage/>}/>
+                    <Route path= "operation" element={<FinanceOperationPage/>}/>
+                    <Route path= "sales" element={<FinanceSalesPage/>}/>
+                    <Route path= "marketing" element={<FinanceMarketingPage/>}/>
                     
 
 

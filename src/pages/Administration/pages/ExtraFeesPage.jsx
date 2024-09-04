@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Button, Grid, useTheme, DialogActions, Divider, TextField, FormControl, Dialog, DialogTitle, DialogContent, Paper, Typography, Chip } from "@mui/material";
-import { Link } from 'react-router-dom';
-import { MaterialReactTable, type MRT_ColumnDef } from "material-react-table";
+import { Box, Button, Grid, useTheme, Paper, Typography, Chip } from "@mui/material";
+import { MaterialReactTable } from "material-react-table";
 import { tokens } from "theme";
-import Lottie from 'lottie-react';
-import Document from '../../../assets/lottie/document.json';
 import { AddNewFee, ChangeFeeStatus, ShowAllFees, ShowFee, UpdateFee } from 'apis/AdministrationApi/OrganiazationalPanel';
 import styled from '@emotion/styled';
 import TagIcon from '@mui/icons-material/Tag';
@@ -91,7 +88,7 @@ const ExtraFeesPage = () => {
     }
   }
   // Define the columns for the table
-  const columns: MRT_ColumnDef[] = [
+  const columns = [
     {
       accessorKey: "id",
       header: "ID",

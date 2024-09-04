@@ -38,6 +38,7 @@ const Payroll = () => {
   const colors = tokens(theme.palette.mode);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState('');
+
   // Customized Item
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? colors.primary[500] : colors.primary[200],
@@ -46,7 +47,7 @@ const Payroll = () => {
     textAlign: 'center',
     color: theme.palette.text.secondary,
   }));
-
+  
   const columns = useMemo(
     () => [
       { accessorKey: 'user.name', header: 'Name' },
@@ -126,7 +127,9 @@ const Payroll = () => {
 
   useEffect(() => {
     const today = dayjs();
-    showAllPayrollRecords(today);
+    console.log(today)
+    const response = showAllPayrollRecords(today);
+    console.log(response);
     setSearchQuery(today);
   }, []);
 
@@ -134,7 +137,7 @@ const Payroll = () => {
     try {
       const formattedDate = date.format('YYYY-MM');
       const response = await ShowAllPayroll({ date: formattedDate });
-      console.log(response);
+      // console.log(response);
       if (response.status === 200 || response.status === 201 || response.status === 204) {
         // Check if response.data is an array
         const payrollData = Array.isArray(response.data) ? response.data : [];
@@ -147,6 +150,7 @@ const Payroll = () => {
 
   const handleExportData = () => {
     // Prepare data with additional Name column for Excel export
+
     const exportData = data.map((row) => ({
       Name: row.user.name,
       'Employee ID': row.user.hr_code,
@@ -165,12 +169,33 @@ const Payroll = () => {
       'Gross Pay': row.TotalPay,
       'Total Liquid Pay': row.TotalLiquidPay,
     }));
-
-    // Add summary row for the selected department
-    const summaryRow = {
-      Name: 'Total',
+  
+    // Calculate totals for summary row
+    const totalLiquidPay = data.reduce((total, payroll) => {
+      return total + parseFloat(payroll.TotalLiquidPay);
+    }, 0);
+  
+    const totalGrossPay = data.reduce((total, payroll) => {
+      return total + parseFloat(payroll.TotalPay);
+    }, 0);
+  
+    const totalTax = data.reduce((total, payroll) => {
+      return total + parseFloat(payroll.tax);
+    }, 0);
+  
+    const totalSocialInsurance = data.reduce((total, payroll) => {
+      return total + parseFloat(payroll.SocialInsurance);
+    }, 0);
+  
+    const totalMedicalInsurance = data.reduce((total, payroll) => {
+      return total + parseFloat(payroll.MedicalInsurance);
+    }, 0);
+  
+    // Add summary row with formatted totals
+    const totals = {
+      Name: 'Totals',
       'Employee ID': '',
-      Department: selectedDepartment,
+      Department: '', // Optionally, you can keep this empty or fill with a specific value
       Salary: '',
       'Possible Working Days': '',
       Holidays: '',
@@ -179,21 +204,21 @@ const Payroll = () => {
       Deductions: '',
       'Daily Rate': '',
       'Paid Days': '',
-      'Medical Insurance': calculateTotal('MedicalInsurance'),
-      'Social Insurance': calculateTotal('SocialInsurance'),
-      Tax: calculateTotal('tax'),
-      'Gross Pay': calculateTotal('TotalPay'),
-      'Total Liquid Pay': calculateTotal('TotalLiquidPay'),
+      'Medical Insurance': Number(totalMedicalInsurance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      'Social Insurance': Number(totalSocialInsurance).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      Tax: Number(totalTax).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      'Gross Pay': Number(totalGrossPay).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
+      'Total Liquid Pay': Number(totalLiquidPay).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }),
     };
-
-    exportData.push(summaryRow);
-
+  
+    exportData.push(totals);
+  
     const worksheet = XLSX.utils.json_to_sheet(exportData);
     const workbook = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(workbook, worksheet, 'PayrollData');
     XLSX.writeFile(workbook, 'PayrollData.xlsx');
   };
-
+  
   const handleUpload = (event) => {
     const file = event.target.files[0];
     const reader = new FileReader();

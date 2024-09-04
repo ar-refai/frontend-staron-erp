@@ -30,6 +30,15 @@ export default function Finance() {
         '/finance/finance-treasury-collection': 'Collection',
         '/finance/finance-ar-requests': 'Liuidity Requests',
         '/finance/finance-treasury-tab': 'Treasury Log',
+        '/finance/organizational-panel': 'Organizational Panel',
+        '/finance/administration': 'Administration Panel',
+        '/finance/human-resource': 'Human Resource Panel',
+        '/finance/supply-chain': "Supply Chain Panel",
+        '/finance/operation': "Operation Panel",
+        '/finance/marketing':'Marketing Panel',
+        '/finance/sales':'Sales Panel',
+        
+
     };
 
     const currentTitle = titles[url.pathname];

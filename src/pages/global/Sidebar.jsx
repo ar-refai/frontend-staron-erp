@@ -13,16 +13,10 @@ import { tokens } from "../../theme";
 import { Typography, Box, ListItem, ListItemIcon, ListItemText, Collapse, ListSubheader, ListItemButton } from '@mui/material';
 
 // Importing icons
-import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined';
-import ChecklistOutlinedIcon from '@mui/icons-material/ChecklistOutlined';
-import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined';
-import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
-import QueryStatsOutlinedIcon from '@mui/icons-material/QueryStatsOutlined';
 import Badge from '@mui/material/Badge';
 import Avatar from '@mui/material/Avatar';
 import HRLinks from './HrLinks';
 import TagIcon from '@mui/icons-material/Tag';
-import UserAvatar from "../../assets/user.jpg";
 import SalesLinks from './SalesLinks';
 import TechLinks from './TechLinks';
 import ControlLinks from './ControlLinks';

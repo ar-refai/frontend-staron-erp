@@ -32,10 +32,12 @@ export default function Administration() {
                 margin: '20px',
                 borderRadius: '10px',
             }}>
-                <Typography variant='h2' sx={{ 
+                <Typography variant='h2' sx=
+                {{ 
                     display: 'flex', 
                     justifyContent: 'start', 
-                    alignItems: 'center' }}>
+                    alignItems: 'center' 
+                }}>
                     <TagIcon sx={{ 
                         color: colors.redAccent[500], 
                         fontSize: '40px' }} />
