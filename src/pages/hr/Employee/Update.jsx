@@ -27,7 +27,7 @@ import moment from "moment";
 import { geDepartmentSupervisors } from "apis/HumanRecourse/Employee";
 let clockinObj = {};
 let clockoutObj = {};
-const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
+const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData , selectedDeptEdit}) => {
     const [activeStep, setActiveStep] = useState(0);
     const [supervisors, setSupervisors] = useState([]);
     const [initialValues, setInitialValues] = useState();
@@ -35,7 +35,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
     const [error, setError] = useState("");
     const [supervisorStatus, setSupervisorStatus] = useState(200);
     const [deptSelect, setDeptSelect] = React.useState('');
-
+    
     const steps = ["Personal Info", "Job Details", "Other Details", "Files"];
 
     useEffect(() => {
@@ -46,10 +46,10 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
                 if ([200, 201, 202].includes(response.status)) {      
                     const clockin = response.data.clockin;
                     clockinObj = dayjs(`1970-01-01T${clockin}`);
-                    console.log(clockinObj);
+                    // console.log(clockinObj);
                     const clockout = response.data.clockout;
                     clockoutObj = dayjs(`1970-01-01T${clockout}`);
-                    console.log(clockoutObj)
+                    // console.log(clockoutObj)
                     setInitialValues({
                         ...response.data,
                         password:'',
@@ -70,6 +70,7 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
                     // console.log("This is the initial values",initialValues); // here prints empty object values
                     setLoading(false);
                 }
+                fetchDeptSupervisors(selectedDeptEdit);
             } catch (error) {
                 console.error("Error fetching employee data:", error);
                 setError("Failed to fetch employee data.");
@@ -119,11 +120,11 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
     ];
     const handleDeptSelect = (event,) => {
         setDeptSelect(event.target.value);
-        fetchDeptSupervisors(event.target.value);
+        fetchDeptSupervisors(selectedDeptEdit);
     };
 
     const fetchDeptSupervisors = async (dept) => {
-        console.log(dept);
+        // console.log(dept);
 
         const formData = {
             "department": dept,
@@ -131,9 +132,9 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
         try {
             const response = await geDepartmentSupervisors(JSON.stringify(formData, null, 2));
             setSupervisors(response?.data);
-            console.log(supervisors);
+            // console.log(supervisors);
             setSupervisorStatus(response?.status);
-            console.log(response.data);
+            // console.log(response.data);
         } catch (error) {
             console.log(error, "Error fetching....");
         }
@@ -321,7 +322,12 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="job_tybe" as={TextField} label="Job Tybe" fullWidth helperText={<ErrorMessage name="job_tybe" />} />
+                                                    <Field name="job_tybe" as={TextField} label="Job Type" fullWidth select helperText={<ErrorMessage name="job_tybe" />}>
+                                                        <MenuItem value="Full-Time">Full-Time</MenuItem>
+                                                        <MenuItem value="Part-Time">Part-Time</MenuItem>
+                                                        <MenuItem value="Internship">Internship</MenuItem>
+                                                        <MenuItem value="Contractor">Contractor</MenuItem>
+                                                    </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                 <Field name="salary" as={TextField} label="Salary" fullWidth helperText={<ErrorMessage name="salary" />} />
@@ -336,7 +342,9 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
                                                     <Field name="tax" as={TextField} label="Tax" fullWidth helperText={<ErrorMessage name="tax" />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="Supervisor" as={TextField} label="Supervisor" fullWidth select helperText={<ErrorMessage name="Supervisor" />}>
+                                                    <Field name="Supervisor"
+                                                    onClick={(e)=> handleDeptSelect(e)}
+                                                    as={TextField} label="Supervisor" fullWidth select helperText={<ErrorMessage name="Supervisor"  />}>
                                                         <MenuItem value="" >No Supervisor</MenuItem>
                                                         {supervisorStatus === 200 && supervisors?.map((supervisor) => (
                                                             <MenuItem key={supervisor?.id} value={supervisor?.id}>
@@ -376,7 +384,11 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
                                                     <Field name="SocialInsurance" as={TextField} label="Social Insurance" fullWidth helperText={<ErrorMessage name="SocialInsurance" />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="TimeStamp" as={TextField} label="Time Stamp" fullWidth helperText={<ErrorMessage name="TimeStamp" />} />
+                                                    {/* <Field name="TimeStamp" as={TextField} label="Time Stamp" fullWidth helperText={<ErrorMessage name="TimeStamp" />} /> */}
+                                                    <Field name="TimeStamp" as={TextField} label="TimeStamp" fullWidth select helperText={<ErrorMessage name="TimeStamp" />}>
+                                                        <MenuItem value="G & A">Office</MenuItem>
+                                                        <MenuItem value="COR">Whats App</MenuItem>
+                                                    </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     <Field name="grade" as={TextField} label="Grade" select fullWidth helperText={<ErrorMessage name="grade" />} >
@@ -391,7 +403,11 @@ const Update = ({ onClose, selectedRow ,onUpdateSuccess , fetchData}) => {
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12}>
-                                                    <Field name="segment" as={TextField} label="Segment" fullWidth helperText={<ErrorMessage name="segment" />} />
+                                                    {/* <Field name="segment" as={TextField} label="Segment" fullWidth helperText={<ErrorMessage name="segment" />} /> */}
+                                                    <Field name="segment" as={TextField} label="Segment" fullWidth select helperText={<ErrorMessage name="segment" />}>
+                                                        <MenuItem value="G & A">G & A</MenuItem>
+                                                        <MenuItem value="COR">COR</MenuItem>
+                                                    </Field>
                                                 </Grid>
                                                 <Grid item xs={12}>
                                                     <Field name="startwork" as={TextField} label="Start Work" fullWidth select helperText={<ErrorMessage name="startwork" />} >

@@ -18,6 +18,17 @@ const instanceUpdate = axios.create({
     }, withCredentials: true,
     // Replace with your Laravel backend URL
 });
+// All factory functions (facilities)
+export const ShowAllFactories = async () => {
+    try {
+        const response = await instance.get('/adminstration/factory');
+        return response.data;
+    } catch (error) {
+        throw new Error('data failed');
+    }
+}
+// Add more functions (for the facilities)
+
 
 // All Rents Function
 export const ShowAllFees = async () => {
@@ -76,7 +87,7 @@ export const ChangeFeeStatus = async (id) => {
 // Rents Functions 
 export const ShowAllRents = async () => {
     try {
-        const response = await instance.get('/adminstration/rents');
+        const response = await instance.get('/adminstration/rent');
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -86,7 +97,7 @@ export const ShowAllRents = async () => {
 // Add A New Rent
 export const AddNewRent = async (formData) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.post('/adminstration/rent',formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -97,7 +108,7 @@ export const AddNewRent = async (formData) => {
 export const UpdateRent = async (id,formData) => {
     try {
         console.log(formData);
-        const response = await instanceUpdate.put(`/adminstration/rents/${id}`,formData);
+        const response = await instanceUpdate.put(`/adminstration/rent/${id}`,formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -107,7 +118,7 @@ export const UpdateRent = async (id,formData) => {
 // Change Rent Status
 export const ChangeRentStatus = async (id) => {
     try {
-        const response = await instance.delete(`/adminstration/rents/${id}`);
+        const response = await instance.delete(`/adminstration/rent/${id}`);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -117,7 +128,7 @@ export const ChangeRentStatus = async (id) => {
 // Show Specific Rent
 export const ShowRent = async (id) => {
     try {
-        const response = await instance.get(`/adminstration/rents/${id}`);
+        const response = await instance.get(`/adminstration/rent/${id}`);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -178,34 +189,37 @@ export const ChangeUnplannedStatus = async (id) => {
 // Supplies Functions
 export const AddNewSupplies = async (formData) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        console.log(formData);
+        const response = await instanceUpdate.post('/adminstration/supplies',formData);
+        console.log(formData);
+
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const UpdateSupplies = async (formData) => {
+export const UpdateSupplies = async (id,formData) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.put(`/adminstration/supplies/${id}`,formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const ShowSupplies = async (formData) => {
+export const ShowSupplies = async (id) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.get(`/adminstration/supplies/${id}`);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const ShowAllSupplies = async (formData) => {
+export const ShowAllSupplies = async () => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.get('/adminstration/supplies');
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -213,9 +227,9 @@ export const ShowAllSupplies = async (formData) => {
 };
 
 
-export const ChangeSuppliesStatus = async (formData) => {
+export const ChangeSuppliesStatus = async (id) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.delete(`/adminstration/supplies/${id}`);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -225,34 +239,34 @@ export const ChangeSuppliesStatus = async (formData) => {
 //  Utilities Functions
 export const AddNewUtilities = async (formData) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.post('/adminstration/utilites',formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const UpdateUtilities = async (formData) => {
+export const UpdateUtilities = async (id,formData) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.put(`/adminstration/utilites/${id}`,formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const ShowUtilities = async (formData) => {
+export const ShowUtilities = async (id) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.get('/adminstration/utilites');
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const ShowAllUtilities = async (formData) => {
+export const ShowAllUtilities = async () => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.get('/adminstration/utilites');
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -260,9 +274,9 @@ export const ShowAllUtilities = async (formData) => {
 };
 
 
-export const ChangeUtilitiesStatus = async (formData) => {
+export const ChangeUtilitiesStatus = async (id) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.delete(`/adminstration/utilites/${id}`);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -273,34 +287,34 @@ export const ChangeUtilitiesStatus = async (formData) => {
 // Miscellaneous Functions
 export const AddNewMiscellaneous= async (formData) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.post('/adminstration/miscelleneous',formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const UpdateMiscellaneous= async (formData) => {
+export const UpdateMiscellaneous= async (id,formData) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.put(`/adminstration/miscelleneous/${id}`,formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const ShowMiscellaneous = async (formData) => {
+export const ShowMiscellaneous = async (id) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.get(`/adminstration/miscelleneous/${id}`);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const ShowAllMiscellaneous = async (formData) => {
+export const ShowAllMiscellaneous = async () => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.get('/adminstration/miscelleneous');
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -308,9 +322,9 @@ export const ShowAllMiscellaneous = async (formData) => {
 };
 
 
-export const ChangeMiscellaneousStatus = async (formData) => {
+export const ChangeMiscellaneousStatus = async (id) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.delete(`/adminstration/miscelleneous/${id}`);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -320,16 +334,16 @@ export const ChangeMiscellaneousStatus = async (formData) => {
 // Subscriptions Functions
 export const AddNewSubscriptions= async (formData) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.post('/adminstration/Subscliption',formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const UpdateSubscriptions= async (formData) => {
+export const UpdateSubscriptions= async (id,formData) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.put(`/adminstration/Subscliption/${id}`,formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -337,18 +351,18 @@ export const UpdateSubscriptions= async (formData) => {
 };
 
 // Subscriptions
-export const ShowSubscriptions = async (formData) => {
+export const ShowSubscriptions = async (id) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.get(`/adminstration/Subscliption/${id}`);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const ShowAllSubscriptions = async (formData) => {
+export const ShowAllSubscriptions = async () => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.get('/adminstration/Subscliption');
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -356,9 +370,9 @@ export const ShowAllSubscriptions = async (formData) => {
 };
 
 
-export const ChangeSubscriptionsStatus = async (formData) => {
+export const ChangeSubscriptionsStatus = async (id) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.delete(`/adminstration/Subscliption/${id}`);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -368,16 +382,16 @@ export const ChangeSubscriptionsStatus = async (formData) => {
 // Subscriptions Functions
 export const AddNewMaintainance= async (formData) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.post('/adminstration/maintainance',formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const UpdateMaintainance= async (formData) => {
+export const UpdateMaintainance= async (id , formData) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.put(`/adminstration/maintainance/${id}`,formData);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -385,18 +399,18 @@ export const UpdateMaintainance= async (formData) => {
 };
 
 // Maintainance Functions
-export const ShowMaintainance = async (formData) => {
+export const ShowMaintainance = async (id) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.get(`/adminstration/maintainance/${id}`);
         return response.data;
     } catch (error) {
         throw new Error('data failed');
     }
 };
 
-export const ShowAllMaintainance = async (formData) => {
+export const ShowAllMaintainance = async () => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.get('/adminstration/maintainance');
         return response.data;
     } catch (error) {
         throw new Error('data failed');
@@ -404,9 +418,9 @@ export const ShowAllMaintainance = async (formData) => {
 };
 
 
-export const ChangeMaintainanceStatus = async (formData) => {
+export const ChangeMaintainanceStatus = async (id) => {
     try {
-        const response = await instanceUpdate.post('/adminstration/rents',formData);
+        const response = await instanceUpdate.delete(`/adminstration/maintainance/${id}`);
         return response.data;
     } catch (error) {
         throw new Error('data failed');

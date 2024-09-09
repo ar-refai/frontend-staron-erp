@@ -12,13 +12,18 @@ const SuppliesPage = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [arData, setArData] = useState([]);
+  const [currentData, setCurrentData] = useState([]);
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-  const [formData, setFormData] = useState({ name: '' , amount: null });
+  const [formData, setFormData] = useState({factories_id: null , name: '' , amount: null });
   const [selectedSuppliesId, setSelectedSuppliesId] = useState(null);
-  const [formDataUpdate, setFormDataUpdate] = useState({ amount: null });
-  const [openViewDialog, setOpenViewDialog] = useState(false);  // New state for View All dialog
+  const [formDataUpdate, setFormDataUpdate] = useState({factories_id: null , name: '', amount: null });
 
+
+
+  const handleCloseAddDialog = (state) => {
+    setOpenAddDialog(state);
+  }
   // Item for Grid View
   const Item = styled(Paper)(({ theme }) => ({
       backgroundColor: theme.palette.mode === 'dark' ? colors.primary[600] : '#fff',
@@ -29,12 +34,14 @@ const SuppliesPage = () => {
   }));
 
   // Fetch the Supplies accounts data from the API
+  
   const fetchSuppliesData = async () => {
     try {
       const response = await ShowAllSupplies();
       if (response.status === 200) {
         setArData(response.data);
       }
+      
     } catch (error) {
       console.error("Failed to fetch supplies data:", error);
     }
@@ -44,11 +51,15 @@ const SuppliesPage = () => {
     fetchSuppliesData();
   }, []);
 
+  useEffect(() => {
+    setCurrentData(arData.filter((item) => item.status === 'pending'));
+  }, [arData]);
+
   const handleAdd = async () => {
     try {
       await AddNewSupplies(formData);
       setOpenAddDialog(false);
-      setFormData({ name: '' , amount: null }); // Reset form data after submission
+      setFormData({ factories_id: null ,name: '' , amount: null }); // Reset form data after submission
       fetchSuppliesData();
     } catch (error) {
       console.log("There was an error:", error);
@@ -61,7 +72,7 @@ const SuppliesPage = () => {
       console.log('Updating Supplies:', selectedSuppliesId, formDataUpdate);
       await UpdateSupplies(selectedSuppliesId, formDataUpdate);
       setOpenUpdateDialog(false);
-      setFormDataUpdate({ amount: null }); // Reset form data after submission
+      setFormDataUpdate({factories_id:null , name:'', amount: null }); // Reset form data after submission
       setSelectedSuppliesId(null); // Reset selected Supplies ID
       fetchSuppliesData();
     } catch (error) {
@@ -75,18 +86,19 @@ const SuppliesPage = () => {
     setSelectedSuppliesId(id);
     console.log(response.data);
     setOpenUpdateDialog(true);
-    setFormDataUpdate({amount: response.data.amount});
+    setFormDataUpdate({factories_id:response.data.factories_id ,name: response.data.name, amount: response.data.amount});
     
   };
+
   const Deactive = async (id) => {
     try {
+      console.log(id);
       const response = await ChangeSuppliesStatus(id);
-      console.log(response);
-      fetchSuppliesData();
+      fetchSuppliesData(); // This should be enough to refresh the table after deletion
     } catch (error) {
       console.log("There was an error:", error);
     }
-  }
+  };
   // Define the columns for the table
   const columns: MRT_ColumnDef[] = [
     {
@@ -105,12 +117,17 @@ const SuppliesPage = () => {
       accessorKey: "status",
       header: "Supplies Status",
       Cell: ({ cell }) => {
-        const isActive = cell.getValue() === '1'; // Assuming '1' is active and '0' is inactive
+        const status = cell.getValue(); // Assuming '1' is active and '0' is inactive
         return (
+
+          // paid 
+          // pending
+          // 
           <Chip
-            label={isActive ? 'Active' : 'Inactive'}
+            label={cell.getValue()}
             variant="outlined"
-            color={isActive ? 'success' : 'default'}
+            color={status === 'paid' ? 'success' : status === 'pending' ? 'warning' : status === 'delayed' ? 
+              'info' : 'error' }
             size="medium"
             sx={{fontSize:'14px'}}
           />
@@ -132,43 +149,84 @@ const SuppliesPage = () => {
           Edit
         </Button>
         {
-            row.original.status == '1' ?
               <Button
                 sx={{ mt: 1, width: '100px' }}
                 variant="outlined"
                 color="error"
                 onClick={() => Deactive(row.original.id)}
               >
-                Deactivate
+                Delete
               </Button>
-              :
-              <Button
-                sx={{ mt: 1, width: '100px' }}
-                variant="outlined"
-                color="secondary"
-                onClick={() => Deactive(row.original.id)}
-              >
-                Activate
-              </Button>
+ 
           }
           </>
       ),
     },
   ];
+  const historyColumns: MRT_ColumnDef[] = [
+    {
+      accessorKey: "id",
+      header: "ID",
+    },
+    {
+      accessorKey: "name",
+      header: "Supplies Title",
+    },
+    {
+      accessorKey: "amount",
+      header: "Supplies Amount",
+    },
+    {
+      accessorKey: 'budget',
+      header: 'Budget'
+    },
+    {
+      accessorKey: 'actuals',
+      header: 'Actuals'
+    }
+    ,
+    {
+      accessorKey: "status",
+      header: "Supplies Status",
+      Cell: ({ cell }) => {
+        const status = cell.getValue(); // Assuming '1' is active and '0' is inactive
+        return (
 
+          // paid 
+          // pending
+          // 
+          <Chip
+            label={cell.getValue()}
+            variant="outlined"
+            color={status === 'paid' ? 'success' : status === 'pending' ? 'warning' : status === 'delayed' ? 
+              'info' : 'error' }
+            size="medium"
+            sx={{fontSize:'14px'}}
+          />
+        );
+      },
+    },
+  ];
   return (
     <Box>
       <Grid item xs={12}>
         <Box
-          sx={{
+           sx={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
+            gridTemplateColumns: {
+              xs: '1fr', // Single column for mobile
+              sm: 'repeat(2, 1fr)', // Two columns for small screens
+              md: 'repeat(4, 1fr)', // Four columns for medium screens
+            },
             gap: 2,
-            gridTemplateRows: 'repeat(2, 250px) 1fr',
+            gridTemplateRows: {
+              xs: 'auto', // Adjust rows automatically for smaller screens
+              sm: 'repeat(2, 250px)',
+              md: 'repeat(2, 250px) 1fr',
+            },
             gridAutoRows: 'minmax(200px, auto)',
             width: '100%',
             minHeight: '750px',
-
           }}
         >
           <Item sx={{ gridColumn: 'span 2', gridRow: 'span 4' }}>
@@ -176,7 +234,12 @@ const SuppliesPage = () => {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <Box sx={{ display: "flex", justifyContent: 'center', alignItems: "center" }}>
                         <TagIcon sx={{ color: colors.redAccent[500], fontSize: '35px' }} />
-                        <Typography variant='h5' sx={{ textTransform: "uppercase", color: colors.grey[100] }}>
+                        <Typography variant='h5' sx={{ textTransform: "uppercase", color: colors.grey[100], fontSize: {
+    xs: '16px', // Smaller font size for mobile
+    sm: '18px', 
+    md: '20px', 
+    lg: '22px',
+  }  }}>
                             Supplies Table
                         </Typography>
                     </Box>
@@ -199,7 +262,7 @@ const SuppliesPage = () => {
             </Box>
           <MaterialReactTable
             columns={columns}
-            data={arData}
+            data={currentData}
             muiSkeletonProps={{
               animation: "wave",
             }}
@@ -218,9 +281,9 @@ const SuppliesPage = () => {
             })}
             muiTablePaperProps={{
               elevation: 2,
-              sx: {
-                borderRadius: "20px",
-              },
+              // sx: {
+              //   borderRadius: "20px",
+              // },
             }}
             muiTableContainerProps={{
               sx: {
@@ -272,7 +335,7 @@ const SuppliesPage = () => {
             </Box>
             {/* History Table */}
             <MaterialReactTable
-            columns={columns}
+            columns={historyColumns}
             data={arData}
             muiSkeletonProps={{
               animation: "wave",
@@ -292,9 +355,9 @@ const SuppliesPage = () => {
             })}
             muiTablePaperProps={{
               elevation: 2,
-              sx: {
-                borderRadius: "20px",
-              },
+              // sx: {
+              //   borderRadius: "20px",
+              // },
             }}
             muiTableContainerProps={{
               sx: {
@@ -324,7 +387,7 @@ const SuppliesPage = () => {
       {/* Add Record Dialog */}
       <AddSuppliesDialog 
       openAddDialog = {openAddDialog}
-      setOpenAddDialog = {setOpenAddDialog}
+      setOpenAddDialog = {handleCloseAddDialog}
       formData = {formData}
       setFormData = {setFormData}
       handleAdd = {handleAdd}

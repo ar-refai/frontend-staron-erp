@@ -73,7 +73,6 @@ import BankProfile from 'pages/finance/components/treasury/pages/BankProfile';
 import OrganizationalPanel from 'pages/Administration/Organizational Panel/OrganizationalPanel';
 import Administration from 'pages/Administration/Administration';
 import UnplannedPage from 'pages/Administration/pages/UnplannedPage';
-import RentsPage from 'pages/Administration/pages/RentsPage';
 import ExtraFeesPage from 'pages/Administration/pages/ExtraFeesPage';
 import HrOrganizationalPanel from 'pages/hr/HrOrganizationalPanel';
 import PayrollPanelPage from 'pages/hr/oraganizational panel pages/PayrollPanelPage';
@@ -90,6 +89,7 @@ import MiscellaneousPage from 'pages/finance/components/organizational panel/dep
 import UtilitiesPage from 'pages/finance/components/organizational panel/departments/Administration/Pages/UtilitiesPage';
 import SuppliesPage from 'pages/finance/components/organizational panel/departments/Administration/Pages/SuppliesPage';
 import MaintainancePage from 'pages/finance/components/organizational panel/departments/Administration/Pages/MaintainancePage';
+import RentsPage from 'pages/finance/components/organizational panel/departments/Administration/Pages/RentsPage';
 
 // Main Function
 function App() {

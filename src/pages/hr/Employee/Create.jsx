@@ -15,6 +15,8 @@ import {
     Paper,
     Select,
     FormControl,
+    Snackbar,
+    Alert,
 } from "@mui/material";
 import { CreateEmployee, ShowAllEmployee } from "../../../apis/Employee";
 import { CloudUploadOutlined } from "@mui/icons-material";
@@ -30,6 +32,13 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
     const [supervisors, setSupervisors] = useState([]);
     const [supervisorStatus, setSupervisorStatus] = useState(200);
     const [deptSelect, setDeptSelect] = React.useState('');
+    const [dopError , setDopError] = React.useState('');
+    const [employmentDateError, setemploymentDateError] = React.useState('');
+    const [supervisorError, setSupervisorError] = React.useState('');
+    const [snackbarOpen, setSnackbarOpen] = useState(false);
+    const [snackbarSeverity, setSnackbarSeverity] = useState('success');
+    const [loadingUpload,setLoadingUpload] = useState(false);
+    const [errorMessage, setErrorMessage] = React.useState("");
 
     const handleDeptSelect = (event,) => {
         setDeptSelect(event.target.value);
@@ -37,6 +46,12 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
 
     };
 
+    const handleSnackbarClose = (event, reason) => {
+        if (reason === 'clickaway') {
+            return;
+        }
+        setSnackbarOpen(false);
+    };
     const steps = ["Personal Info", "Job Details", "Other Details", "Files"];
 
     useEffect(() => {
@@ -154,6 +169,7 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
         console.log("-".repeat(22));
         console.log(values);
         console.log("-".repeat(22));
+    
         const newValues = {
             ...values,
             EmploymentDate: dateCorrector(values.EmploymentDate),
@@ -161,29 +177,46 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
             clockin: TimeCorrector(values.clockin), // Corrected field name
             clockout: TimeCorrector(values.clockout), // Corrected field name
         };
+    
         console.log(newValues);
         console.log("-".repeat(22));
-
+    
         const formData = new FormData();
         Object.keys(newValues).forEach((key) => {
-            if(key === "department") 
-                formData.append(key,deptSelect)
+            if (key === "department") 
+                formData.append(key, deptSelect);
             else
                 formData.append(key, newValues[key]);
         });
-
+    
+        setLoadingUpload(true); // Start loading indicator
+    
         CreateEmployee(formData)
-            .then((response) => {
-                console.log("Employee created successfully:", response);
-                onSubmit(formData);
-                fetchData();
-                onClose();
+        .then((response) => {
+            if(response.status === 200)
+                {console.log("Employee created successfully:", response);
+                setSnackbarSeverity('success');
+                setErrorMessage("Employee created successfully");
+                setSnackbarOpen(true); // Trigger success Snackbar
+                // onSubmit(formData);
+                    onClose(); // Close dialog only on success
+                fetchData();}
+                else {
+                    throw new Error("Error creating employee");
+                }
             })
             .catch((error) => {
                 console.error("Error creating employee:", error);
-                setSubmitting(false);
+                setSubmitting(false); // Allow form to be resubmitted
+                setSnackbarSeverity('error');
+                setErrorMessage(error.response?.data?.message || "Failed to create employee");
+                setSnackbarOpen(true); // Trigger error Snackbar
+            })
+            .finally(() => {
+                setLoadingUpload(false); // Stop loading indicator after the request is done
             });
     };
+        
 
     const handleNext = (formikProps) => {
         formikProps.validateForm().then((errors) => {
@@ -196,6 +229,9 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
             } else {
                 formikProps.setTouched(errors);
                 console.log(errors);
+                errors.date && setDopError(errors?.date);
+                errors.EmploymentDate && setemploymentDateError(errors?.EmployationDate);
+                errors.Supervisor && setSupervisorError(errors?.Supervisor);
             }
         });
     };
@@ -234,16 +270,18 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                         {activeStep === 0 && (
                                             <Grid container spacing={2}>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="name" as={TextField} label="Name" fullWidth helperText={<ErrorMessage name="name" />} />
+                                                    <Field name="name" as={TextField} label="Name" fullWidth helperText={<ErrorMessage name="name" 
+                                                    render={msg => <Typography color={'error'}>{msg}</Typography>} />}
+                                                    />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="email" as={TextField} label="Email" type="email" fullWidth helperText={<ErrorMessage name="email" />} />
+                                                    <Field name="email" as={TextField} label="Email" type="email" fullWidth helperText={<ErrorMessage name="email" render={msg => <Typography color={'error'}>{msg}</Typography>} />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="password" as={TextField} label="Password" type="password" fullWidth helperText={<ErrorMessage name="password" />} />
+                                                    <Field name="password" as={TextField} label="Password" type="password" fullWidth helperText={<ErrorMessage name="password" render={msg => <Typography color={'error'}>{msg}</Typography>} />} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="password_confirm" as={TextField} label="Confirm Password" type="password" fullWidth helperText={<ErrorMessage name="password_confirm" />} />
+                                                    <Field name="password_confirm" as={TextField} label="Confirm Password" type="password" fullWidth helperText={<ErrorMessage name="password_confirm" render={msg => <Typography color={'error'}>{msg}</Typography>} />} />
                                                 </Grid>
                                                 <Grid item xs={12}>
                                                     {/* <Field name="date" as={TextField} label="Date" type="date" fullWidth InputLabelProps={{ shrink: true }} helperText={<ErrorMessage name="date" />} /> */}
@@ -255,26 +293,31 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                                         >
                                                             <DesktopDatePicker
                                                                 name="date"
-                                                                label="Date"
+                                                                label="DOP"
                                                                 views={["year", "month", "day"]}
                                                                 format="YYYY-MM-DD"
                                                                 slotProps={{ textField: { fullWidth: true } }}
                                                                 value={dayjs(formikProps.values.date)}
                                                                 onChange={(value) => formikProps.setFieldValue("date", value)}
-                                                                renderInput={(params) => <TextField {...params} fullWidth/>}
+                                                                renderInput={(params) => <TextField {...params} fullWidth
+                                                                helperText={<ErrorMessage name="date" render={msg => <Typography color={'error'}>{msg}</Typography>}/>}
+                                                                />}
                                                             />
+                                                            <Typography color={'error'}>
+                                                                {dopError}
+                                                            </Typography>
 
                                                         </DemoContainer>
                                                     </LocalizationProvider>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="hr_code" as={TextField} label="HR Code" fullWidth helperText={<ErrorMessage name="hr_code" />} />
+                                                    <Field name="hr_code" as={TextField} label="HR Code" fullWidth helperText={<ErrorMessage name="hr_code" render={msg => <Typography color={'error'}>{msg}</Typography>}/>} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="address" as={TextField} label="Address" fullWidth helperText={<ErrorMessage name="address" />} />
+                                                    <Field name="address" as={TextField} label="Address" fullWidth helperText={<ErrorMessage name="address" render={msg => <Typography color={'error'}>{msg}</Typography>} />} />
                                                 </Grid>
                                                 <Grid item xs={12}>
-                                                    <Field name="phone" as={TextField} label="Phone Number" fullWidth helperText={<ErrorMessage name="phone" />} />
+                                                    <Field name="phone" as={TextField} label="Phone Number" fullWidth helperText={<ErrorMessage name="phone" render={msg => <Typography color={'error'}>{msg}</Typography>}/>} />
                                                 </Grid>
                                             </Grid>
                                         )}
@@ -282,7 +325,7 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                             <Grid container spacing={2}>
                                                 <Grid item xs={12} sm={6}>
                                                     <Field
-                                                    native
+                                                            native
                                                             name="department"
                                                             label="Department"
                                                             as={TextField}
@@ -307,12 +350,12 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                                     {/* </Field> */}
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="job_role" as={TextField} label="Job Role" fullWidth helperText={<ErrorMessage name="job_role" />}>
+                                                    <Field name="job_role" as={TextField} label="Job Role" fullWidth helperText={<ErrorMessage name="job_role" render={msg => <Typography color={'error'}>{msg}</Typography>}/>}>
 
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="job_tybe" as={TextField} label="Job Type" fullWidth select helperText={<ErrorMessage name="job_tybe" />}>
+                                                    <Field name="job_tybe" as={TextField} label="Job Type" fullWidth select helperText={<ErrorMessage name="job_tybe" render={msg => <Typography color={'error'}>{msg}</Typography>}/>}>
                                                         <MenuItem value="Full-Time">Full-Time</MenuItem>
                                                         <MenuItem value="Part-Time">Part-Time</MenuItem>
                                                         <MenuItem value="Internship">Internship</MenuItem>
@@ -320,19 +363,19 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="salary" as={TextField} label="Salary" type="number" fullWidth helperText={<ErrorMessage name="salary" />} />
+                                                    <Field name="salary" as={TextField} label="Salary" type="number" fullWidth helperText={<ErrorMessage name="salary" render={msg => <Typography color={'error'}>{msg}</Typography>}/>} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="Trancportation" as={TextField} label="Transportation" type="number" fullWidth helperText={<ErrorMessage name="Trancportation" />} />
+                                                    <Field name="Trancportation" as={TextField} label="Transportation" type="number" fullWidth helperText={<ErrorMessage name="Trancportation" render={msg => <Typography color={'error'}>{msg}</Typography>}/>} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="kpi" as={TextField} label="KPI" type="number" fullWidth helperText={<ErrorMessage name="kpi" />} />
+                                                    <Field name="kpi" as={TextField} label="KPI" type="number" fullWidth helperText={<ErrorMessage name="kpi" render={msg => <Typography color={'error'}>{msg}</Typography>}/>} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="tax" as={TextField} label="Tax" type="number" fullWidth helperText={<ErrorMessage name="tax" />} />
+                                                    <Field name="tax" as={TextField} label="Tax" type="number" fullWidth helperText={<ErrorMessage name="tax" render={msg => <Typography color={'error'}>{msg}</Typography>}/>} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="Supervisor" as={TextField} label="Supervisor" fullWidth select helperText={<ErrorMessage name="Supervisor" />}>
+                                                    <Field name="Supervisor" as={TextField} label="Supervisor" fullWidth select helperText={<ErrorMessage name="Supervisor" render={msg => <Typography color={'error'}>{msg}</Typography>}/>}>
                                                         <MenuItem value="" >No Supervisor</MenuItem>
                                                         {supervisorStatus === 200 && supervisors?.map((supervisor) => (
                                                             <MenuItem key={supervisor?.id} value={supervisor?.id}>
@@ -357,8 +400,13 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                                                 value={dayjs(formikProps.values.EmploymentDate)}
                                                                 slotProps={{ textField: { fullWidth: true } }}
                                                                 onChange={(value) => formikProps.setFieldValue("EmploymentDate", value)}
-                                                                renderInput={(params) => <TextField {...params} fullWidth />}
+                                                                renderInput={(params) => <TextField {...params} fullWidth 
+                                                                helperText={<ErrorMessage name="EmploymentDate" render={msg => <Typography color={'error'}>{msg}</Typography>}/>}
+                                                                />}
                                                             />
+                                                            <Typography component={'div'} color={'error'}>
+                                                                {employmentDateError}
+                                                            </Typography>
 
                                                         </DemoContainer>
                                                     </LocalizationProvider>
@@ -368,20 +416,20 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                         {activeStep === 2 && (
                                             <Grid container spacing={2}>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="MedicalInsurance" as={TextField} label="Medical Insurance" type="number" fullWidth helperText={<ErrorMessage name="MedicalInsurance" />} />
+                                                    <Field name="MedicalInsurance" as={TextField} label="Medical Insurance" type="number" fullWidth helperText={<ErrorMessage name="MedicalInsurance" render={msg => <Typography color={'error'}>{msg}</Typography>}/>} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="SocialInsurance" as={TextField} label="Social Insurance" type="number" fullWidth helperText={<ErrorMessage name="SocialInsurance" />} />
+                                                    <Field name="SocialInsurance" as={TextField} label="Social Insurance" type="number" fullWidth helperText={<ErrorMessage name="SocialInsurance" render={msg => <Typography color={'error'}>{msg}</Typography>}/>} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     {/* <Field name="TimeStamp" as={TextField} label="Timestamp" fullWidth helperText={<ErrorMessage name="TimeStamp" />} /> */}
-                                                    <Field name="TimeStamp" as={TextField} label="TimeStamp" fullWidth select helperText={<ErrorMessage name="TimeStamp" />}>
-                                                        <MenuItem value="G & A">Office</MenuItem>
-                                                        <MenuItem value="COR">Whats App</MenuItem>
+                                                    <Field name="TimeStamp" as={TextField} label="TimeStamp" fullWidth select helperText={<ErrorMessage name="TimeStamp" render={msg => <Typography color={'error'}>{msg}</Typography>} />}>
+                                                        <MenuItem value="Office">Office</MenuItem>
+                                                        <MenuItem value="Whats App">Whats App</MenuItem>
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="grade" as={TextField} select label="Grade" fullWidth helperText={<ErrorMessage name="grade" />} >
+                                                    <Field name="grade" as={TextField} select label="Grade" fullWidth helperText={<ErrorMessage name="grade" render={msg => <Typography color={'error'}>{msg}</Typography>}/>} >
                                                     <MenuItem value="Executive">Executive</MenuItem>
                                                     <MenuItem value="Manager">Manager</MenuItem>
                                                     <MenuItem value="First Staff">First Staff</MenuItem>
@@ -393,13 +441,13 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="segment" as={TextField} label="Segment" fullWidth select helperText={<ErrorMessage name="segment" />}>
+                                                    <Field name="segment" as={TextField} label="Segment" fullWidth select helperText={<ErrorMessage name="segment" render={msg => <Typography color={'error'}>{msg}</Typography>} />}>
                                                         <MenuItem value="G & A">G & A</MenuItem>
                                                         <MenuItem value="COR">COR</MenuItem>
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="startwork" as={TextField} label="Start Work" fullWidth select helperText={<ErrorMessage name="startwork" />}>
+                                                    <Field name="startwork" as={TextField} label="Start Work" fullWidth select helperText={<ErrorMessage name="startwork" render={msg => <Typography color={'error'}>{msg}</Typography>}/>}>
                                                         <MenuItem value="Saturday">Saturday</MenuItem>
                                                         <MenuItem value="Sunday">Sunday</MenuItem>
                                                         <MenuItem value="Monday">Monday</MenuItem>
@@ -410,7 +458,7 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                                     </Field>
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
-                                                    <Field name="endwork" as={TextField} label="End Work" fullWidth select helperText={<ErrorMessage name="endwork" />}>
+                                                    <Field name="endwork" as={TextField} label="End Work" fullWidth select helperText={<ErrorMessage name="endwork" render={msg => <Typography color={'error'}>{msg}</Typography>}/>}>
                                                         <MenuItem value="Saturday">Saturday</MenuItem>
                                                         <MenuItem value="Sunday">Sunday</MenuItem>
                                                         <MenuItem value="Monday">Monday</MenuItem>
@@ -431,7 +479,9 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                                             value={dayjs(formikProps.values.clockin)}
 
                                                             onChange={(value) => formikProps.setFieldValue("clockin", value)}
-                                                            renderInput={(params) => <TextField {...params} fullWidth />}
+                                                            renderInput={(params) => <TextField {...params} fullWidth 
+                                                            helperText={<ErrorMessage name="clockin" render={msg => <Typography color={'error'}>{msg}</Typography>}/>}
+                                                            />}
                                                         />
                                                     </LocalizationProvider>
 
@@ -447,7 +497,9 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                                         
                                                             slotProps={{ textField: { fullWidth: true } }}
                                                             onChange={(value) => formikProps.setFieldValue("clockout", value)}
-                                                            renderInput={(params) => <TextField {...params} fullWidth />}
+                                                            renderInput={(params) => <TextField {...params} fullWidth
+                                                            helperText={<ErrorMessage name="clockout" render={msg => <Typography color={'error'}>{msg}</Typography>}/>}
+                                                            />}
                                                         />
                                                     </LocalizationProvider>
 
@@ -473,7 +525,7 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                                             }}
                                                         />
                                                     </Button>
-                                                    <ErrorMessage name="profileimage" component="div" style={{ color: 'red' }} />
+                                                    <ErrorMessage name="profileimage" render={msg => <Typography color={'error'}>{msg}</Typography>} />
                                                 </Grid>
                                                 <Grid item xs={12} sm={6}>
                                                     <Button
@@ -492,13 +544,19 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
                                                             }}
                                                         />
                                                     </Button>
-                                                    <ErrorMessage name="pdf" component="div" style={{ color: 'red' }} />
+                                                    <ErrorMessage name="pdf" render={msg => <Typography color={'error'}>{msg}</Typography>}/>
                                                 </Grid>
                                             </Grid>
                                         )}
                                     </>
                                 )}
                             </Box>
+                            <CustomizedSnackbars
+                                open={snackbarOpen}
+                                handleClose={handleSnackbarClose}
+                                severity={snackbarSeverity}
+                                errorMessage={errorMessage}
+                            />
                             <Box sx={{ display: "flex", justifyContent: "space-between" }}>
                                 <Button
                                     disabled={activeStep === 0}
@@ -525,3 +583,19 @@ const Create = ({ onSubmit, onClose ,fetchData}) => {
 };
 
 export default Create;
+
+
+const CustomizedSnackbars = ({ open, handleClose, severity, errorMessage }) => {
+    return (
+        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
+            <Alert
+                onClose={handleClose}
+                severity={severity}
+                variant="filled"
+                sx={{ width: '100%' }}
+            >
+                {errorMessage}
+            </Alert>
+        </Snackbar>
+    );
+};

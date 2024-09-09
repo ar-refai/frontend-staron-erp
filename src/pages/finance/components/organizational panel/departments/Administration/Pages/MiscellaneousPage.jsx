@@ -14,10 +14,12 @@ const MiscellaneousPage = () => {
   const [arData, setArData] = useState([]);
   const [openAddDialog, setOpenAddDialog] = useState(false);
   const [openUpdateDialog, setOpenUpdateDialog] = useState(false);
-  const [formData, setFormData] = useState({ name: '' , amount: null });
+  const [formData, setFormData] = useState({factories_id: null , name: '' , amount: null });
   const [selectedMiscellaneousId, setSelectedMiscellaneousId] = useState(null);
-  const [formDataUpdate, setFormDataUpdate] = useState({ amount: null });
+  const [formDataUpdate, setFormDataUpdate] = useState({factories_id: null , name: '', amount: null });
   const [openViewDialog, setOpenViewDialog] = useState(false);  // New state for View All dialog
+
+
 
   // Item for Grid View
   const Item = styled(Paper)(({ theme }) => ({
@@ -48,7 +50,7 @@ const MiscellaneousPage = () => {
     try {
       await AddNewMiscellaneous(formData);
       setOpenAddDialog(false);
-      setFormData({ name: '' , amount: null }); // Reset form data after submission
+      setFormData({factories_id: null , name: '' , amount: null }); // Reset form data after submission
       fetchMiscellaneousData();
     } catch (error) {
       console.log("There was an error:", error);
@@ -61,7 +63,7 @@ const MiscellaneousPage = () => {
       console.log('Updating Miscellaneous:', selectedMiscellaneousId, formDataUpdate);
       await UpdateMiscellaneous(selectedMiscellaneousId, formDataUpdate);
       setOpenUpdateDialog(false);
-      setFormDataUpdate({ amount: null }); // Reset form data after submission
+      setFormDataUpdate({factories_id:null , name:'',  amount: null }); // Reset form data after submission
       setSelectedMiscellaneousId(null); // Reset selected Miscellaneous ID
       fetchMiscellaneousData();
     } catch (error) {
@@ -75,8 +77,7 @@ const MiscellaneousPage = () => {
     setSelectedMiscellaneousId(id);
     console.log(response.data);
     setOpenUpdateDialog(true);
-    setFormDataUpdate({amount: response.data.amount});
-    
+    setFormDataUpdate({factories_id:response.data.factories_id ,name: response.data.name, amount: response.data.amount});    
   };
   const Deactive = async (id) => {
     try {
@@ -102,15 +103,24 @@ const MiscellaneousPage = () => {
       header: "Miscellaneous Amount",
     },
     {
+      accessorKey: "budget",
+      header: "Budget",
+    },
+    {
+      accessorKey: "actuals",
+      header: "Actuals",
+    },
+    {
       accessorKey: "status",
       header: "Miscellaneous Status",
       Cell: ({ cell }) => {
-        const isActive = cell.getValue() === '1'; // Assuming '1' is active and '0' is inactive
+        const status = cell.getValue() ; // Assuming '1' is active and '0' is inactive
         return (
           <Chip
-            label={isActive ? 'Active' : 'Inactive'}
+            label={cell.getValue()}
             variant="outlined"
-            color={isActive ? 'success' : 'default'}
+            color={status === 'paid' ? 'success' : status === 'pending' ? 'warning' : status === 'delayed' ? 
+              'info' : 'error' }
             size="medium"
             sx={{fontSize:'14px'}}
           />
@@ -132,24 +142,15 @@ const MiscellaneousPage = () => {
           Edit
         </Button>
         {
-            row.original.status == '1' ?
               <Button
                 sx={{ mt: 1, width: '100px' }}
                 variant="outlined"
                 color="error"
                 onClick={() => Deactive(row.original.id)}
               >
-                Deactivate
+                Delete
               </Button>
-              :
-              <Button
-                sx={{ mt: 1, width: '100px' }}
-                variant="outlined"
-                color="secondary"
-                onClick={() => Deactive(row.original.id)}
-              >
-                Activate
-              </Button>
+              
           }
           </>
       ),
@@ -162,13 +163,20 @@ const MiscellaneousPage = () => {
         <Box
           sx={{
             display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
+            gridTemplateColumns: {
+              xs: '1fr', // Single column for mobile
+              sm: 'repeat(2, 1fr)', // Two columns for small screens
+              md: 'repeat(4, 1fr)', // Four columns for medium screens
+            },
             gap: 2,
-            gridTemplateRows: 'repeat(2, 250px) 1fr',
+            gridTemplateRows: {
+              xs: 'auto', // Adjust rows automatically for smaller screens
+              sm: 'repeat(2, 250px)',
+              md: 'repeat(2, 250px) 1fr',
+            },
             gridAutoRows: 'minmax(200px, auto)',
             width: '100%',
             minHeight: '750px',
-
           }}
         >
           <Item sx={{ gridColumn: 'span 2', gridRow: 'span 4' }}>
@@ -176,7 +184,14 @@ const MiscellaneousPage = () => {
                 <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
                     <Box sx={{ display: "flex", justifyContent: 'center', alignItems: "center" }}>
                         <TagIcon sx={{ color: colors.redAccent[500], fontSize: '35px' }} />
-                        <Typography variant='h5' sx={{ textTransform: "uppercase", color: colors.grey[100] }}>
+                        <Typography variant='h5' sx={{ textTransform: "uppercase", color: colors.grey[100],
+                           fontSize: {
+                            xs: '16px', // Smaller font size for mobile
+                            sm: '18px', 
+                            md: '20px', 
+                            lg: '22px',
+                          } 
+                         }}>
                             Miscellaneous Table
                         </Typography>
                     </Box>
@@ -218,7 +233,7 @@ const MiscellaneousPage = () => {
             muiTablePaperProps={{
               elevation: 2,
               sx: {
-                borderRadius: "20px",
+                // borderRadius: "20px",
               },
             }}
             muiTableContainerProps={{
@@ -291,7 +306,7 @@ const MiscellaneousPage = () => {
             muiTablePaperProps={{
               elevation: 2,
               sx: {
-                borderRadius: "20px",
+                // borderRadius: "20px",
               },
             }}
             muiTableContainerProps={{

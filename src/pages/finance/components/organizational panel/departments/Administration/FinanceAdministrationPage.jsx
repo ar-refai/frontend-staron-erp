@@ -38,22 +38,27 @@ const FinanceAdministrationPage = () => {
         <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
             <Rents />
         </Item>
+        
         {/* Supplies */}
         <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
             <Supplies />
         </Item>
+        
         {/* Utilities */}
         <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
             <Utilities />
         </Item>
+        
         {/* Miscellaneous */}
         <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
-          <Miscellaneous />
+            <Miscellaneous />
         </Item>
+        
         {/* Subscriptions */}
         <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
             <Subscriptions />
         </Item>
+        
         {/* Maintainance & Repairs */}
         <Item sx={{ gridColumn: 'span 2', gridRow: 'span 1' }}>
             <Maintainance />

@@ -47,6 +47,8 @@ const EmployeeList = () => {
     const [snackbarOpen, setSnackbarOpen] = useState(false);
     const [snackbarSeverity, setSnackbarSeverity] = useState('success');
     const [snackbarMessage, setSnackbarMessage] = useState('');
+    const [selectedDeptEdit ,setSelectedDeptEdit]= useState('');
+
     const theme = useTheme();
     const colors = tokens(theme.palette.mode);
     const fetchData = async () => {
@@ -83,7 +85,7 @@ const EmployeeList = () => {
         } catch (error) {
             console.error('Error creating employee:', error);
             setSnackbarSeverity('error');
-            setSnackbarMessage('Failed to create employee');
+            setSnackbarMessage(`Failed to create employee ${error}`);
             setSnackbarOpen(true);
         }
     };
@@ -194,6 +196,8 @@ const EmployeeList = () => {
     );
 
     const handleOpenModal = (mode, row) => {
+        // console.log(row.department)
+        setSelectedDeptEdit(row?.department);
         setModalMode(mode);
         setSelectedRow(row);
         setModalOpen(true);
@@ -319,7 +323,7 @@ const EmployeeList = () => {
                             </IconButton>
                         </Box>
                         {modalMode === 'create' && <Create onSubmit={handleCreateNewRow} onClose={handleCloseModal} fetchData={fetchData}/>}
-                        {modalMode === 'edit' && <Update  onClose={handleCloseModal} selectedRow={selectedRow} onUpdateSuccess={handleUpdateSuccess} fetchData={fetchData} />}
+                        {modalMode === 'edit' && <Update  onClose={handleCloseModal} selectedRow={selectedRow} onUpdateSuccess={handleUpdateSuccess} fetchData={fetchData} selectedDeptEdit ={selectedDeptEdit} />}
                         {modalMode === 'view' && <Profile employee={selectedRow} />}
                     </Box>
                 </Modal>
