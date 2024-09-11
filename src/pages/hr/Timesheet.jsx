@@ -5,16 +5,14 @@ import { LocalizationProvider } from "@mui/x-date-pickers/LocalizationProvider";
 import { AdapterDayjs } from "@mui/x-date-pickers/AdapterDayjs";
 import { DatePicker } from "@mui/x-date-pickers/DatePicker";
 import dayjs from "dayjs";
-import { styled, useTheme } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import { tokens } from "../../theme";
-import Lottie from 'lottie-react';
-import Document from "../../assets/lottie/document.json"
 import { ShowAllAttendance } from "../../apis/HumanRecourse/Attendance"
 import EmployeeTimesheetInfo from "../../components/EmployeeTimesheetInfo";
 import { addetionEmployee, deductionEmployee, CreateAttendanceExel } from "../../apis/HumanRecourse/Attendance";
-import Snackbar from '@mui/material/Snackbar';
 import { LoadingButton } from "@mui/lab";
-
+import CustomizedSnackbars from "./Timesheet Components/TimesheetSnackbar";
+import AddDeductModal from "./Timesheet Components/AddDeductModal";
 
 
 
@@ -67,11 +65,11 @@ const TimeSheet = () => {
         setValue(newValue);
     };
 
-    const handleEditOpen = (rowData) => {
-        // console.log(rowData);
-        setModalData(rowData);
-        setShowModal(true);
-    };
+    // const handleEditOpen = (rowData) => {
+    //     // console.log(rowData);
+    //     setModalData(rowData);
+    //     setShowModal(true);
+    // };
     const handleEditSave = async () => {
         let formData = {}; // Initialize formData here
 
@@ -104,10 +102,6 @@ const TimeSheet = () => {
                 accessorKey: "user.profileimage",
                 header: "Profile Image",
                 Cell: ({ cell }) => {
-                    // console.log("#".repeat(55))
-                    // console.log(cell.row.original.user)
-                    // console.log(cell.getValue())
-
                     return (<img
                         src={`https://erpsystem.darakoutlet.com/${cell.getValue()}`}
                         alt="profile"
@@ -457,17 +451,27 @@ const TimeSheet = () => {
 
             )}
             {/* OUR TABLE */}
+            <AddDeductModal 
+            showModal = {showModal}
+            setShowModal = {setShowModal} 
+            value = {value} 
+            handleChange = {handleChange} 
+            editValue = {editValue} 
+            setEditValue = {setEditValue}
+            handleEditSave = {handleEditSave}
+            />
+
             <MaterialReactTable
                 columns={columns}
                 data={filteredData}
                 layoutMode="grid"
                 enableColumnFilterModes={true}
                 enableColumnOrdering={true}
-                enableGrouping={true}
-                enableColumnPinning={true}
-                enableGlobalFilterModes={true}
-                enableFacetedValues={true}
-                enableStickyHeader={true}
+                enableGrouping= {true}
+                enableColumnPinning = {true}
+                enableGlobalFilter = {true}
+                enableFacetedValues = {true}
+                enableStickyHeader = {true}
                 initialState={{
                     showColumnFilters: true,
                     showGlobalFilter: true,
@@ -482,6 +486,7 @@ const TimeSheet = () => {
                 }}
                 muiTableHeadCellProps={{
                     sx: {
+                        backgroundColor: colors.primary[400],
                         fontWeight: 'normal',
                         fontSize: '20px', // Increased font size
                     },
@@ -494,9 +499,11 @@ const TimeSheet = () => {
                 }}
                 muiTableBodyCellProps={{
                     sx: {
+                        backgroundColor: colors.primary[400],
                         fontSize: '18px', // Adjusted font size for table body cells
                     },
                 }}
+                
                 globalFilterModeOptions={['fuzzy', 'startsWith']}
                 renderTopToolbar={({ table }) => (
                     <>
@@ -550,12 +557,6 @@ const TimeSheet = () => {
                 muiTableContainerProps={{
                     sx: { maxHeight: '600px', backgroundColor: colors.primary[400] },
                 }}
-                muiTableHeadCellProps={{
-                    sx: { backgroundColor: colors.primary[400], fontSize: '20px' }, // Increased font size
-                }}
-                muiTableBodyCellProps={{
-                    sx: { backgroundColor: colors.primary[400], fontSize: '18px' }, // Increased font size
-                }}
                 muiTableBodyProps={{ sx: { backgroundColor: colors.primary[400] } }}
                 muiBottomToolbarProps={({ table }) => ({
                     sx: { backgroundColor: colors.primary[400] },
@@ -563,126 +564,7 @@ const TimeSheet = () => {
             />
 
 
-            <Modal
-                open={showModal}
-                onClose={() => setShowModal(false)}
-                aria-labelledby="modal-title"
-                aria-describedby="modal-description"
-            >
-                <Box
-                    sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        width: 400,
-                        bgcolor: colors.grey[800],
-                        borderRadius: "10px",
-                        boxShadow: 24,
-                        padding: "15px 30px",
-                    }}
-                >
-                    <Typography id="modal-description" sx={{ mt: 2 }}>
-                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
-                            <Lottie style={{ width: '30px', display: 'flex' }} animationData={Document} />
-                            Edit Addition && Deduction Time :
-                        </Box>
-                    </Typography>
-                    <Divider />
-
-                    {/* Two tabs for addition and deduction */}
-                    <Box
-                        sx={{
-                            display: "flex",
-                            justifyContent: "center",
-                            alignItems: "center",
-                            flexDirection: "column",
-                        }}
-                    >
-                        <Tabs
-                            value={value}
-                            onChange={handleChange}
-                            aria-label="edit type tabs"
-                            indicatorColor="secondary"
-                            textColor="secondary"
-                            variant="fullWidth"
-                            sx={{
-                                display: "flex",
-                                justifyContent: "center",
-                                alignItems: "center",
-                            }}
-                        >
-                            <Tab label="Addition" />
-                            <Tab label="Deduction" />
-                        </Tabs>
-                        {value === 0 && (
-                            <Box>
-                                {/* Addition input field */}
-                                <FormControl sx={{ m: 1 }} variant="filled" fullWidth>
-                                    <FilledInput
-                                        id="filled-adornment-weight"
-                                        value={editValue}
-                                        onChange={(e) => setEditValue(e.target.value)}
-                                        endAdornment={
-                                            <InputAdornment position="end">Days</InputAdornment>
-                                        }
-                                        aria-describedby="filled-weight-helper-text"
-                                        inputProps={{
-                                            "aria-label": "Addition",
-                                        }}
-                                    />
-                                </FormControl>
-                            </Box>
-                        )}
-                        {value === 1 && (
-                            <Box>
-                                {/* Deduction input field */}
-                                <FormControl sx={{ m: 1 }} variant="filled" fullWidth>
-                                    <FilledInput
-                                        id="filled-adornment-weight"
-                                        value={editValue}
-                                        onChange={(e) => setEditValue(e.target.value)}
-                                        endAdornment={
-                                            <InputAdornment position="end">Days</InputAdornment>
-                                        }
-                                        aria-describedby="filled-weight-helper-text"
-                                        inputProps={{
-                                            "aria-label": "Deduction",
-                                        }}
-                                    />
-                                </FormControl>
-                            </Box>
-                        )}
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            sx={{ mb: 2 }}
-                            onClick={handleEditSave}
-                        >
-                            Save
-                        </Button>
-                    </Box>
-                    <Divider />
-                    <Box
-                        sx={{
-                            mt: 2,
-                            display: "flex",
-                            justifyContent: "end",
-                            alignItems: "center",
-                            marginTop: "20px",
-                        }}
-                    >
-                        <Button
-                            variant="outlined"
-                            onClick={() => setShowModal(false)}
-                            color="error"
-                        >
-                            Close
-                        </Button>
-
-                    </Box>
-                </Box>
-            </Modal>
+            
             {selectedRow && (
                 <EmployeeTimesheetInfo
                     selectedRow={selectedRow}
@@ -692,18 +574,5 @@ const TimeSheet = () => {
         </Box>
     );
 };
-const CustomizedSnackbars = ({ open, handleClose, severity, message }) => {
-    return (
-        <Snackbar open={open} autoHideDuration={6000} onClose={handleClose}>
-            <Alert
-                onClose={handleClose}
-                severity={severity}
-                variant="filled"
-                sx={{ width: '100%' }}
-            >
-                {message}
-            </Alert>
-        </Snackbar>
-    );
-};
+
 export default TimeSheet;

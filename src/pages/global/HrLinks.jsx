@@ -19,16 +19,16 @@ const HRLinks = [
     {   title: "Timesheet", to: "/hr/timesheet",
         icon: <ListAltOutlinedIcon /> 
     },
-    // {
-    //     title: "Requests Approval",
-    //     to: "/hr/requests-approval",
-    //     icon: <FactCheckOutlinedIcon />,
-    // },
-    // {
-    //     title: "Recruitment Approval",
-    //     to: "/hr/recruitment-approval",
-    //     icon: <AssignmentTurnedInOutlinedIcon />,
-    // },
+    {
+        title: "Requests Approval",
+        to: "/hr/requests-approval",
+        icon: <FactCheckOutlinedIcon />,
+    },
+    {
+        title: "Recruitment Approval",
+        to: "/hr/recruitment-approval",
+        icon: <AssignmentTurnedInOutlinedIcon />,
+    },
     { 
         title: "Payroll",
         to: "/hr/payroll",

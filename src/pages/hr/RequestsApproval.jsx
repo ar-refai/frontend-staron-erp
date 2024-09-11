@@ -12,6 +12,7 @@ import {
     DialogContentText,
     DialogTitle,
     Divider,
+    Chip,
 } from '@mui/material';
 import React, { useMemo, useState } from 'react';
 import { useTheme, lighten } from '@mui/system';
@@ -101,19 +102,19 @@ const RequestsApproval = () => {
                                 ? 'orange'
                                 : 'red';
                     return (
-                        <Box
-                            component="span"
-                            sx={{
-                                backgroundColor: color,
-                                borderRadius: '0.25rem',
-                                color: '#fff',
-                                maxWidth: '9ch',
+                            <Chip label= {status} 
+                            sx=
+                            {{
+                                borderColor:color,
+                                color: color,
                                 p: '0.25rem',
                                 textAlign: 'center',
-                            }}
-                        >
-                            {status}
-                        </Box>
+                                fontSize: '14px',
+                            }} 
+                            variant="outlined"
+                            
+                            />
+
                     );
                 },
             },

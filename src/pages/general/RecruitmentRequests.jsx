@@ -10,8 +10,8 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import dayjs from 'dayjs';
 import { useNavigate } from 'react-router-dom';
-import Lottie from 'lottie-react';
-import Document from "../../assets/lottie/document.json"
+import RecruitNewModal from './Recruitment Components/RecruitNewModal';
+import RecruitDescriptionModal from './Recruitment Components/RecruitDescriptionModal';
 
 // Generate mock data
 const makeRecruitmentData = () => [
@@ -176,15 +176,17 @@ const RecruitmentRequests = () => {
                                         : 'red';
                          return (
                               <Chip
+                                   variant = 'outlined'
+                                   
                                    label={status}
                                    sx={{
-                                        backgroundColor: color,
+                                        borderColor: color,
+                                        color:color,
                                         textAlign: 'center',
                                         width: '80px',
                                         fontSize: '13px',
                                         fontWeight: 'semiBold',
                                         letterSpacing: "0.5px",
-                                        color: colors.grey[100]
                                    }}
                               />
                          );
@@ -298,134 +300,22 @@ const RecruitmentRequests = () => {
                     <MaterialReactTable table={table} />
                </Box>
 
-               <Modal open={open} onClose={handleClose}>
-                    <Box
-                         sx={{
-                              position: 'absolute',
-                              top: '50%',
-                              left: '50%',
-                              transform: 'translate(-50%, -50%)',
-                              width: 900,
-                              background: colors.grey[800],
-                              border: `1px solid ${colors.greenAccent[500]}`,
-                              boxShadow: 24,
-                              p: 4,
-                              display: 'flex',
-                              flexDirection: 'column',
-                              gap: '1rem',
-                              borderRadius: '10px'
-                         }}
-                    >
-                         <Typography variant="h6" component="h2">
-                        
-                              <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
-                              <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
-                              Add New Recruitment Request
-                              </Box>
-                         </Typography>
-                         <Divider />
+              {/* sadasdasdas */}
+               <RecruitNewModal 
+                    open = {open}
+                    handleClose = {handleClose}
+                    newRequest  = {newRequest}
+                    handleChange  = {handleChange} 
+                    handleDateChange = {handleDateChange}
+                    handleAddRequest = {handleAddRequest}
+                    roles = {roles}
+               />
 
-                         <FormControl fullWidth variant="filled">
-                              <InputLabel>Role</InputLabel>
-                              <Select
-                                   name="role"
-                                   value={newRequest.role}
-                                   onChange={handleChange}
-                                   label="Role"
-                                   style={{ color: colors.primary[200] }}
-                              >
-                                   {roles.map((role) => (
-                                        <MenuItem key={role} value={role}>
-                                             {role}
-                                        </MenuItem>
-                                   ))}
-                              </Select>
-                         </FormControl>
-                         <TextField
-                              label="Description"
-                              name="description"
-                              value={newRequest.description}
-                              onChange={handleChange}
-                              fullWidth
-                              multiline
-                              variant="filled"
-                              rows={4}
-                              InputLabelProps={{ style: { color: colors.primary[200] } }}
-                              InputProps={{
-                                   style: { color: colors.primary[200] },
-                              }}
-                         />
-                         <LocalizationProvider dateAdapter={AdapterDayjs}>
-                              <DatePicker
-                                   label="Start Date"
-                                   value={newRequest.date}
-                                   slotProps={{
-                                        openPickerIcon: { fontSize: 'large' },
-                                        openPickerButton: { color: 'secondary' },
-                                        textField: {
-                                        variant: 'filled',
-                                        focused: true,
-                                        color: 'secondary',
-                                   },
-                                   }}
-                         
-                                   onChange={handleDateChange}
-                                   renderInput={(params) => <TextField {...params} fullWidth />}
-                              />
-                         </LocalizationProvider>
-                         <Divider />
-                         <Button variant="outlined" color="secondary" onClick={handleAddRequest}>
-                              Add
-                         </Button>
-                    </Box>
-               </Modal>
-
-               <Modal open={descriptionOpen} onClose={handleDescriptionClose}>
-                    <Box
-                         sx={{
-                              position: 'absolute',
-                              top: '50%',
-                              left: '50%',
-                              transform: 'translate(-50%, -50%)',
-                              width: 900,
-                              background: colors.grey[900],
-                              color: colors.grey[100],
-                              border: `1px solid ${colors.greenAccent[400]}`,
-                              boxShadow: 24,
-                              p: 4,
-                              display: 'flex',
-                              flexDirection: 'column',
-                              gap: '1rem',
-                              borderRadius: '10px'
-                         }}
-                    >
-                         <Typography variant="h6" sx={{
-                              textTransform: "uppercase",
-                              fontWeight: 'bold',
-                         }} component="h2">
-
-                         <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
-                         <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
-                              Request Description
-                         </Box>
-                         </Typography>
-                         <Divider />
-                         <Typography
-                              sx={{
-                                   padding: '10px',
-                                   borderRadius: '10px'
-                              }}
-                         >{selectedDescription}</Typography>
-                         <Divider />
-                         <Button
-                              variant="outlined"
-                              color="secondary"
-                              onClick={handleDescriptionClose}
-                         >
-                              Close
-                         </Button>
-                    </Box>
-               </Modal>
+               <RecruitDescriptionModal 
+                    descriptionOpen = {descriptionOpen} 
+                    handleDescriptionClose = {handleDescriptionClose}
+                    selectedDescription = {selectedDescription} 
+               />
           </>
      );
 };

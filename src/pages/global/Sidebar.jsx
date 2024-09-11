@@ -11,6 +11,9 @@ import Tooltip, { tooltipClasses } from '@mui/material/Tooltip';
 import { Link } from "react-router-dom";
 import { tokens } from "../../theme";
 import { Typography, Box, ListItem, ListItemIcon, ListItemText, Collapse, ListSubheader, ListItemButton } from '@mui/material';
+import MarkunreadMailboxOutlinedIcon from '@mui/icons-material/MarkunreadMailboxOutlined';
+import SpaceDashboardOutlinedIcon from '@mui/icons-material/SpaceDashboardOutlined';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 
 // Importing icons
 import Badge from '@mui/material/Badge';
@@ -39,6 +42,9 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   // console.log("#".repeat(44));
   // console.log(`https://erpsystem.darakoutlet.com/${user.profileimage}`);
   // console.log("#".repeat(44));
+
+  console.log(user.supervisor);
+
 
   return (
     <LightTooltip title={title}>
@@ -210,7 +216,7 @@ export default function MiniDrawer() {
         <Divider />
         <List sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
           {/* Don't Delete this */}
-          {/* <Typography
+          <Typography
 
             variant="h6"
             color={colors.grey[300]}
@@ -225,8 +231,8 @@ export default function MiniDrawer() {
             </Box> // Change cursor to pointer when hovered
 
             }
-          </Typography> */}
-          {/* <Item
+          </Typography> 
+           <Item
             key={"dashboard"}
             title="Dashboard"
             to="/global/dashboard"
@@ -234,7 +240,7 @@ export default function MiniDrawer() {
             selected={selected}
             setSelected={setSelected}
           />
-          <Item
+          {/* <Item
             key={"attendance"}
 
             title="Attendance"
@@ -242,7 +248,7 @@ export default function MiniDrawer() {
             icon={<ChecklistOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
-          />
+          /> */}
           <Item
             key={"requests"}
 
@@ -252,6 +258,7 @@ export default function MiniDrawer() {
             selected={selected}
             setSelected={setSelected}
           />
+          {!user.supervisor && 
           <Item
             key={"recuirtment"}
 
@@ -261,8 +268,9 @@ export default function MiniDrawer() {
             selected={selected}
             setSelected={setSelected}
           />
+          }
 
-          <Item
+          {/* <Item
             key={"performance"}
 
             title="Targets & Performance"
@@ -270,7 +278,7 @@ export default function MiniDrawer() {
             icon={<QueryStatsOutlinedIcon />}
             selected={selected}
             setSelected={setSelected}
-          /> */}
+          />  */}
 
           <Typography
             variant="h6"

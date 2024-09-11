@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react';
-import { Alert, Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, TextField } from '@mui/material';
+import { Alert, Box, Button, Chip, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Snackbar, TextField } from '@mui/material';
 import { lighten, useTheme } from '@mui/material/styles';
 import { MaterialReactTable, MRT_GlobalFilterTextField, MRT_ToggleFiltersButton } from 'material-react-table';
 import Divider from '@mui/material/Divider';
@@ -9,6 +9,7 @@ import CloudUploadIcon from '@mui/icons-material/CloudUpload';
 import styled from '@emotion/styled';
 import Lottie from 'lottie-react';
 import Document from "../../assets/lottie/document.json"
+import RecruitmentApprovalDescriptionModal from './Recruitment Approval Components/RecruitmentApprovalDescriptionModal';
 
 // FileUploadModal Component
 const FileUploadModal = ({ open, onClose, onUpload }) => {
@@ -284,19 +285,18 @@ const RequestsApproval = () => {
                                     ? 'blue'
                                     : 'red';
                     return (
-                        <Box
-                            component="span"
-                            sx={{
-                                backgroundColor: color,
-                                borderRadius: '0.25rem',
-                                color: '#fff',
-                                maxWidth: '9ch',
-                                p: '0.25rem',
-                                textAlign: 'center',
-                            }}
-                        >
-                            {status}
-                        </Box>
+                        <Chip label= {status} 
+                        sx=
+                        {{
+                            borderColor:color,
+                            color: color,
+                            p: '0.25rem',
+                            textAlign: 'center',
+                            fontSize: '14px',
+                        }} 
+                        variant="outlined"
+                        
+                        />
                     );
                 },
             },
@@ -336,40 +336,12 @@ const RequestsApproval = () => {
                 </Alert>
             </Snackbar>
 
-            <Dialog
-                open={showDescriptionModal}
-                onClose={handleCloseDescriptionModal}
-                aria-labelledby="description-dialog-title"
-            >
-                <Box
-                sx={{
-                    bgcolor:colors.grey[800]
-                }}
-                >
-
-                <DialogTitle id="description-dialog-title">
-                    <Box sx={{display:"flex" , flexDirection:"row"  , alignItems:"center" ,gap:"10px" , textTransform:"uppercase"}}>
-                    <Lottie style={{width:'30px',display:'flex' }} animationData={Document}/>
-                    Request Description
-                    </Box>
-                </DialogTitle>
-                <Divider />
-                <DialogContent sx={{ padding: "30px 80px" }}>
-                    <DialogContentText sx={{ textAlign: 'start' }}>{selectedDescription}</DialogContentText>
-                </DialogContent>
-                <Divider />
-                <DialogActions>
-                    <Button 
-                                onClick={handleCloseDescriptionModal} 
-                                variant='outlined'
-                                color='error'
-                            >
-                        Close
-                    </Button>
-                </DialogActions>
-                </Box>
-            </Dialog>
-
+            <RecruitmentApprovalDescriptionModal
+            showDescriptionModal = {showDescriptionModal} 
+            handleCloseDescriptionModal = {handleCloseDescriptionModal}
+            selectedDescription = {selectedDescription}
+            />
+        
             <FileUploadModal
                 open={showUploadModal}
                 onClose={handleCloseUploadModal}

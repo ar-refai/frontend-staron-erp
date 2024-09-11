@@ -63,7 +63,6 @@ const EmployeeList = () => {
         }
     };
 
-
     useEffect(() => {
         fetchData();
     }, []);

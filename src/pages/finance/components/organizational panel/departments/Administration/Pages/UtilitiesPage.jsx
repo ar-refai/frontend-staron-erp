@@ -220,13 +220,13 @@ const UtilitiesPage = () => {
                         <TagIcon sx={{ color: colors.redAccent[500], fontSize: '35px' }} />
                         <Typography variant='h5' sx={{ 
                           textTransform: "uppercase", 
-                        color: colors.grey[100], 
-                        fontSize: {
-                            xs: '16px', // Smaller font size for mobile
-                            sm: '18px', 
-                            md: '20px', 
-                            lg: '22px',
-                          }  }}>
+                          color: colors.grey[100], 
+                          fontSize: {
+                              xs: '16px', // Smaller font size for mobile
+                              sm: '18px', 
+                              md: '20px', 
+                              lg: '22px',
+                            }  }}>
                             Utilities Table
                         </Typography>
                     </Box>

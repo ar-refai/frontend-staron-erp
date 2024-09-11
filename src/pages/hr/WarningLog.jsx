@@ -19,6 +19,8 @@ import { tokens } from "../../theme";
 import Lottie from 'lottie-react';
 import Document from "../../assets/lottie/document.json";
 import { getAllWarningLogs, getAllEmployeeWarningLog, storeWarning } from "../../apis/HumanRecourse/WarningLog";
+import WarningEditDialog from "./WarningLog Components/WarningEditDialog";
+import WarningHistoryDialog from "./WarningLog Components/WarningHistoryDialog";
 
 const Warning = () => {
     const [tableData, setTableData] = useState([]);
@@ -160,13 +162,13 @@ const Warning = () => {
                 header: "Action",
                 Cell: ({ cell }) => (
                     <Box display="flex" gap={1}>
-                        <Button
+                        {/* <Button
                             variant="outlined"
                             color="secondary"
                             onClick={() => handleEdit(cell.row.original)}
                         >
                             Edit
-                        </Button>
+                        </Button> */}
                         <Button
                             variant="outlined"
                             color="secondary"
@@ -240,136 +242,26 @@ const Warning = () => {
                 })}
             />
 
-            <Dialog open={editDialogOpen} onClose={handleClose}>
-                <Box
-                    sx={{
-                        bgcolor: colors.grey[800],
-                        borderRadius: '5px'
-                    }}>
-                    <DialogTitle>
-                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
-                            <Lottie style={{ width: '30px', display: 'flex' }} animationData={Document} />
-                            Edit Warning Level for {selectedEmployee?.name}
-                        </Box>
-                    </DialogTitle>
-                    <Divider />
+            <WarningEditDialog 
+            editDialogOpen = {editDialogOpen}
+            handleClose = {handleClose} 
+            selectedEmployee = {selectedEmployee}
+            warningLevel = {warningLevel}
+            setWarningLevel = {setWarningLevel}
+            reason = {reason}
+            setReason = {setReason}
+            reasons = {reasons}
+            handleStoreWarning = {handleStoreWarning}
+            />
 
-                    <DialogContent>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                gap: 2,
-                                mt: 2,
-                                width: '450px',
-                            }}>
-                            <Select
-                                value={warningLevel}
-                                onChange={(e) => setWarningLevel(e.target.value)}
-                                displayEmpty
-                                fullWidth
-                                sx={{
-                                    "&.Mui-focused": {
-                                        borderColor: colors.blueAccent[300],
-                                    }
-                                }}
-                            >
-                                <MenuItem value="" disabled>Select Warning Level</MenuItem>
-                                <MenuItem value={1}>Level 1</MenuItem>
-                                <MenuItem value={2}>Level 2</MenuItem>
-                                <MenuItem value={3}>Level 3</MenuItem>
-                                <MenuItem value={4}>Level 4</MenuItem>
-                            </Select>
-                            <Select
-                                value={reason}
-                                onChange={(e) => setReason(e.target.value)}
-                                defaultValue=""
-                                displayEmpty
-                                fullWidth
-                            >
-                                <MenuItem value="" disabled>Select Reason</MenuItem>
-                                {reasons.map((reason) => (
-                                    <MenuItem key={reason} value={reason}>
-                                        {reason}
-                                    </MenuItem>
-                                ))}
-                            </Select>
-                        </Box>
-                    </DialogContent>
-                    <Divider />
+            <WarningHistoryDialog
+            historyDialogOpen = {historyDialogOpen} 
+            handleClose = {handleClose}
+            selectedEmployee = {selectedEmployee} 
+            historyColumns = {historyColumns}
+            employeeLogs = {employeeLogs}
+            />
 
-                    <DialogActions>
-                        <Button
-                            variant="outlined"
-                            color="error"
-                            onClick={handleClose}
-                        >
-                            Close
-                        </Button>
-                        <Button
-                            variant="outlined"
-                            color="secondary"
-                            onClick={handleStoreWarning}
-                        >
-                            Save
-                        </Button>
-                    </DialogActions>
-                </Box>
-            </Dialog>
-
-            <Dialog open={historyDialogOpen} onClose={handleClose} maxWidth="lg" fullWidth>
-                <Box
-                    sx={{
-                        bgcolor: colors.grey[800],
-                        borderRadius: '5px'
-                    }}>
-                    <DialogTitle>
-                        <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
-                            <Lottie style={{ width: '30px', display: 'flex' }} animationData={Document} />
-                            Warning History for {selectedEmployee?.name}
-                        </Box>
-                    </DialogTitle>
-                    <Divider />
-
-                    <DialogContent>
-                        <MaterialReactTable
-                            columns={historyColumns}
-                            data={employeeLogs}
-                            enableColumnOrdering
-                            enableColumnActions={false}
-                            muiTablePaperProps={{
-                                elevation: 2,
-                                sx: {
-                                    borderRadius: '20px',
-                                    padding: '20px 0 0 0',
-                                },
-                            }}
-                            muiTableContainerProps={{ sx: { maxHeight: '600px', backgroundColor: colors.primary[400] } }}
-                            muiTableHeadCellProps={{ sx: { backgroundColor: colors.grey[900] } }}
-                            muiTableBodyCellProps={{ sx: { backgroundColor: colors.grey[800] } }}
-                            muiTableBodyProps={{ sx: { backgroundColor: colors.grey[800] } }}
-                            muiBottomToolbarProps={({ table }) => ({
-                                sx: { backgroundColor: colors.grey[800] },
-                            })}
-                            mrtTheme = {(theme) => ({
-                                baseBackgroundColor: colors.grey[700],
-                                draggingBorderColor: theme.palette.secondary.main,
-                            })}
-                        />
-                    </DialogContent>
-                    <Divider />
-
-                    <DialogActions>
-                        <Button
-                            variant="outlined"
-                            color="error"
-                            onClick={handleClose}
-                        >
-                            Close
-                        </Button>
-                    </DialogActions>
-                </Box>
-            </Dialog>
         </>
     );
 };
