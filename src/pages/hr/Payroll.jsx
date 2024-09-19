@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect , useCallback } from 'react';
 import {
   Box,
   Button,
@@ -26,12 +26,10 @@ import dayjs from 'dayjs';
 import { tokens } from '../../theme';
 import { ShowAllPayroll } from 'apis/HumanRecourse/Payroll';
 import styled from '@emotion/styled';
-
-
-
+import { PayrollColumns } from './Payroll Components/PayrollColumns';
+import PayrollReviewModal from './Payroll Components/PayrollReviewModal';
 
 const Payroll = () => {
-  const [showUploadModal, setShowUploadModal] = useState(false);
   const [searchQuery, setSearchQuery] = useState(dayjs());
   const [data, setData] = useState([]);
   const theme = useTheme();
@@ -44,6 +42,8 @@ const Payroll = () => {
   const [totalMedicalInsurancePayment , setTotalMedicalInsurancePayment] = useState(0);
   const [totalSocialInsurancePayment , setTotalSocialInsurancePayment] = useState(0);
   
+  const [reviewModalOpen , setReviewModalOpen] = useState(false);
+
   // Customized Item
   const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? colors.primary[500] : colors.primary[200],
@@ -53,82 +53,7 @@ const Payroll = () => {
     color: theme.palette.text.secondary,
   }));
   
-  const columns = useMemo(
-    () => [
-      { accessorKey: 'user.name', header: 'Name' },
-      {
-        accessorKey: 'user.hr_code',
-        header: 'HR Code',
-        size: 120,
-      },
-      {
-        accessorKey: 'user.department',
-        header: 'Department',
-        size: 200,
-      },
-      {
-        accessorKey: 'user.salary',
-        header: 'Salary' 
-      },
-      {
-        accessorKey: 'workdays',
-        header: 'Possible Working Days',
-        size: 200,
-      },
-      {
-        accessorKey: 'holidays',
-        header: 'Holidays',
-        size: 200,
-      },
-      {
-        accessorKey: 'attendance',
-        header: 'Actual Working Days',
-        size: 200,
-      },
-      {
-        accessorKey: 'additions',
-        header: 'Additions',
-        size: 120,
-      },
-      {
-        accessorKey: 'deductions',
-        header: 'Deductions',
-        size: 200,
-      },
-      {
-        accessorKey: 'dailyrate',
-        header: 'Daily Rate',
-        size: 200,
-      },
-      {
-        accessorKey: 'paiddays',
-        header: 'Paid Days',
-        size: 200,
-      },
-      {
-        accessorKey: 'MedicalInsurance',
-        header: 'Medical Insurance',
-        size: 200,
-      },
-      {
-        accessorKey: 'SocialInsurance',
-        header: 'Social Insurance',
-        size: 200,
-      },
-      { accessorKey: 'tax', header: 'Tax' },
-      {
-        accessorKey: 'TotalPay',
-        header: 'Gross Pay',
-        size: 200,
-      },
-      {
-        accessorKey: 'TotalLiquidPay',
-        header: 'Total \n Liquid Pay',
-        size: 200,
-      },
-    ],
-    []
-  );
+  const columns = PayrollColumns();
 
   useEffect(() => {
     const today = dayjs();
@@ -223,20 +148,13 @@ const Payroll = () => {
     XLSX.writeFile(workbook, 'PayrollData.xlsx');
   };
   
-  const handleUpload = (event) => {
-    const file = event.target.files[0];
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const data = new Uint8Array(e.target.result);
-      const workbook = XLSX.read(data, { type: 'array' });
-      const sheetName = workbook.SheetNames[0];
-      const worksheet = workbook.Sheets[sheetName];
-      const jsonData = XLSX.utils.sheet_to_json(worksheet);
-      setData(jsonData);
-      setShowUploadModal(false);
-    };
-    reader.readAsArrayBuffer(file);
-  };
+  // Review Payroll Modal
+  const handleReviewPayroll = () => {
+    setReviewModalOpen(true);
+  }
+  const handleCloseReviewModal = () => {
+    setReviewModalOpen(false);
+  }
 
   const handleMonthChange = (newValue) => {
     setSearchQuery(newValue);
@@ -244,6 +162,7 @@ const Payroll = () => {
     const totalLiquidPay = data.reduce((total, payroll) => {
       return total + parseFloat(payroll.TotalLiquidPay);
     }, 0);
+
     setTotalLiquidPayment(totalLiquidPay);
     
     const totalGrossPay = data.reduce((total, payroll) => {
@@ -359,6 +278,18 @@ const Payroll = () => {
           flexWrap: 'wrap',
         }}
       >
+        <Button
+          onClick={handleReviewPayroll}
+          startIcon={<FileUploadIcon />}
+          variant='outlined'
+          color='secondary'
+          sx={{
+            fontWeight: 'bold',
+            fontSize: '13px',
+          }}
+        >
+          Review Payroll
+        </Button>
         <Button
           onClick={handleExportData}
           startIcon={<FileUploadIcon />}
@@ -529,25 +460,14 @@ const Payroll = () => {
         <MaterialReactTable table={table} />
       </Box>
 
-      <Dialog open={showUploadModal} onClose={() => setShowUploadModal(false)}>
-        <DialogTitle>Upload Your Excel File</DialogTitle>
-        <Divider sx={{ backgroundColor: colors.blueAccent[300] }} />
-        <DialogContent sx={{ color: colors.grey[200], paddingBlock: '20px' }}>
-          <input type='file' accept='.xlsx, .xls' onChange={handleUpload} />
-        </DialogContent>
-        <Divider sx={{ backgroundColor: colors.blueAccent[300] }} />
-        <DialogActions>
-          <Button
-            variant='outlined'
-            style={{
-              backgroundColor: colors.redAccent[300],
-            }}
-            onClick={() => setShowUploadModal(false)}
-          >
-            Close
-          </Button>
-        </DialogActions>
-      </Dialog>
+
+
+      {/* Reviewthe payroll employee by employee */}
+      <PayrollReviewModal 
+        showReviewModal = {reviewModalOpen}
+        handleCloseReviewModal = {handleCloseReviewModal}
+        filteredData = {filteredData}
+      />
     </>
   );
 };

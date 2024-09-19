@@ -327,7 +327,7 @@ const RequestsApproval = () => {
         <>
             <Snackbar
                 open={showAlert}
-                autoHideDuration={6000}
+                autoHideDuration={5000}
                 onClose={handleCloseAlert}
                 anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
             >

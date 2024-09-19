@@ -1,118 +1,188 @@
-import React, { useMemo, useState } from 'react';
-import { Box, Button, Typography, Modal, TextField, MenuItem, Select, FormControl, InputLabel, Chip, Divider } from '@mui/material';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Box, Button, Typography, Chip, IconButton } from '@mui/material';
 import { useTheme } from '@mui/system';
 import { tokens } from '../../theme';
 import TagIcon from '@mui/icons-material/Tag';
 import { MaterialReactTable, MRT_GlobalFilterTextField, MRT_ToggleFiltersButton } from 'material-react-table';
-import { makeData } from './makeData';
-import { useNavigate } from 'react-router-dom';
-import Lottie from 'lottie-react';
-import Document from "../../assets/lottie/document.json"
 import NewRequestModal from './Requests Components/NewRequestModal';
+import { ShowAllRequests ,CreateNewRequest ,UpdateRequest ,ShowSpecificRequest , DeleteRequest } from 'apis/Requests';
+import RequestDetailsModal from './Requests Components/RequestDetailModal';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
-// Generate mock data
-const initialData = makeData();
-
-// Mock employees list
-const employees = [
-  { name: 'Alice' },
-  { name: 'Bob' },
-  { name: 'Charlie' },
-  // Add more employees as needed
-];
-
-const requestTypes = ['Sick Leave', 'Annual Vacation', 'Errands', 'Clock In Excuse', 'Clock Out Excuse'];
+const requestTypes = ['Sick Leave', 'Annual Vacation', 'Errands', 'Clock In Excuse', 'Clock Out Excuse', 'Absent'];
 
 const Requests = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
   const [open, setOpen] = useState(false);
+  const [editMode, setEditMode] = useState(false);
+  const [requestDetailsOpen, setRequestDetailsOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
   const [newRequest, setNewRequest] = useState({
-    requestType: '',
-    description: '',
-    from: '',
-    to: '',
-    date: '',
-    requesterName: '',
-    status: 'Pending',
+      date:"",
+      request_type: "",
+      from_date: "",
+      to_date: "",
+      from_ci: "",
+      to_co: "",
+      description: ""
   });
- 
+
+
+  const fetchAllRequests = async () => {
+    try {
+      const response = await ShowAllRequests();
+      // console.log(response.data);
+      if (response.status === 200) {
+        setData(response.data);
+      }
+    } catch (err) {
+      console.log('There Was an error fetching requests!');
+    }
+  }
+
+  useEffect(() => {
+    fetchAllRequests();
+  }, [])
+  
+
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+
+  // Track Changes
   const handleChange = (e) => {
+    console.log(e.target.value);
     setNewRequest({
       ...newRequest,
       [e.target.name]: e.target.value,
     });
   };
 
-  const handleAddRequest = () => {
-    const currentDate = new Date().toISOString().split('T')[0]; // Get current date in 'YYYY-MM-DD' format
-    const requestToAdd = {
-      ...newRequest,
-      date: newRequest.date || currentDate,
-      status: 'Pending',
-    };
-
-    // Add the new request to the data
-    setData((prevData) => [...prevData, requestToAdd]);
-    setOpen(false);
-    // Reset the form
-    setNewRequest({
-      requestType: '',
-      description: '',
-      from: '',
-      to: '',
-      date: '',
-      requesterName: '',
-      status: 'Pending',
-    });
+  // Showing Request
+  const handleRequestDetailsOpen = async (id) => {
+    try {
+      const response = await ShowSpecificRequest(id);
+      if (response.status === 200) {
+        setSelectedRequest(response.data);
+        setEditMode(true)
+        setRequestDetailsOpen(true);
+      }
+    } catch (error) {
+      console.log('Error fetching specific request!', error);
+    }
   };
+
+  const handleRequestDetailsClose = () => setRequestDetailsOpen(false);
+
+
+  // Adding Functionality
+  const handleAddRequest = async () => {
+    console.log(newRequest)
+    try {
+      const response = await CreateNewRequest(newRequest);
+      console.log(response.data);
+    } catch (error) {
+      console.log("Error Creating Request!",error);
+    }
+    fetchAllRequests();
+    handleClose();
+  };
+
+  // Updating Functionality
+  const handleUpdateRequest = async () => {
+    try {
+      const response = await UpdateRequest(selectedRequest.id, newRequest);
+      console.log(response.data);
+      fetchAllRequests();
+      setEditMode(false);
+      handleRequestDetailsClose();
+    } catch (error) {
+      console.log('Error Updating Request!', error);
+    }
+  };
+
+  // Deleting Functionality
+  const handleDeleteRequest = async (id) => {
+    try {
+      await DeleteRequest(id);
+      fetchAllRequests();
+    } catch (error) {
+      console.log('Error Deleting Request!', error);
+    }
+  };
+
 
   const columns = useMemo(
     () => [
       {
-        accessorKey: 'requestType',
+        accessorKey: 'user.name',
+        header: 'Requester',
+        size: 200,
+      },
+      {
+        accessorKey: 'request_type',
         header: 'Request Type',
-        size: 250,
+        size: 120,
+      },
+      {
+        accessorKey: 'from_date',
+        header: 'From Date',
+        size: 120,
+        Cell: ({ cell }) => cell.getValue() ? cell.getValue() : "__",
+      },
+      {
+        accessorKey: 'to_date',
+        header: 'To Date',
+        size: 120,
+        Cell: ({ cell }) => cell.getValue() ? cell.getValue() : "__",
       },
       {
         accessorKey: 'description',
-        header: 'Request Description',
-        size: 300,
+        header: 'Description',
+        size: 120,
       },
       {
         accessorKey: 'date',
-        header: 'Date of Request',
-        size: 200,
-        Cell: ({ cell }) => new Date(cell.getValue()).toISOString().slice(0,10),
+        header: 'Date',
+        size: 120,
+        Cell: ({ cell }) => cell.getValue() ? new Date(cell.getValue()).toISOString().slice(11,19) : "__",
+
       },
       {
-        accessorKey: 'requesterName',
-        header: 'Requester',
-        size: 250,
+        accessorKey: 'from_ci',
+        header: 'From Time',
+        size: 120,
+        Cell: ({ cell }) => cell.getValue() ? cell.getValue() : "__",
+
       },
       {
-        accessorKey: 'status',
+        accessorKey: 'to_co',
+        header: 'To Time',
+        size: 120,
+        Cell: ({ cell }) => cell.getValue() ? cell.getValue() : "__",
+
+      },
+      {
+        accessorKey: 'hr_approve',
         filterVariant: "select",
-        filterSelectOptions: ['Accepted', 'Pending', 'Rejected'],
+        filterSelectOptions: ['accepted', 'pending', 'rejected'],
         header: 'Status',
         size: 150,
         Cell: ({ cell }) => {
           const status = cell.getValue();
           const color =
-            status === 'Accepted'
+            status === 'accepted'
               ? 'ForestGreen'
-              : status === 'Pending'
+              : status === 'pending'
               ? "DarkGoldenRod"
               : colors.redAccent[500];
           return (
             <Chip
               variant='outlined'
-
               label={status}
               sx={{
                 borderColor:color,
@@ -127,6 +197,27 @@ const Requests = () => {
           );
         },
       },
+      {
+        accessorKey: 'actions',
+        header: 'Actions',
+        Cell: ({ row }) => (
+          <Box sx={{ display: 'flex', gap: '0.5rem' }}>
+
+            {/* Edit Button */}
+            <IconButton
+            color="info"
+              onClick={() => handleRequestDetailsOpen(row.original.id)}
+              disabled={row.original.hr_approve !== 'pending'}
+            >
+              <EditIcon />
+            </IconButton>
+            {/* Delete Button */}
+            <IconButton color='error' onClick={() => handleDeleteRequest(row.original.id)}>
+              <DeleteIcon />
+            </IconButton>
+          </Box>
+        ),
+      }
     ],
     [],
   );
@@ -205,17 +296,6 @@ const Requests = () => {
       </Box>
     ),
   };
-
-
-
-
-
-  const user = JSON.parse(localStorage.getItem('staron_user'));
-  const navigate = useNavigate();
-  // If the user is not authenticated or authorized, redirect to the login page
-  // if (!(user.department === 'admin')) 
-  //     return navigate('/');
-
   
   return (
     <>
@@ -232,7 +312,7 @@ const Requests = () => {
           <Typography
             variant="h2"
             sx={{
-              color: colors.primary[200],
+              color: colors.primary[120],
               marginLeft: '10px',
               padding: '10px 12px',
             }}
@@ -251,8 +331,17 @@ const Requests = () => {
       newRequest = {newRequest}
       handleChange = {handleChange}
       requestTypes = {requestTypes}
-      employees = {employees}
       handleAddRequest = {handleAddRequest}
+      />
+
+      <RequestDetailsModal
+      open = {requestDetailsOpen}
+      handleClose = {handleRequestDetailsClose}
+      request = {selectedRequest}
+      handleChange ={handleChange}
+      handleUpdate ={handleUpdateRequest}
+      isEditable = {editMode}
+      requestTypes = {requestTypes}
       />
       
     </>

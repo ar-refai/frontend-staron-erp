@@ -43,7 +43,7 @@ const Item = ({ title, to, icon, selected, setSelected }) => {
   // console.log(`https://erpsystem.darakoutlet.com/${user.profileimage}`);
   // console.log("#".repeat(44));
 
-  console.log(user.supervisor);
+  // console.log(user.supervisor);
 
 
   return (
