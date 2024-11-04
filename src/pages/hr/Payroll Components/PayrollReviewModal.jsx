@@ -1,4 +1,4 @@
-import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid } from '@mui/material'
+import { Box, Button, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, Divider, Grid, TextField } from '@mui/material'
 import Lottie from 'lottie-react';
 import Document from "../../../assets/lottie/document.json"
 import { ThemeColor } from 'components/ThemeColor';
@@ -10,11 +10,12 @@ import Typography from '@mui/material/Typography';
 import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft';
 import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight';
 
+// Fake data
 const steps = [
     {
         "id": 1,
         "user_id": "232",
-        "Date": "2024-09-01",
+        "Date": "2024-09-02",
         "workdays": "21",
         "holidays": "10",
         "attendance": "21",
@@ -35,60 +36,24 @@ const steps = [
             "salary": "12000",
             "department": "Human Resources",
             "profileimage": "/uploads/profileimages/1709045242.jpeg",
-            "job_role": "HR Administrator",
-            "Supervisor": null,
-            "MedicalInsurance": "0",
-            "SocialInsurance": "0",
-            "Trancportation": "0",
-            "kpi": "1000",
-            "tax": "0"
+            "job_role": "HR Administrator"
         }
     },
-    {
-        "id": 2,
-        "user_id": "232",
-        "Date": "2024-09-01",
-        "workdays": "21",
-        "holidays": "10",
-        "attendance": "21",
-        "excuses": "0.00",
-        "additions": "2-.00",
-        "deductions": "1.00",
-        "dailyrate": "433.33",
-        "paiddays": "30.00",
-        "SocialInsurance": "0.00",
-        "MedicalInsurance": "0.00",
-        "tax": "0.00",
-        "TotalPay": "13000.00",
-        "TotalLiquidPay": "13000.00",
-        "user": {
-            "id": 232,
-            "name": "Amany Youssef",
-            "hr_code": "20338",
-            "salary": "12000",
-            "department": "Human Resources",
-            "profileimage": "/uploads/profileimages/1709045242.jpeg",
-            "job_role": "HR Administrator",
-            "Supervisor": null,
-            "MedicalInsurance": "0",
-            "SocialInsurance": "0",
-            "Trancportation": "0",
-            "kpi": "1000",
-            "tax": "0"
-        }
-    },
+    // additional employee data ...
 ];
 
 const PayrollReviewModal = ({
     showReviewModal,
     handleCloseReviewModal,
-    filteredData
+    handleSubmitPayroll
 }) => {
     const colors = ThemeColor();
     const theme = useTheme();
 
     const [activeStep, setActiveStep] = React.useState(0);
     const maxSteps = steps.length;
+    const [stalledEmployees, setStalledEmployees] = React.useState([]);
+    const [editableData, setEditableData] = React.useState(steps);
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -98,7 +63,27 @@ const PayrollReviewModal = ({
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
-    const currentData = steps[activeStep];  // Current employee's data
+    const handleStall = () => {
+        setStalledEmployees((prev) => [...prev, editableData[activeStep].user_id]);
+        handleNext();
+    };
+
+    const handleSubmit = () => {
+        const unstalledEmployees = editableData.filter(
+            (employee) => !stalledEmployees.includes(employee.user_id)
+        );
+        handleSubmitPayroll(unstalledEmployees); // Send the unstalled employees for submission
+        handleCloseReviewModal();
+    };
+
+    const handleInputChange = (e, field) => {
+        const updatedData = [...editableData];
+        updatedData[activeStep][field] = e.target.value;
+        setEditableData(updatedData);
+        console.log(editableData);
+    };
+
+    const currentData = editableData[activeStep];
 
     return (
         <Dialog
@@ -107,11 +92,7 @@ const PayrollReviewModal = ({
             aria-labelledby="description-dialog-title"
             fullWidth={true}
         >
-            <Box
-                sx={{
-                    bgcolor: colors.grey[800]
-                }}
-            >
+            <Box sx={{ bgcolor: colors.grey[800] }}>
                 <DialogTitle id="description-dialog-title">
                     <Box sx={{ display: "flex", flexDirection: "row", alignItems: "center", gap: "10px", textTransform: "uppercase" }}>
                         <Lottie style={{ width: '30px', display: 'flex' }} animationData={Document} />
@@ -133,7 +114,7 @@ const PayrollReviewModal = ({
                                     bgColor: colors.grey[800],
                                 }}
                             >
-                                <Typography>Payroll of : {currentData?.user?.name}</Typography>
+                                <Typography>Payroll of: {currentData?.user?.name}</Typography>
                             </Paper>
                             <Box sx={{ p: 2 }}>
                                 <Grid container spacing={2}>
@@ -158,46 +139,23 @@ const PayrollReviewModal = ({
                                             {currentData?.user?.department}
                                         </Typography>
                                     </Grid>
-                                    {/** Payroll Details */}
-                                    <Grid item xs={6}>
-                                        <Typography variant="body1" fontWeight="bold">
-                                            Total Pay:
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <Typography variant="body1">
-                                            {Number(currentData?.TotalPay).toLocaleString()} EGP
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <Typography variant="body1" fontWeight="bold">
-                                            Total Liquid Pay:
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <Typography variant="body1">
-                                            {Number(currentData?.TotalLiquidPay).toLocaleString()} EGP
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <Typography variant="body1" fontWeight="bold">
-                                            Tax:
-                                        </Typography>
-                                    </Grid>
-                                    <Grid item xs={6}>
-                                        <Typography variant="body1">
-                                            {Number(currentData?.tax).toLocaleString()} EGP
-                                        </Typography>
-                                    </Grid>
+                                    {/* Add Some more information here if you could  */}
+                                    {/* Include Warning logs  */}
+                                    {/* Include Employee's Attendance  and highlight the important rows */}
+
+                                    {/** Editable Payroll Details */}
                                     <Grid item xs={6}>
                                         <Typography variant="body1" fontWeight="bold">
                                             Additions:
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <Typography variant="body1">
-                                            {Number(currentData?.additions).toLocaleString()} EGP
-                                        </Typography>
+                                        <TextField
+                                            type="number"
+                                            fullWidth
+                                            value={currentData?.additions}
+                                            onChange={(e) => handleInputChange(e, 'additions')}
+                                        />
                                     </Grid>
                                     <Grid item xs={6}>
                                         <Typography variant="body1" fontWeight="bold">
@@ -205,32 +163,42 @@ const PayrollReviewModal = ({
                                         </Typography>
                                     </Grid>
                                     <Grid item xs={6}>
-                                        <Typography variant="body1">
-                                            {Number(currentData?.deductions).toLocaleString()} EGP
-                                        </Typography>
+                                        <TextField
+                                            type="number"
+                                            fullWidth
+                                            value={currentData?.deductions}
+                                            onChange={(e) => handleInputChange(e, 'deductions')}
+                                        />
                                     </Grid>
                                     <Grid item xs={6}>
                                         <Typography variant="body1" fontWeight="bold">
-                                            Paid Days:
+                                            Holidays:
                                         </Typography>
                                     </Grid>
-                                
                                     <Grid item xs={6}>
-                                        <Typography variant="body1">
-                                            {currentData?.paiddays} days
-                                        </Typography>
+                                        <TextField
+                                            type="number"
+                                            fullWidth
+                                            value={currentData?.holidays}
+                                            onChange={(e) => handleInputChange(e, 'holidays')}
+                                        />
                                     </Grid>
                                 </Grid>
                             </Box>
-                            {/** Mobile Stepper for navigating employees */}
+                            {/** Mobile Stepper */}
                             <MobileStepper
                                 variant="progress"
                                 steps={maxSteps}
                                 position="static"
                                 activeStep={activeStep}
-                                sx={{ flexGrow: 1, bgcolor: colors.primary[400] }}
+                                sx={{ flexGrow: 1, bgcolor: colors.grey[600] }}
                                 nextButton={
-                                    <Button size="small" color='success' onClick={handleNext} disabled={activeStep === maxSteps - 1}>
+                                    <Button
+                                        size="small"
+                                        color='success'
+                                        onClick={handleNext}
+                                        disabled={activeStep === maxSteps - 1}
+                                    >
                                         Next
                                         {theme.direction === 'rtl' ? (
                                             <KeyboardArrowLeft />
@@ -240,7 +208,12 @@ const PayrollReviewModal = ({
                                     </Button>
                                 }
                                 backButton={
-                                    <Button size="small" color='warning' onClick={handleBack} disabled={activeStep === 0}>
+                                    <Button
+                                        size="small"
+                                        color='warning'
+                                        onClick={handleBack}
+                                        disabled={activeStep === 0}
+                                    >
                                         {theme.direction === 'rtl' ? (
                                             <KeyboardArrowRight />
                                         ) : (
@@ -255,6 +228,15 @@ const PayrollReviewModal = ({
                 </DialogContent>
                 <Divider />
                 <DialogActions>
+                    {activeStep < maxSteps - 1 ? (
+                        <Button onClick={handleStall} variant='outlined' color='secondary'>
+                            Stall
+                        </Button>
+                    ) : (
+                        <Button onClick={handleSubmit} variant='outlined' color='success'>
+                            Submit
+                        </Button>
+                    )}
                     <Button onClick={handleCloseReviewModal} variant='outlined' color='error'>
                         Close
                     </Button>
@@ -265,3 +247,12 @@ const PayrollReviewModal = ({
 };
 
 export default PayrollReviewModal;
+
+// هل يقتات مثلك إلى على قلب كقلبي وما ضرك لو أن تركتني لا علي ولا ليا 
+// أما اليوم فلا أملك لنفسي ضرا ولا نفعا. كأني كنت أملكخا سابقا 
+// إنما هي أيام ثم تنقضي وما هي إلا غمضة عين فتمر سلمى وتمر صويحباها مرور غيرهم ممن فارقت 
+// لا يجمعهم شيء إلا مرارى في القلب موروثة و مرتعا في القلب لا ينضب شجاه ولا ينتهي ألمه 
+// فحسبك منك يا سلمى وحسبي 
+// لا ألقاك اليوم إلا غير مكترث بجميع النساء وهل أنت إلا إحداهن ناعمة الملمس في أنيابها العطب
+// سمني ما شئت فقد اجتمع في الحب والبغض وإن كنت لا أعرف حد الحب على الحقيقة فقد اجتمع في الضدان ولا ريب 
+// مرارة تكاد تجرفني وتقلع جذروي اقتلاعا 

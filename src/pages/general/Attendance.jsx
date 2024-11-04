@@ -183,7 +183,8 @@ const Attendance = () => {
         } else {
             const filtered = data.filter((entry) => {
                 const entryDate = dayjs(entry.date);
-                return entryDate.isSame(startDate, 'day') || entryDate.isSame(endDate, 'day') || (entryDate.isAfter(startDate) && entryDate.isBefore(endDate));
+                console.log(startDate.isSame(entryDate ,'day'));
+                return entryDate.isSame(startDate , 'day') || entryDate.isSame(endDate, 'day') || (entryDate.isAfter(startDate) && entryDate.isBefore(endDate)  , 'day');
             });
             setFilteredData(filtered);
         }

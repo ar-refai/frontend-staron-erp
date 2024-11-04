@@ -183,11 +183,10 @@ const Payroll = () => {
     setReviewModalOpen(false);
   };
 
-
-
   return (
     <>
       <Box sx={{ padding: '16px' }}>
+
         {/* Filters Search and Department  */}
         <PayrollFilters
           searchQuery={searchQuery}
@@ -212,6 +211,7 @@ const Payroll = () => {
 
         {/* Material react table */}
         <PayrollTable columns={columns} data={filteredData} colors={colors} />
+
       </Box>
 
       {/* Review Modal */}
@@ -220,6 +220,7 @@ const Payroll = () => {
         handleCloseReviewModal={handleCloseReviewModal}
         filteredData={filteredData}
       />
+      
     </>
   );
 };

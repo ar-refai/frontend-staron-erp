@@ -22,7 +22,7 @@ const instanceUpdate = axios.create({
 // Chart of Accounts Functions
 export const ShowAllAccounts = async () => {
   try {
-    const response = await instance.get('/finance/chartAccount');
+    const response = await instance.get('/finance/chartAccount/all');
     return response.data;
   } catch (error) {
     throw new Error('data failed');
@@ -152,6 +152,64 @@ export const ShowGLRecords = async (formData) => {
 };
 
 
-// 
+// Finance Validation Functions for Chart Of Accounts and Main Journal
+// COA All Requests
+export const showAllValidationRequests = async () =>{
 
+  try {
 
+    const response = await instance.get('/finance/chartAccountValidation/pending');
+    return response.data;
+
+  } catch (error) {
+
+    throw new Error('data faild');
+  }
+} 
+
+// Show single Validation Request
+export const showValidationRequest = async (id) => {
+
+  try{
+
+    const response = await instance.get(`/finance/chartAccountValidation/show/${id}`);
+    return response.data;
+
+  } catch (error) {
+    throw new Error('data faild');
+  }
+
+}
+
+// store new request
+export const storeValidationRequest = async (formData) =>{
+
+  try {
+    const response = await instanceUpdate.post('/finance/chartAccountValidation/store', formData);
+    return response.data;
+  } catch (error) {
+    throw new Error('data faild');
+  }
+}
+
+// approve an existing request 
+export const approveValidationRequest = async (id) => {
+  try {
+    
+    const response = await instanceUpdate.post(`/finance/chartAccountValidation/approve/${id}`);
+    return response.data;
+    
+  } catch (error) {
+    throw new Error('data faild');
+  }
+}
+
+// show a user 
+export const FetchUserById = async (id) => {
+  try {
+    const response = await instance.get('/humanresource/employee/'+id);
+    return response.data;
+  } catch (error) {
+    throw new Error('data failed');
+  }
+};

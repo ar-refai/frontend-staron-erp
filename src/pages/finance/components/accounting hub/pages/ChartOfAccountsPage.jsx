@@ -1,11 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Button, Grid, IconButton, useTheme } from '@mui/material';
 import { type MRT_ColumnDef, MaterialReactTable } from 'material-react-table';
+
 import { tokens } from 'theme';
 import { ShowAllAccounts, AccountsList } from 'apis/FainanceApi/FinanceRequests';
 import AddAccountModal from '../../accounting hub/components/AddAccount'; // Ensure the correct import path
 import UpdateAccountModal from '../../accounting hub/components/UpdateAccount';
 import EditIcon from '@mui/icons-material/Edit';
+import ValidationTable from '../components/ValidationTable';
 const ChartOfAccounts = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -88,9 +90,10 @@ const ChartOfAccounts = () => {
   ];
 
   return (
-    <Grid item xs={12}>
+    <Grid container spacing={2}>
+
+    <Grid item xs={12} md={8}>
       <Box
-        component="div"
         sx={{
           display: 'inline-block',
           p: 1,
@@ -99,14 +102,14 @@ const ChartOfAccounts = () => {
           borderRadius: '5px'
         }}
       >
-        <Button
+        {/* <Button
           variant="outlined"
           color="secondary"
           onClick={() => setOpenModal(true)}
           sx={{ mb: 2, display: 'flex', justifyContent: 'start' }}
         >
           Add Account
-        </Button>
+        </Button> */}
         <MaterialReactTable
           columns={columns}
           data={tableData}
@@ -173,6 +176,10 @@ const ChartOfAccounts = () => {
           }}
         />
       </Box>
+
+
+
+
       <AddAccountModal
         isOpen={openModal}
         onClose={() => setOpenModal(false)}
@@ -183,6 +190,10 @@ const ChartOfAccounts = () => {
                   accountId={selectedAccountId}
                   onUpdated={handleAccountUpdate}
                 />
+    </Grid>
+    <Grid item xs={12} md={4}>
+        <ValidationTable />
+      </Grid>
     </Grid>
   );
 };
